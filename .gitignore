@@ -1,0 +1,49 @@
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# code by galin
+# 2013/8/5
+
+# MySQL Database
+SturdyStem/data/
+# SAE built in packages
+# Now I consider it not so convenient for you to redownload these packages from SAE.
+# So I included them in the repository.
+#SturdyStem/web/WEB-INF/lib/activation.jar
+#SturdyStem/web/WEB-INF/lib/commons-beanutils-1.8.3.jar
+#SturdyStem/web/WEB-INF/lib/commons-beanutils-bean-collections-1.8.3.jar
+#SturdyStem/web/WEB-INF/lib/commons-beanutils-core-1.8.3.jar
+#SturdyStem/web/WEB-INF/lib/commons-codec-1.4.jar
+#SturdyStem/web/WEB-INF/lib/commons-collections-3.2.1.jar
+#SturdyStem/web/WEB-INF/lib/commons-io-1.3.2.jar
+#SturdyStem/web/WEB-INF/lib/commons-lang-2.6.jar
+#SturdyStem/web/WEB-INF/lib/commons-logging-1.1.1.jar
+#SturdyStem/web/WEB-INF/lib/derby.jar
+#SturdyStem/web/WEB-INF/lib/ezmorph-1.0.6.jar
+#SturdyStem/web/WEB-INF/lib/httpclient-4.1.2.jar
+#SturdyStem/web/WEB-INF/lib/httpclient-cache-4.1.2.jar
+#SturdyStem/web/WEB-INF/lib/httpcore-4.1.2.jar
+#SturdyStem/web/WEB-INF/lib/httpmime-4.1.2.jar
+#SturdyStem/web/WEB-INF/lib/json-lib-2.4-jdk15.jar
+#SturdyStem/web/WEB-INF/lib/log4j.jar
+#SturdyStem/web/WEB-INF/lib/mail.jar
+#SturdyStem/web/WEB-INF/lib/mysql-connector-java-5.0.8-bin.jar
+#SturdyStem/web/WEB-INF/lib/sae-local-1.1.0.jar
+
+# compiled classes
+SturdyStem/web/WEB-INF/classes
+SturdyStem/librarica.war
+
+# javadoc
+# Not staged as they are continuously changed.
+# You can use "ant javadoc -s" to create them from source code
+SturdyStem/javadoc
+
+# end code_by
