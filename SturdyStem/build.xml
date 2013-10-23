@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- code by "galin"<cuter44@stu.scau.edu.cn> -->
+<!-- Ant build configuration -->
+<!-- Project TVProtal -->
+<project basedir="." default="build-all" >
+
+  <!-- 变量定义 -->
+  <property name="srcdir" value="src" />
+  <property name="destdir" value="web/WEB-INF/classes" />
+
+  <path id="classpath">
+    <!-- web/WEB-INF/lib 存放需要发布的类库 -->
+    <fileset id="packages" dir="web/WEB-INF/lib">
+	  <include name="*.jar" />
+	</fileset>
+	<!-- lib 存放开发及测试用库 -->
+	<fileset id="debug-packages" dir="lib">
+	  <include name="*.jar" />
+	</fileset>
+	<pathelement path="web/WEB-INF/classes" />
+  </path>
+
+  <!-- 任务 -->
+  <!-- 全体编译 -->
+  <target name="build" description="编译">
+    <antcall target="copy-config" />
+    <javac srcdir="${srcdir}" destdir="${destdir}" failonerror="true" debug="true" includeantruntime="false">
+      <compilerarg value="-Xlint:unchecked"/>
+      <classpath refid="classpath" />
+	</javac>
+  </target>
+
+  <target name="build-all" description="全部重新编译">
+    <antcall target="clear-built" />
+    <antcall target="build" />
+  </target>
+
+  <target name="clear-built" description="清理">
+    <delete dir="web/WEB-INF/classes" failonerror="false" />
+  </target>
+
+  <!-- 复制配置文件 -->
+  <!-- 可以使用include元素追加你想要的文件 -->
+  <target name="copy-config" description="复制配置文件">
+	<copy todir="web/WEB-INF/classes">
+	  <fileset dir="src">
+	    <include name="**/*.xml" />
+		<include name="**/*.properties" />
+	  </fileset>
+	</copy>
+  </target>
+
+  <!-- 设定运行环境 -->
+  <!-- 在部署到sae之前要更换配置 -->
+  <!-- 使用-Dconf.env=local或sae来传递需要切换为哪个环境 -->
+  <target name="conf" description="设定运行环境, 使用-Dconf.env=local或sae来传递需要切换为哪个环境" if="conf.env">
+    <copy file="src/hibernate.${conf.env}.cfg.xml" tofile="web/WEB-INF/classes/hibernate.cfg.xml" overwrite="true"/>
+    <copy file="src/hibernate.${conf.env}.cfg.xml" tofile="src/hibernate.cfg.xml" overwrite="true"/>
+    <copy file="web/WEB-INF/web.${conf.env}.xml" tofile="web/WEB-INF/web.xml" overwrite="true"/>
+  </target>
+
+  <!-- 生成javadoc -->
+  <target name="javadoc" description="生成javadoc">
+    <javadoc sourcepath="src" destdir="javadoc" private="true" classpathref="classpath"/>
+  </target>
+
+  <!-- 生成war -->
+  <!-- 追加-Dhbm.cfg可以指定使用的数据库环境, 请参见conf -->
+  <target name="war">
+    <antcall target="conf" description="生成war, 追加-Dhbm.cfg可以指定使用的数据库环境 "/>
+    <jar destfile="librarica.war" basedir="web"
+      exclude="hibernate.sae.cfg.xml" />
+  </target>
+
+
+  <!-- 工具类 -->
+  <target name="run" description="直接运行, 使用-Drun.main=&lt;类名&gt;指定入口类">
+    <java classname="${run.main}" fork="true" dir="web/WEB-INF/classes">
+      <classpath refid="classpath" />
+	</java>
+  </target>
+
+  <target name="rsaenc" description="RSAEncoder">
+    <property name="run.main" value="cn.edu.scau.librarica.debug.RSAEncryptCLI" />
+    <antcall target="run" />
+  </target>
+
+  <target name="urlenc" description="URLEncoder">
+    <property name="run.main" value="cn.edu.scau.librarica.debug.URLEncodeCLI" />
+    <antcall target="run" />
+  </target>
+
+
+  <target name="debug" description="本地测试, 使用-Ddebug.main=&lt;类名&gt;指定jvm的入口类">
+	<java classname="${debug.main}" fork="true" dir="web/WEB-INF/classes">
+      <!-- 启用断言 -->
+      <jvmarg value="-ea" />
+      <!-- 启用调试 -->
+      <jvmarg value="-Xdebug"/> 
+      <!-- 启用远程调试 -->
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8288,suspend=y,server=y"/>
+      <classpath refid="classpath" />
+	</java>
+  </target>
+
+</project>
