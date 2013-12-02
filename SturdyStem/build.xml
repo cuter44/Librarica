@@ -17,11 +17,10 @@
 	<fileset id="debug-packages" dir="lib">
 	  <include name="*.jar" />
 	</fileset>
-	<pathelement path="web/WEB-INF/classes" />
+	<pathelement path="${destdir}" />
   </path>
 
   <!-- 任务 -->
-  <!-- 全体编译 -->
   <target name="build" description="编译">
     <antcall target="copy-config" />
     <javac srcdir="${srcdir}" destdir="${destdir}" failonerror="true" debug="true" includeantruntime="false">
@@ -36,13 +35,11 @@
   </target>
 
   <target name="clear-built" description="清理">
-    <delete dir="web/WEB-INF/classes" failonerror="false" />
+    <delete dir="${destdir}" failonerror="false" />
   </target>
 
-  <!-- 复制配置文件 -->
-  <!-- 可以使用include元素追加你想要的文件 -->
   <target name="copy-config" description="复制配置文件">
-	<copy todir="web/WEB-INF/classes">
+	<copy todir="${destdir}">
 	  <fileset dir="src">
 	    <include name="**/*.xml" />
 		<include name="**/*.properties" />
@@ -56,7 +53,6 @@
   <target name="conf" description="设定运行环境, 使用-Dconf.env=local或sae来传递需要切换为哪个环境" if="conf.env">
     <copy file="src/hibernate.${conf.env}.cfg.xml" tofile="web/WEB-INF/classes/hibernate.cfg.xml" overwrite="true"/>
     <copy file="src/hibernate.${conf.env}.cfg.xml" tofile="src/hibernate.cfg.xml" overwrite="true"/>
-    <copy file="web/WEB-INF/web.${conf.env}.xml" tofile="web/WEB-INF/web.xml" overwrite="true"/>
   </target>
 
   <!-- 生成javadoc -->
@@ -66,8 +62,8 @@
 
   <!-- 生成war -->
   <!-- 追加-Dhbm.cfg可以指定使用的数据库环境, 请参见conf -->
-  <target name="war">
-    <antcall target="conf" description="生成war, 追加-Dhbm.cfg可以指定使用的数据库环境 "/>
+  <target name="war" description="生成war, 追加-Dconf.env可以指定使用的数据库环境">
+    <antcall target="conf"/>
     <jar destfile="librarica.war" basedir="web"
       exclude="hibernate.sae.cfg.xml" />
   </target>

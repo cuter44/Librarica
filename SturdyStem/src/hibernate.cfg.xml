@@ -36,11 +36,6 @@
 		<property name="connection.characterEncoding">UTF-8</property> 
 
         <!-- 映射持久类 -->
-		<mapping resource="cn/edu/scau/librarica/dao/User.hbm.xml" />
-        <mapping resource="cn/edu/scau/librarica/dao/Book.hbm.xml" />		
-        <mapping resource="cn/edu/scau/librarica/dao/MessageSession.hbm.xml" />
-        <mapping resource="cn/edu/scau/librarica/dao/Message.hbm.xml" />
-        <mapping resource="cn/edu/scau/librarica/dao/NotifyItem.hbm.xml" />
-        <mapping resource="cn/edu/scau/librarica/dao/NotifyList.hbm.xml" />
+		<mapping resource="cn/edu/scau/librarica/authorize/dao/User.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>

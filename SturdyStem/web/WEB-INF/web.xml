@@ -6,6 +6,25 @@
         id="WebApp_ID" version="2.5">
   <display-name>librarica</display-name>
 
+  <!--
+  <servlet>
+    <servlet-name></servlet-name>
+    <servlet-class>cn.edu.scau.librarica.</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name></servlet-name>
+    <url-pattern>cn.edu.scau.librarica.</url-pattern>
+  </servlet-mapping>
+  -->
+
+  <servlet>
+    <servlet-name>AuthorizeRegisterUser</servlet-name>
+    <servlet-class>cn.edu.scau.librarica.authorize.servlet.Register</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AuthorizeRegisterUser</servlet-name>
+    <url-pattern>/user/register</url-pattern>
+  </servlet-mapping>
 
 
   <welcome-file-list>

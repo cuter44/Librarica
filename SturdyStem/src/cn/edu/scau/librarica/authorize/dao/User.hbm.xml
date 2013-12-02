@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="cn.edu.scau.librarica.authorize.dao">
+    <class name="User" table="authorize_user">
+        <id	name="id" type="long" column="id">
+            <generator class="identity"/>
+        </id>
+        
+        <property name="mail" type="string" index="idx_authorize_user_mail" unique="true" not-null="true" />
+        <property name="uname" type="string" index="idx_authorize_user_name" unique="true" />
+
+        <property name="skey" type="binary" length="16" />
+        <property name="salt" type="binary" length="8" />
+        <property name="pass" type="binary" length="16" />
+
+        <property name="status" type="byte" not-null="true" />
+        <property name="regDate" type="timestamp" />
+    </class>
+</hibernate-mapping>
