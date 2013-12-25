@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="cn.edu.scau.librarica.lend.dao">
+    <class name="BorrowableBook" table="lend_borrowable_book">
+        <id	name="id" type="long" column="id">
+            <generator class="foreign">
+                <param name="property">book</param>
+            </generator>
+        </id>
+        <one-to-one name="book" class="cn.edu.scau.librarica.shelf.dao.Book" constrained="true" />
+        <property name="geohash" type="string" index="idx_borrowablebook_geohash" length="24"/>
+        <property name="ps" type="string" />
+    </class>
+</hibernate-mapping>

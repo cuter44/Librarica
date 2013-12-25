@@ -9,6 +9,13 @@ import org.hibernate.criterion.Restrictions;
 
 public class UserMgr
 {
+    public static User get(Long id)
+    {
+        return(
+            (User)HiberDao.get(User.class, id)
+        );
+    }
+
     public static User forMail(String mail)
     {
         DetachedCriteria dc = DetachedCriteria.forClass(User.class)
@@ -33,15 +40,13 @@ public class UserMgr
 
     //public static String update();
 
-    public static String remove(Long id)
+    public static void remove(Long id)
     {
-        User u = (User)HiberDao.get(User.class, id);
+        User u = UserMgr.get(id);
 
-        if (u == null)
-            return("notfound");
+        if (u != null)
+            HiberDao.delete(u);
 
-        HiberDao.delete(u);
-
-        return("success");
+        return;
     }
 }

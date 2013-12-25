@@ -37,5 +37,8 @@
 
         <!-- 映射持久类 -->
 		<mapping resource="cn/edu/scau/librarica/authorize/dao/User.hbm.xml" />
+		<mapping resource="cn/edu/scau/librarica/shelf/dao/Book.hbm.xml" />
+		<mapping resource="cn/edu/scau/librarica/lend/dao/BorrowableBook.hbm.xml" />
+
 	</session-factory>
 </hibernate-configuration>

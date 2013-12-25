@@ -1,4 +1,4 @@
-package cn.edu.scau.librarica.util;
+package cn.edu.scau.librarica.util.conf;
 
 import java.util.Properties;
 
@@ -27,15 +27,17 @@ public class Configurator
     {
         try
         {
-            this.prop = new Properties();
-            this.prop.load(
-                new InputStreamReader(
-                    Thread.currentThread()
-                        .getContextClassLoader()
-                        .getResourceAsStream("/librarica.properties"),
-                    "utf-8"
-                )
+            InputStreamReader is = new InputStreamReader(
+                Thread.currentThread()
+                    .getContextClassLoader()
+                    .getResourceAsStream("/librarica.properties"),
+                "utf-8"
             );
+
+            this.prop = new Properties();
+            this.prop.load(is);
+
+            is.close();
         }
         catch (Exception ex)
         {
@@ -104,6 +106,33 @@ public class Configurator
         try
         {
             Integer v = Integer.valueOf(get(name));
+
+            if (v != null)
+                return(v);
+            else
+                throw(new IllegalArgumentException("Missing required config key: " + name));
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return(defaultValue);
+        }
+    }
+
+    public static Long getLong(String name)
+    {
+        return(
+            Long.valueOf(
+                get(name)
+            )
+        );
+    }
+
+    public static Long getLong(String name, Long defaultValue)
+    {
+        try
+        {
+            Long v = Long.valueOf(get(name));
 
             if (v != null)
                 return(v);

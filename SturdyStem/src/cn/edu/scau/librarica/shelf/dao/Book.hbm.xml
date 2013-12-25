@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="cn.edu.scau.librarica.shelf.dao">
+    <class name="Book" table="shelf_book">
+        <id	name="id" type="long" column="id">
+            <generator class="identity"/>
+        </id>
+        <property name="isbn" type="string" index="idx_book_isbn" length="13" not-null="true" />
+        <many-to-one name="owner" class="cn.edu.scau.librarica.authorize.dao.User" not-null="true" index="idx_book_owner" />
+    </class>
+</hibernate-mapping>

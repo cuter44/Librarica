@@ -1,21 +1,19 @@
 package com.github.cuter44.util.crypto;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-
-import java.security.KeyPairGenerator;
+import java.nio.ByteBuffer;
 import java.security.KeyPair;
-import java.security.PublicKey;
-import java.security.PrivateKey;
-
+import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
-
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 
-import java.security.NoSuchAlgorithmException;
-
-import java.nio.ByteBuffer;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
 
 
 /** 提供加密算法的封装
@@ -24,9 +22,29 @@ import java.nio.ByteBuffer;
  * <br />
  * 只要密钥和密文都正确就能给出明文, 否则给出空值, 这个库截断了可能产生的 Exception
  * 以简化上层代码逻辑, 上层代码在进行解密时应始终检查返回值是否为空.
+ * @version 1.0.0 build 20131212
  */
 public class CryptoUtil
 {
+    public static final String defaultDESConf = "DES/ECB/ZeroPadding";
+    public static final String defaultAESConf = "AES/CBC/PKCS5Padding";
+    public static final String defaultRSAConf = "RSA/ECB/PKCS1Padding";
+    // for Java built-in, follow are available
+    //AES/CBC/NoPadding (128)
+    //AES/CBC/PKCS5Padding (128)
+    //AES/ECB/NoPadding (128)
+    //AES/ECB/PKCS5Padding (128)
+    //DES/CBC/NoPadding (56)
+    //DES/CBC/PKCS5Padding (56)
+    //DES/ECB/NoPadding (56)
+    //DES/ECB/PKCS5Padding (56)
+    //DESede/CBC/NoPadding (168)
+    //DESede/CBC/PKCS5Padding (168)
+    //DESede/ECB/NoPadding (168)
+    //DESede/ECB/PKCS5Padding (168)
+    //RSA/ECB/PKCS1Padding (1024, 2048)
+    //RSA/ECB/OAEPWithSHA-1AndMGF1Padding (1024, 2048)
+    //RSA/ECB/OAEPWithSHA-256AndMGF1Padding (1024, 2048)
     public static final char[] base64char =
         {'A','B','C','D','E','F','G','H',
          'I','J','K','L','M','N','O','P',
@@ -38,17 +56,26 @@ public class CryptoUtil
          '4','5','6','7','8','9','+','/'};
 
   // SINGLETON
-    private KeyGenerator AESKeyGen = null;
-    private KeyPairGenerator RSAKeyGen = null;
-    private SecureRandom rng = null;
+    private KeyGenerator DESKeyGen;
+    private SecretKeyFactory DESKeyFactory;
+    private KeyGenerator AESKeyGen;
+    private KeyPairGenerator RSAKeyGen;
+    private SecureRandom rng;
 
     private CryptoUtil()
     {
         try
         {
+            this.DESKeyGen = KeyGenerator.getInstance("DES");
+            this.DESKeyGen.init(56);
+            this.DESKeyFactory = SecretKeyFactory.getInstance("DES");
+
             this.AESKeyGen = KeyGenerator.getInstance("AES");
+            this.AESKeyGen.init(128);
+
             this.RSAKeyGen = KeyPairGenerator.getInstance("RSA");
             this.RSAKeyGen.initialize(1024);
+
             this.rng = SecureRandom.getInstance("SHA1PRNG");
         }
         catch (NoSuchAlgorithmException ex)
@@ -64,6 +91,28 @@ public class CryptoUtil
     }
 
   // KEY
+    public static SecretKey generateDESKey()
+    {
+        SecretKey key = Singleton.instance.DESKeyGen.generateKey();
+
+        return(key);
+    }
+
+    public static SecretKey generateDESKey(DESKeySpec spec)
+    {
+        try
+        {
+            SecretKey key = Singleton.instance.DESKeyFactory.generateSecret(spec);
+
+            return(key);
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+            return(null);
+        }
+    }
+
     public static SecretKey generateAESKey()
     {
         SecretKey key = Singleton.instance.AESKeyGen.generateKey();
@@ -79,6 +128,62 @@ public class CryptoUtil
     }
 
   // CRYPTO
+    public static byte[] DESEncrypt(byte[] in, SecretKey key)
+    {
+        try
+        {
+            if (in == null)
+                throw(new IllegalArgumentException("in must have walue."));
+            if (key == null)
+                throw(new IllegalArgumentException("key must have value."));
+
+            // TODO: specified mode and padding.
+            Cipher c = Cipher.getInstance(defaultDESConf);
+            c.init(Cipher.ENCRYPT_MODE, key);
+
+            byte[] out = c.doFinal(in);
+
+            return(out);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            throw(ex);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return(null);
+        }
+    }
+
+    public static byte[] DESDecrypt(byte[] in, SecretKey key)
+    {
+        try
+        {
+            if (in == null)
+                throw(new IllegalArgumentException("in must have walue."));
+            if (key == null)
+                throw(new IllegalArgumentException("key must have value."));
+
+            // TODO: specified mode and padding.
+            Cipher c = Cipher.getInstance(defaultDESConf);
+            c.init(Cipher.DECRYPT_MODE, key);
+
+            byte[] out = c.doFinal(in);
+
+            return(out);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            throw(ex);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return(null);
+        }
+    }
+
     public static byte[] AESEncrypt(byte[] in, SecretKey key)
     {
         try
@@ -89,7 +194,7 @@ public class CryptoUtil
                 throw(new IllegalArgumentException("key must have value."));
 
             // TODO: specified mode and padding.
-            Cipher c = Cipher.getInstance("AES");
+            Cipher c = Cipher.getInstance(defaultAESConf);
             c.init(Cipher.ENCRYPT_MODE, key);
 
             byte[] out = c.doFinal(in);
@@ -117,7 +222,7 @@ public class CryptoUtil
                 throw(new IllegalArgumentException("key must have value."));
 
             // TODO: specified mode and padding.
-            Cipher c = Cipher.getInstance("AES");
+            Cipher c = Cipher.getInstance(defaultAESConf);
             c.init(Cipher.DECRYPT_MODE, key);
 
             byte[] out = c.doFinal(in);
@@ -145,7 +250,7 @@ public class CryptoUtil
                 throw(new IllegalArgumentException("key must have value."));
 
             // TODO: specified mode and padding.
-            Cipher c = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher c = Cipher.getInstance(defaultRSAConf);
             c.init(Cipher.ENCRYPT_MODE, key);
 
             byte[] out = c.doFinal(in);
@@ -172,7 +277,7 @@ public class CryptoUtil
             if (key == null)
                 throw(new IllegalArgumentException("key must have value."));
 
-            Cipher c = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher c = Cipher.getInstance(defaultRSAConf);
             c.init(Cipher.DECRYPT_MODE, key);
 
             byte[] out = c.doFinal(in);

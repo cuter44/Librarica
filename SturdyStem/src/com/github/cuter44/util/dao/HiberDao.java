@@ -49,7 +49,7 @@ import org.apache.log4j.Logger;
  * 就是这么简单...
  * <br />
  * 切记要提交并且关闭会话, 否则出现内存溢出, 读写失败什么的概不负责.
- * @version 1.2.2
+ * @version 1.2.2 build 20131212
  */
 public class HiberDao
 {
@@ -263,15 +263,15 @@ public class HiberDao
      * @param start 结果分页用, 从第#条记录开始
      * @param limit 结果分页用, 限制最多返回#条记录
      */
-    public static List search(DetachedCriteria dc, Integer start, Integer limit)
+    public static List search(DetachedCriteria dc, Integer start, Integer size)
     {
         Session s = threadSession.get();
         Criteria c = dc.getExecutableCriteria(s);
 
         if (start != null)
             c.setFirstResult(start);
-        if (limit != null)
-            c.setMaxResults(limit);
+        if (size != null)
+            c.setMaxResults(size);
 
         List li = c.list();
 

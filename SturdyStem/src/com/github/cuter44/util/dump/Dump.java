@@ -2,6 +2,9 @@ package com.github.cuter44.util.dump;
 
 import java.lang.StackTraceElement;
 
+/** ¼òÒ×ÄÚ´æ×ª´¢ºê
+ * @version 1.0.0 builld 20131212
+ */
 public class Dump
 {
     public static void dump(byte[] bytes)

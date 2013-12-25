@@ -9,7 +9,7 @@
         </id>
         
         <property name="mail" type="string" index="idx_authorize_user_mail" unique="true" not-null="true" />
-        <property name="uname" type="string" index="idx_authorize_user_name" unique="true" />
+        <property name="uname" type="string" index="idx_authorize_user_name" unique="true" length="60" />
 
         <property name="skey" type="binary" length="16" />
         <property name="salt" type="binary" length="8" />

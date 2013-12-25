@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- code by "galin"<cuter44@stu.scau.edu.cn> -->
 <!-- Ant build configuration -->
-<!-- Project TVProtal -->
+<!-- Project Librarica -->
 <project basedir="." default="build-all" >
 
-  <!-- 变量定义 -->
+  <!-- 变量 -->
   <property name="srcdir" value="src" />
   <property name="destdir" value="web/WEB-INF/classes" />
 
@@ -20,7 +20,7 @@
 	<pathelement path="${destdir}" />
   </path>
 
-  <!-- 任务 -->
+  <!-- 编译 -->
   <target name="build" description="编译">
     <antcall target="copy-config" />
     <javac srcdir="${srcdir}" destdir="${destdir}" failonerror="true" debug="true" includeantruntime="false">
@@ -29,18 +29,20 @@
 	</javac>
   </target>
 
+  <target name="clear-built" description="清理">
+    <delete>
+      <fileset dir="${destdir}" includes="**/*"/>
+    </delete>
+  </target>
+
   <target name="build-all" description="全部重新编译">
     <antcall target="clear-built" />
     <antcall target="build" />
   </target>
 
-  <target name="clear-built" description="清理">
-    <delete dir="${destdir}" failonerror="false" />
-  </target>
-
   <target name="copy-config" description="复制配置文件">
 	<copy todir="${destdir}">
-	  <fileset dir="src">
+	  <fileset dir="${srcdir}">
 	    <include name="**/*.xml" />
 		<include name="**/*.properties" />
 	  </fileset>
@@ -57,7 +59,7 @@
 
   <!-- 生成javadoc -->
   <target name="javadoc" description="生成javadoc">
-    <javadoc sourcepath="src" destdir="javadoc" private="true" classpathref="classpath"/>
+    <javadoc sourcepath="${srcdir}" destdir="javadoc" private="true" classpathref="classpath"/>
   </target>
 
   <!-- 生成war -->
@@ -71,24 +73,24 @@
 
   <!-- 工具类 -->
   <target name="run" description="直接运行, 使用-Drun.main=&lt;类名&gt;指定入口类">
-    <java classname="${run.main}" fork="true" dir="web/WEB-INF/classes">
+    <java classname="${run.main}" fork="true" dir="${destdir}">
       <classpath refid="classpath" />
 	</java>
   </target>
 
   <target name="rsaenc" description="RSAEncoder">
-    <property name="run.main" value="cn.edu.scau.librarica.debug.RSAEncryptCLI" />
+    <property name="run.main" value="com.github.cuter44.util.crypto.RSAEncryptCLI" />
     <antcall target="run" />
   </target>
 
-  <target name="urlenc" description="URLEncoder">
-    <property name="run.main" value="cn.edu.scau.librarica.debug.URLEncodeCLI" />
+  <target name="rsadec" description="RSADecoder">
+    <property name="run.main" value="com.github.cuter44.util.crypto.RSADecryptCLI" />
     <antcall target="run" />
   </target>
 
 
   <target name="debug" description="本地测试, 使用-Ddebug.main=&lt;类名&gt;指定jvm的入口类">
-	<java classname="${debug.main}" fork="true" dir="web/WEB-INF/classes">
+	<java classname="${debug.main}" fork="true" dir="${destdir}">
       <!-- 启用断言 -->
       <jvmarg value="-ea" />
       <!-- 启用调试 -->

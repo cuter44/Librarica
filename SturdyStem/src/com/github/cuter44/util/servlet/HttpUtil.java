@@ -1,16 +1,19 @@
 package com.github.cuter44.util.servlet;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 /* util */
 import java.util.List;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
+
+import javax.servlet.http.Cookie;
 /* http */
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Cookie;
-/* log */
-import org.apache.log4j.Logger;
 
+/** Servlet π§æﬂ¿‡
+ * @version 1.0.0 builld 20131212
+ */
 public class HttpUtil
 {
     /**
@@ -66,16 +69,13 @@ public class HttpUtil
         try
         {
             String v = getParam(req, name);
-            if (v != null)
-                return(Integer.valueOf(v));
+            return(v==null?null:Integer.valueOf(v));
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
-            Logger.getLogger("librarica.servlet")
-                .error(ex.toString());
+            return(null);
         }
-        return(null);
     }
 
     /**
@@ -92,16 +92,13 @@ public class HttpUtil
         try
         {
             String v = getParam(req, name);
-            if (v != null)
-                return(Double.valueOf(v));
+            return(v==null?null:Double.valueOf(v));
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
-            Logger.getLogger("librarica.servlet")
-                .error(ex.toString());
+            return(null);
         }
-        return(null);
     }
 
     /**
@@ -118,16 +115,13 @@ public class HttpUtil
         try
         {
             String v = getParam(req, name);
-            if (v != null)
-                return(Byte.valueOf(v));
+            return(v==null?null:Byte.valueOf(v));
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
-            Logger.getLogger("librarica.servlet")
-                .error(ex.toString());
+            return(null);
         }
-        return(null);
     }
 
     public static Long getLongParam(HttpServletRequest req, String name)
@@ -135,16 +129,13 @@ public class HttpUtil
         try
         {
             String v = getParam(req, name);
-            if (v != null)
-                return(Long.valueOf(v));
+            return(v==null?null:Long.valueOf(v));
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
-            Logger.getLogger("librarica.servlet")
-                .error(ex.toString());
+            return(null);
         }
-        return(null);
     }
 
     public static List<Long> getLongListParam(HttpServletRequest req, String name)
@@ -166,9 +157,43 @@ public class HttpUtil
         catch (Exception ex)
         {
             ex.printStackTrace();
-            Logger.getLogger("librarica.servlet")
-                .error(ex.toString());
+            return(null);
         }
-        return(null);
     }
+
+    public static byte[] getByteArrayParam(HttpServletRequest req, String name)
+    {
+        try
+        {
+            String v = getParam(req, name);
+            if (v == null)
+                return(null);
+
+            int l = v.length() / 2;
+
+            ByteBuffer buf = ByteBuffer.allocate(l);
+            for (int i=0; i<v.length(); i+=2)
+            {
+                buf.put(
+                    Integer.valueOf(
+                        v.substring(i, i+2),
+                        16
+                    ).byteValue()
+                );
+            }
+            return(buf.array());
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return(null);
+        }
+    }
+
+    public static Boolean getBooleanParam(HttpServletRequest req, String name)
+    {
+        String v = getParam(req, name);
+        return(v==null?null:Boolean.valueOf(v));
+    }
+
 }

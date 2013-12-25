@@ -1,19 +1,23 @@
-package cn.edu.scau.librarica.util;
+package cn.edu.scau.librarica.util.mail;
 
 import javax.mail.Session;
 //import javax.mail.Message;
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 
+import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import javax.mail.internet.InternetAddress;
 import javax.mail.Message.RecipientType;
 
-import javax.mail.Transport;
 import javax.mail.SendFailedException;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
-import cn.edu.scau.librarica.util.Configurator;
+import java.io.UnsupportedEncodingException;
+
+import cn.edu.scau.librarica.util.conf.Configurator;
 
 /** 发邮件功能封装
  * <br />
@@ -57,7 +61,8 @@ public class MailUtil
         this.session.setDebug(true);
     }
 
-    public static String sendHTMLMail(String to, String subject, String content)
+    public static void sendHTMLMail(String to, String subject, String content)
+        throws MessagingException, AddressException
     {
         try
         {
@@ -83,17 +88,11 @@ public class MailUtil
 
             Transport.send(msg);
 
-            return("success");
+            return;
         }
-        catch (SendFailedException ex)
+        catch (UnsupportedEncodingException ex)
         {
             ex.printStackTrace();
-            return("!failed");
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-            return("!error");
         }
     }
 }

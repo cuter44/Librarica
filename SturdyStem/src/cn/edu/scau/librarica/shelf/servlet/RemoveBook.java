@@ -1,49 +1,51 @@
-package cn.edu.scau.librarica.authorize.servlet;
+package cn.edu.scau.librarica.shelf.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.OutputStream;
+import java.util.List;
 
 import javax.servlet.http.*;
 import javax.servlet.ServletException;
 
 import com.github.cuter44.util.dao.*;
 import com.github.cuter44.util.servlet.*;
-import com.github.cuter44.util.crypto.*;
 
 import com.alibaba.fastjson.*;
 
-import cn.edu.scau.librarica.util.mail.MailProvider;
-import cn.edu.scau.librarica.util.conf.*;
-import cn.edu.scau.librarica.authorize.dao.*;
-import cn.edu.scau.librarica.authorize.core.*;
+import cn.edu.scau.librarica.shelf.dao.*;
+import cn.edu.scau.librarica.shelf.core.*;
 
-/** 注册
+/** 删除藏书
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
-   POST /user/register
+   GET/POST /book/remove
 
    <strong>参数</strong>
-   mail:string, 邮件地址
+   bid:long, 删除书的id;
+   <i>鉴权</i>
+   uid:long, uid;
+   s:hex, session key;
 
    <strong>响应</strong>
-   application/json 对象:
-   mail:string, 成功时返回注册的邮件地址
-   uid:long, 成功时返回分配的UID
+   成功时返回 OK(200), 无响应正文
 
    <strong>例外</strong>
-   邮件地址已被使用时返回 Bad Request(400): {"flag":"!duplicated"}
+   指定bid不存在时返回Bad Request(400):{"flag":"!notfound"}
+   因为外借中等状况无法删除时返回Bad Request(400):{"flag":"!referenced"}
+   不是藏书所有者时返回Bad Request(400), 无响应正文
 
    <strong>样例</strong>暂无
  * </pre>
  *
  */
-public class Register extends HttpServlet
+public class RemoveBook extends HttpServlet
 {
     private static final String FLAG = "flag";
-    private static final String MAIL = "mail";
     private static final String UID = "uid";
+    private static final String S = "s";
+    private static final String BID = "bid";
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -65,39 +67,32 @@ public class Register extends HttpServlet
 
         try
         {
-            String mail = HttpUtil.getParam(req, MAIL);
-            if (mail == null)
-                throw(new MissingParameterException(MAIL));
+            Long uid = HttpUtil.getLongParam(req, UID);
+            if (uid == null)
+                throw(new MissingParameterException(UID));
+
+            Long bid = HttpUtil.getLongParam(req, BID);
+            if (bid == null)
+                throw(new MissingParameterException(BID));
 
             HiberDao.begin();
 
-            User u = Authorizer.register(mail);
-
-            // 发送邮件
-            MailProvider m = (MailProvider)Class.forName(
-                Configurator.get("librarica.mail.RegisterMailProvider")
-            ).getConstructor().newInstance();
-            m.sendMail(req);
+            BookMgr.remove(bid);
 
             HiberDao.commit();
-
-            json.put(MAIL, u.getMail());
-            json.put(UID, u.getId());
-
-            out.println(json.toJSONString());
         }
-        catch (EntityDuplicatedException ex)
+        catch (EntityNotFoundException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!duplicated");
+            json.put(FLAG, "!notfound");
             out.println(json.toJSONString());
         }
-        catch (MissingParameterException ex)
+        catch (EntityReferencedException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!parameter");
+            json.put(FLAG, "!referenced");
             out.println(json.toJSONString());
         }
         catch (Exception ex)
