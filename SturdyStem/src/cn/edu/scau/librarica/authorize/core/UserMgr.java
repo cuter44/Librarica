@@ -40,13 +40,5 @@ public class UserMgr
 
     //public static String update();
 
-    public static void remove(Long id)
-    {
-        User u = UserMgr.get(id);
-
-        if (u != null)
-            HiberDao.delete(u);
-
-        return;
-    }
+    //public static void remove(Long id)
 }

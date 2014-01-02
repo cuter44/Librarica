@@ -17,8 +17,8 @@ public class BorrowSession
     public static final Byte REJECTED = -1;
     public static final Byte REQUESTED = 0;
     public static final Byte ACCEPTED = 1;
-    public static final Byte READING = 2;
-    public static final Byte RETURN = 3;
+    public static final Byte BORROWED = 2;
+    public static final Byte RETURNING = 3;
     public static final Byte CLOSED = 4;
 
   // FIELDS
@@ -26,10 +26,8 @@ public class BorrowSession
     private Long id;
     private Byte status;
 
-    private User lender;
-    private User borrower;
-
     private Book book;
+    private User borrower;
 
   // GETTER/SETTER
     public Long getId()
@@ -48,15 +46,6 @@ public class BorrowSession
     public void setStatus(Byte aStatus)
     {
         this.status = aStatus;
-    }
-
-    public User getLender()
-    {
-        return(this.lender);
-    }
-    public void setLender(User aLender)
-    {
-        this.lender = lender;
     }
 
     public User getBorrower()
@@ -81,6 +70,14 @@ public class BorrowSession
     public BorrowSession()
     {
         this.status = REQUESTED;
+    }
+
+    public BorrowSession(Book book, User borrower)
+    {
+        this();
+
+        this.setBorrower(borrower);
+        this.setBook(book);
     }
 
   // HASH

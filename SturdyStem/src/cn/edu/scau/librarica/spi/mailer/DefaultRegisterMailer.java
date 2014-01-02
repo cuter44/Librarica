@@ -1,32 +1,38 @@
-package cn.edu.scau.librarica.authorize.util;
+package cn.edu.scau.librarica.spi.mailer;
 
-import cn.edu.scau.librarica.util.mail.MailProvider;
-
-import javax.servlet.http.*;
-import com.github.cuter44.util.servlet.*;
 import com.github.cuter44.util.crypto.*;
 import cn.edu.scau.librarica.util.mail.*;
+import cn.edu.scau.librarica.util.conf.*;
 
 import cn.edu.scau.librarica.authorize.dao.*;
 import cn.edu.scau.librarica.authorize.core.*;
 
-public class RegisterMailProvider
-    implements MailProvider
+/** 默认的注册邮件发送机
+ * 可以参照这个类以实现自己的邮件内容.
+ * 将类名注册在 librarica.xml 以在启动时注入监听器
+ */
+public class DefaultRegisterMailer
 {
-    private static String MAIL = "mail";
+    private static String baseURL = Configurator.get("librarica.server.web.baseurl");
 
-    @Override
-    public boolean sendMail(HttpServletRequest req)
+    // 注册监听器
+    static
     {
-        User u = UserMgr.forMail(HttpUtil.getParam(req, MAIL));
+        Authorizer.addListener(
+            new Authorizer.StatusChangedListener()
+            {
+                @Override
+                public void onStatusChanged(User u)
+                {
+                    if (User.REGISTERED.equals(u.getStatus()))
+                        DefaultRegisterMailer.sendRegisteredMail(u);
+                }
+            }
+        );
+    }
 
-        StringBuffer reqURL = req.getRequestURL();
-        int URLPart = reqURL.length();
-        int URIPart = req.getRequestURI().length();
-        int contextPart = req.getContextPath().length();
-
-        String baseURL = reqURL.substring(0, URLPart-URIPart+contextPart);
-
+    public static void sendRegisteredMail(User u)
+    {
         String activateURL =
             baseURL + "/user/activate.jsp?" +
             "id=" + u.getId() + "&" +
@@ -55,10 +61,10 @@ public class RegisterMailProvider
         }
         catch (Exception ex)
         {
-            return(false);
+            ex.printStackTrace();
         }
 
-        return(true);
+        return;
     }
 }
 

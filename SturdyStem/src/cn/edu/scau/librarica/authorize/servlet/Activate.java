@@ -14,8 +14,7 @@ import com.github.cuter44.util.crypto.*;
 
 import com.alibaba.fastjson.*;
 
-import cn.edu.scau.librarica.util.mail.MailProvider;
-import cn.edu.scau.librarica.util.conf.*;
+//import cn.edu.scau.librarica.util.conf.*;
 import cn.edu.scau.librarica.authorize.dao.*;
 import cn.edu.scau.librarica.authorize.core.*;
 
@@ -123,13 +122,14 @@ public class Activate extends HttpServlet
             byte[] skey = Authorizer.login(uid, pass);
             json.put(S, skey);
 
-            // 发送邮件
-            String mp = Configurator.get("librarica.mail.ActivateMailProvider");
-            if ((mp != null) && mp.length()!=0)
-            {
-                MailProvider m = (MailProvider)Class.forName(mp).getConstructor().newInstance();
-                m.sendMail(req);
-            }
+            // !deprecated
+            //// 发送邮件
+            //String mp = Configurator.get("librarica.mail.ActivateMailProvider");
+            //if ((mp != null) && mp.length()!=0)
+            //{
+                //MailProvider m = (MailProvider)Class.forName(mp).getConstructor().newInstance();
+                //m.sendMail(req);
+            //}
 
             HiberDao.commit();
 

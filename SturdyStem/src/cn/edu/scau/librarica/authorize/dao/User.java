@@ -12,13 +12,13 @@ public class User
     // 帐户状态枚举
     /** 注册
      */
-    public static final Byte REGISTER = 0;
+    public static final Byte REGISTERED = 0;
     /** 已验证邮箱
      */
     public static final Byte ACTIVATED = 1;
     /** 主动注销
      */
-    public static final Byte CANCEL = -1;
+    public static final Byte CANCELED = -1;
     /** 封号
      */
     public static final Byte BANNED = -2;
@@ -126,7 +126,7 @@ public class User
   // CONSTRUCT
     public User()
     {
-        this.status = REGISTER;
+        this.status = REGISTERED;
     }
 
     public User(String aMail)

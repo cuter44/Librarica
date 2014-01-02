@@ -17,6 +17,11 @@
   </servlet-mapping>
   -->
 
+  <!-- bootstrap -->
+  <listener>
+    <listener-class>cn.edu.scau.librarica.util.bootstrap.BootstrapJSPAdapter</listener-class>
+  </listener>
+
   <!-- authorize -->
   <servlet>
     <servlet-name>AuthorizeRegisterUser</servlet-name>

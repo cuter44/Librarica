@@ -1,17 +1,19 @@
 package cn.edu.scau.librarica.authorize.core;
 
-import java.util.Date;
 import java.nio.ByteBuffer;
+import java.util.Date;
 import java.util.Arrays;
-
-import cn.edu.scau.librarica.authorize.dao.*;
+import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.github.cuter44.util.dao.*;
+import com.github.cuter44.util.crypto.CryptoUtil;
+
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
 
-import com.github.cuter44.util.crypto.CryptoUtil;
+import cn.edu.scau.librarica.authorize.dao.*;
 
 import org.apache.log4j.Logger;
 
@@ -19,6 +21,82 @@ import org.apache.log4j.Logger;
  */
 public class Authorizer
 {
+  // ANNOUNCER
+    /** 帐号状态监听器
+     * 对于注册(重新发送邮件)/激活/封号/注销事件进行回调
+     */
+    public static interface StatusChangedListener
+    {
+        public abstract void onStatusChanged(User u);
+    }
+
+    private static ArrayList<StatusChangedListener> statusChangedListeners = new ArrayList<StatusChangedListener>();
+
+    public static synchronized void addListener(StatusChangedListener l)
+    {
+        statusChangedListeners.add(l);
+
+        return;
+    }
+
+  // EVENT-DISPATCH
+    private static LinkedBlockingQueue<User> statusChangedList = new LinkedBlockingQueue<User>();
+
+    private static Thread statusChangedDispatcher = new Thread(
+        new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                // shortcuts
+                ArrayList<StatusChangedListener> listeners = Authorizer.statusChangedListeners;
+                LinkedBlockingQueue<User> events = Authorizer.statusChangedList;
+                try
+                {
+                    while (true)
+                    {
+                        User u = events.take();
+                        for (int i=0; i<listeners.size(); i++)
+                        {
+                            try
+                            {
+                                listeners.get(i).onStatusChanged(u);
+                            }
+                            catch (Throwable ex)
+                            {
+                                ex.printStackTrace();
+                            }
+                        } // end_for
+                    } // end_while
+                }
+                catch (InterruptedException ex)
+                {
+                    ex.printStackTrace();
+                }
+                finally
+                {
+                    HiberDao.close();
+                }
+            } // end_run
+        } // end_Runnable
+    );
+
+    static
+    {
+        statusChangedDispatcher.setDaemon(true);
+        statusChangedDispatcher.setName("Authorizer-StatusChangedDispatcher");
+        statusChangedDispatcher.start();
+    }
+
+    private static void fireStatusChanged(User u)
+    {
+        statusChangedList.offer(u);
+        return;
+    }
+
+  // MAIN
+    /** seems no use...
+     */
     private static Logger logger = Logger.getLogger(Authorizer.class);
 
     /** session 长度
@@ -42,7 +120,7 @@ public class Authorizer
             // 未注册
             u = new User(mail);
 
-            u.setStatus(User.REGISTER);
+            u.setStatus(User.REGISTERED);
             u.setRegDate(new Date(System.currentTimeMillis()));
 
             byte[] pass = ByteBuffer.allocate(16).put(CryptoUtil.randomBytes(16)).array();
@@ -51,13 +129,17 @@ public class Authorizer
 
             HiberDao.save(u);
 
+            fireStatusChanged(u);
             return(u);
         }
         else
         {
             // 已注册
-            if (u.getStatus() == User.REGISTER)
+            if (User.REGISTERED.equals(u.getStatus()))
+            {
+                fireStatusChanged(u);
                 return(u);
+            }
             else
                 throw(new EntityDuplicatedException("Mail address is occupied."));
         }
@@ -76,9 +158,10 @@ public class Authorizer
         if (u == null)
             throw(new EntityNotFoundException("No such User:"+uid));
 
-        if (Arrays.equals(u.getPass(),activateCode) || (u.getStatus() == User.REGISTER))
+        if (Arrays.equals(u.getPass(),activateCode) || User.REGISTERED.equals(u.getStatus()))
         {
             setPassword(uid, newPass);
+            fireStatusChanged(u);
             return(true);
         }
         else

@@ -73,7 +73,7 @@ public class BorrowableBook
     {
         this();
 
-        this.book = book;
+        this.setBook(book);
     }
 
   // HASH

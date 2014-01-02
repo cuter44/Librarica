@@ -1,5 +1,6 @@
 package cn.edu.scau.librarica.util.mail;
 
+import java.security.Security;
 import javax.mail.Session;
 //import javax.mail.Message;
 import javax.mail.Authenticator;
@@ -40,6 +41,7 @@ public class MailUtil
 
     private MailUtil()
     {
+        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
         Authenticator auth = new Authenticator()
             {
                 @Override
@@ -58,7 +60,6 @@ public class MailUtil
             Configurator.getProperties(),
             auth
         );
-        this.session.setDebug(true);
     }
 
     public static void sendHTMLMail(String to, String subject, String content)

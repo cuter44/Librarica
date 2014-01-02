@@ -13,6 +13,7 @@ import cn.edu.scau.librarica.authorize.dao.*;
 
 public class RSAKeyCache
 {
+  // SINGLETON
     private static class Singleton
     {
         private static RSAKeyCache instance = new RSAKeyCache();
@@ -54,6 +55,7 @@ public class RSAKeyCache
         return;
     }
 
+  // CONSTRUCT
     private RSAKeyCache()
     {
         this.l1Cache = new HashMap<Long, PrivateKey>();
