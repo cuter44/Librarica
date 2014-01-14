@@ -47,6 +47,7 @@ import org.hibernate.criterion.*;
  * </pre>
  *
  */
+@Deprecated
 public class SearchBook extends HttpServlet
 {
     private static final String FLAG = "flag";

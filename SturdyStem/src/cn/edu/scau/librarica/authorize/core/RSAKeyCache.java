@@ -16,80 +16,77 @@ public class RSAKeyCache
   // SINGLETON
     private static class Singleton
     {
-        private static RSAKeyCache instance = new RSAKeyCache();
+        public static RSAKeyCache instance = new RSAKeyCache();
     }
 
-    private HashMap<Long, PrivateKey> l1Cache;
-    private HashMap<Long, PrivateKey> l2Cache;
+    private static class KeyPool extends HashMap<Long, PrivateKey>
+    {
+        public KeyPool()
+        {
+            super();
+        }
 
-    private ReentrantReadWriteLock rwLock;
+        public PrivateKey put(Long id, PrivateKey key)
+        {
+            return(super.put(id, key));
+        }
+
+        public PrivateKey get(Long id)
+        {
+            return(super.get(id));
+        }
+    };
+
+    private KeyPool[] cache;
+    private int active;
+    private long timestamp;
+    private long interval;
 
     public static void put(Long id, PrivateKey key)
     {
-        Singleton.instance.l1Cache.put(id, key);
+        Singleton.instance.cache[Singleton.instance.active].put(id, key);
 
         return;
     }
 
+    /**
+     * @warning 包含 synchronized 调用所以性能有待观察
+     */
     public static PrivateKey get(Long id)
     {
-        Singleton.instance.rwLock.readLock().lock();
+        expire();
 
-        PrivateKey l1 = Singleton.instance.l1Cache.get(id);
-        PrivateKey l2 = Singleton.instance.l2Cache.get(id);
+        PrivateKey k = Singleton.instance.cache[Singleton.instance.active].get(id);
 
-        Singleton.instance.rwLock.readLock().unlock();
-
-        return(l1!=null?l1:l2);
+        return(k!=null?k:Singleton.instance.cache[1-Singleton.instance.active].get(id));
     }
 
-    public static void expire()
+    /** 检查并消去过期的 key
+     * get() 包含这个方法
+     */
+    public static synchronized void expire()
     {
-        Singleton.instance.rwLock.writeLock().lock();
+        long elapsed = System.currentTimeMillis() - Singleton.instance.timestamp;
 
-        Singleton.instance.l2Cache = Singleton.instance.l1Cache;
-        Singleton.instance.l1Cache = new HashMap<Long, PrivateKey>();
+        if (elapsed > Singleton.instance.interval)
+        {
+            Singleton.instance.cache[1 - Singleton.instance.active].clear();
+            Singleton.instance.active = 1 - Singleton.instance.active;
 
-        Singleton.instance.rwLock.writeLock().unlock();
-
-        return;
+            Singleton.instance.timestamp = System.currentTimeMillis();
+        }
     }
 
   // CONSTRUCT
     private RSAKeyCache()
     {
-        this.l1Cache = new HashMap<Long, PrivateKey>();
-        this.l2Cache = this.l1Cache;
-        this.rwLock = new ReentrantReadWriteLock();
-
-        long interval = Configurator.getLong("librarica.authorize.rsakeylifetime");
-        new ExpireExecutor(interval);
+        this.cache = new KeyPool[2];
+        this.cache[0] = new KeyPool();
+        this.cache[1] = new KeyPool();
+        this.active = 0;
+        this.timestamp = System.currentTimeMillis();
+        this.interval = Configurator.getLong("librarica.authorize.rsakeylifetime", 100000L);
 
         return;
-    }
-
-    /** 过期定时器
-     */
-    private class ExpireExecutor
-        extends Timer
-    {
-        public ExpireExecutor(long interval)
-            throws IllegalArgumentException
-        {
-            super(true);
-
-            this.schedule(
-                new TimerTask()
-                {
-                    @Override
-                    public void run()
-                    {
-                        RSAKeyCache.expire();
-                    }
-                },
-                interval,
-                interval
-            );
-        }
     }
 }

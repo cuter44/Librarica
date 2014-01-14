@@ -44,4 +44,16 @@ public class BorrowSessionMgr
 
         return(HiberDao.count(dc)==1);
     }
+
+    public static boolean isBookInvolved(Long bookId)
+    {
+        DetachedCriteria dc = DetachedCriteria.forClass(BorrowSession.class)
+            .add(Restrictions.ge("status", BorrowSession.REQUESTED))
+            .add(Restrictions.lt("status", BorrowSession.CLOSED))
+            .createCriteria("book")
+            .add(Restrictions.eq("id", bookId));
+
+        return(HiberDao.count(dc)>0);
+    }
+
 }

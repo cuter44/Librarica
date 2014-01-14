@@ -23,7 +23,7 @@ import cn.edu.scau.librarica.lend.core.*;
    POST /lend/update
 
    <strong>参数</strong>
-   bid:long, 必需, 准备上架的书id
+   id:long, 必需, 准备上架的书id
    <1>可变更项目</i>
    geohash:base32(24), 地理标记
    ps:string, 附言
@@ -33,12 +33,12 @@ import cn.edu.scau.librarica.lend.core.*;
 
    <strong>响应</strong>
    application/json Object:
-   bid:long, 等于 bid;
+   id:long, 等于 id;
    geohash:base32, 地理标记
    ps:string, 附言
 
    <strong>例外</strong>
-   指定的 bid 不存在返回 Bad Request(400):{"flag":"!notfound"}
+   指定的 id 不存在返回 Bad Request(400):{"flag":"!notfound"}
 
    <strong>样例</strong>暂无
  * </pre>
@@ -49,7 +49,7 @@ public class UpdateBorrowable extends HttpServlet
     private static final String FLAG = "flag";
     private static final String UID = "uid";
     private static final String S = "s";
-    private static final String BID = "bid";
+    private static final String ID = "id";
     private static final String GEOHASH = "geohash";
     private static final String PS = "ps";
 
@@ -57,7 +57,7 @@ public class UpdateBorrowable extends HttpServlet
     {
         JSONObject json = new JSONObject();
 
-        json.put(BID, bb.getId());
+        json.put(ID, bb.getId());
         json.put(GEOHASH, bb.getGeohash());
         json.put(PS, bb.getPs());
 
@@ -84,13 +84,13 @@ public class UpdateBorrowable extends HttpServlet
 
         try
         {
-            Long bid = HttpUtil.getLongParam(req, BID);
-            if (bid == null)
-                throw(new MissingParameterException(BID));
+            Long id = HttpUtil.getLongParam(req, ID);
+            if (id == null)
+                throw(new MissingParameterException(ID));
 
             HiberDao.begin();
 
-            BorrowableBook bb = BorrowableBookMgr.get(bid);
+            BorrowableBook bb = BorrowableBookMgr.get(id);
 
             String geohash = HttpUtil.getParam(req, GEOHASH);
             if (geohash != null)

@@ -18,152 +18,392 @@
   -->
 
   <!-- bootstrap -->
-  <listener>
-    <listener-class>cn.edu.scau.librarica.util.bootstrap.BootstrapJSPAdapter</listener-class>
-  </listener>
+    <listener>
+      <listener-class>cn.edu.scau.librarica.util.bootstrap.BootstrapJSPAdapter</listener-class>
+    </listener>
+  <!-- /bootstrap -->
 
   <!-- authorize -->
-  <servlet>
-    <servlet-name>AuthorizeRegisterUser</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.authorize.servlet.Register</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>AuthorizeRegisterUser</servlet-name>
-    <url-pattern>/user/register</url-pattern>
-  </servlet-mapping>
+    <servlet>
+      <servlet-name>AuthorizeRegisterUser</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.Register</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>AuthorizeRegisterUser</servlet-name>
+      <url-pattern>/user/register</url-pattern>
+    </servlet-mapping>
 
-  <servlet>
-    <servlet-name>AuthorizeGetRSAKey</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.authorize.servlet.GetRsaKey</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>AuthorizeGetRSAKey</servlet-name>
-    <url-pattern>/security/get-rsa-key</url-pattern>
-  </servlet-mapping>
+    <servlet>
+      <servlet-name>AuthorizeGetRSAKey</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.GetRsaKey</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>AuthorizeGetRSAKey</servlet-name>
+      <url-pattern>/security/get-rsa-key</url-pattern>
+    </servlet-mapping>
 
-  <servlet>
-    <servlet-name>AuthorizeActivateUser</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.authorize.servlet.Activate</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>AuthorizeActivateUser</servlet-name>
-    <url-pattern>/user/activate</url-pattern>
-  </servlet-mapping>
+    <servlet>
+      <servlet-name>AuthorizeActivateUser</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.Activate</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>AuthorizeActivateUser</servlet-name>
+      <url-pattern>/user/activate</url-pattern>
+    </servlet-mapping>
 
-  <servlet>
-    <servlet-name>AuthorizeLogin</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.authorize.servlet.Login</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>AuthorizeLogin</servlet-name>
-    <url-pattern>/user/login</url-pattern>
-  </servlet-mapping>
+    <servlet>
+      <servlet-name>AuthorizeLogin</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.Login</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>AuthorizeLogin</servlet-name>
+      <url-pattern>/user/login</url-pattern>
+    </servlet-mapping>
 
-  <servlet>
-    <servlet-name>AuthorizeLogout</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.authorize.servlet.Logout</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>AuthorizeLogout</servlet-name>
-    <url-pattern>/user/logout</url-pattern>
-  </servlet-mapping>
+    <servlet>
+      <servlet-name>AuthorizeLogout</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.Logout</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>AuthorizeLogout</servlet-name>
+      <url-pattern>/user/logout</url-pattern>
+    </servlet-mapping>
 
-  <filter>
-    <filter-name>SessionKeyFilter</filter-name>
-    <filter-class>cn.edu.scau.librarica.authorize.filter.SessionKeyFilter</filter-class>
-    <init-param>
-      <param-name>userIdParamName</param-name>
-      <param-value>uid</param-value>
-    </init-param>
-    <init-param>
-      <param-name>sessionKeyParamName</param-name>
-      <param-value>s</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>SessionKeyFilter</filter-name>
-    <url-pattern>/book/add</url-pattern>
-    <url-pattern>/book/remove</url-pattern>
-    <url-pattern>/lend/reg</url-pattern>
-    <url-pattern>/lend/update</url-pattern>
-    <url-pattern>/lend/unreg</url-pattern>
-  </filter-mapping>
+    <filter>
+      <filter-name>PasswordVerifier</filter-name>
+      <filter-class>cn.edu.scau.librarica.authorize.filter.PasswordVerifier</filter-class>
+      <init-param>
+        <param-name>userIdParamName</param-name>
+        <param-value>uid</param-value>
+      </init-param>
+      <init-param>
+        <param-name>passParamName</param-name>
+        <param-value>pass</param-value>
+      </init-param>
+    </filter>
+    <!-- remove comment while enable
+    <filter-mapping>
+      <filter-name>PasswordVerifier</filter-name>
+        userIdParamName=uid
+        passParamName=pass
+    </filter-mapping>
+    -->
+
+    <filter>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <filter-class>cn.edu.scau.librarica.authorize.filter.SessionKeyVerifier</filter-class>
+      <init-param>
+        <param-name>userIdParamName</param-name>
+        <param-value>uid</param-value>
+      </init-param>
+      <init-param>
+        <param-name>sessionKeyParamName</param-name>
+        <param-value>s</param-value>
+      </init-param>
+    </filter>
+    <!-- remove comment while enable.
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+        userIdParamName=uid
+        sessionKeyParamName=s
+    </filter-mapping>
+    -->
+  <!-- /authorize -->
 
   <!-- shelf -->
-  <servlet>
-    <servlet-name>ShelfAddBook</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.shelf.servlet.AddBook</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>ShelfAddBook</servlet-name>
-    <url-pattern>/book/add</url-pattern>
-  </servlet-mapping>
+    <servlet>
+      <servlet-name>ShelfAddBook</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.shelf.servlet.AddBook</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>ShelfAddBook</servlet-name>
+      <url-pattern>/book/add</url-pattern>
+    </servlet-mapping>
 
-  <servlet>
-    <servlet-name>ShelfSearchBook</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.shelf.servlet.SearchBook</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>ShelfSearchBook</servlet-name>
-    <url-pattern>/book/search</url-pattern>
-  </servlet-mapping>
-  
-  <servlet>
-    <servlet-name>ShelfRemoveBook</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.shelf.servlet.RemoveBook</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>ShelfRemoveBook</servlet-name>
-    <url-pattern>/book/remove</url-pattern>
-  </servlet-mapping>
+    <servlet>
+      <servlet-name>ShelfSearchBook</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.shelf.servlet.SearchBook</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>ShelfSearchBook</servlet-name>
+      <url-pattern>/book/search</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+      <servlet-name>ShelfRemoveBook</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.shelf.servlet.RemoveBook</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>ShelfRemoveBook</servlet-name>
+      <url-pattern>/book/remove</url-pattern>
+    </servlet-mapping>
 
-  <filter>
-    <filter-name>BookOwnerFilter</filter-name>
-    <filter-class>cn.edu.scau.librarica.shelf.filter.BookOwnerFilter</filter-class>
-    <init-param>
-      <param-name>bookIdParamName</param-name>
-      <param-value>bid</param-value>
-    </init-param>
-    <init-param>
-      <param-name>userIdParamName</param-name>
-      <param-value>uid</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>BookOwnerFilter</filter-name>
-    <url-pattern>/book/remove</url-pattern>
-    <url-pattern>/lend/reg</url-pattern>
-    <url-pattern>/lend/update</url-pattern>
-    <url-pattern>/lend/unreg</url-pattern>
-  </filter-mapping>
+    <filter>
+      <filter-name>BookOwnerVerifier</filter-name>
+      <filter-class>cn.edu.scau.librarica.shelf.filter.BookOwnerVerifier</filter-class>
+      <init-param>
+        <param-name>bookIdParamName</param-name>
+        <param-value>id</param-value>
+      </init-param>
+      <init-param>
+        <param-name>userIdParamName</param-name>
+        <param-value>uid</param-value>
+      </init-param>
+    </filter>
+    <filter-mapping>
+      <filter-name>BookOwnerVerifier</filter-name>
+      <!--
+        bookIdParamName=id
+      -->
+      <url-pattern>/book/remove</url-pattern>
+    </filter-mapping>
+
+    <filter>
+      <filter-name>BookOwnerInterceptor</filter-name>
+      <filter-class>cn.edu.scau.librarica.shelf.filter.BookOwnerInterceptor</filter-class>
+      <init-param>
+        <param-name>bookIdParamName</param-name>
+        <param-value>id</param-value>
+      </init-param>
+      <init-param>
+        <param-name>userIdParamName</param-name>
+        <param-value>uid</param-value>
+      </init-param>
+    </filter>
+    <!--
+    <filter-mapping>
+      <filter-name>BookOwnerInterceptor</filter-name>
+        bookIdParamName=id
+    </filter-mapping>
+    -->
+
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/book/add</url-pattern>
+      <url-pattern>/book/remove</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>IsBookEnvolvedBorrowSessionIntercepter</filter-name>
+      <!--
+        bookIdParamName=id
+      -->
+      <url-pattern>/book/remove</url-pattern>
+    </filter-mapping>  
+  <!-- /shelf -->
 
   <!-- lend -->
-  <servlet>
-    <servlet-name>LendRegBorrowable</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.lend.servlet.RegBorrowable</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>LendRegBorrowable</servlet-name>
-    <url-pattern>/lend/reg</url-pattern>
-  </servlet-mapping>
+    <servlet>
+      <servlet-name>LendRegBorrowable</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.RegBorrowable</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>LendRegBorrowable</servlet-name>
+      <url-pattern>/lend/reg</url-pattern>
+    </servlet-mapping>
 
-  <servlet>
-    <servlet-name>LendUpdateBorrowable</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.lend.servlet.UpdateBorrowable</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>LendUpdateBorrowable</servlet-name>
-    <url-pattern>/lend/update</url-pattern>
-  </servlet-mapping>
+    <servlet>
+      <servlet-name>LendUpdateBorrowable</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.UpdateBorrowable</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>LendUpdateBorrowable</servlet-name>
+      <url-pattern>/lend/update</url-pattern>
+    </servlet-mapping>
 
-  <servlet>
-    <servlet-name>LendUnregBorrowable</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.lend.servlet.UnregBorrowable</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>LendUnregBorrowable</servlet-name>
-    <url-pattern>/lend/unreg</url-pattern>
-  </servlet-mapping>
+    <servlet>
+      <servlet-name>LendUnregBorrowable</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.UnregBorrowable</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>LendUnregBorrowable</servlet-name>
+      <url-pattern>/lend/unreg</url-pattern>
+    </servlet-mapping>
+
+    <filter-mapping>
+      <filter-name>BookOwnerVerifier</filter-name>
+      <!--
+        bookIdParamName=id
+      -->
+      <url-pattern>/lend/reg</url-pattern>
+      <url-pattern>/lend/update</url-pattern>
+      <url-pattern>/lend/unreg</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/lend/reg</url-pattern>
+      <url-pattern>/lend/update</url-pattern>
+      <url-pattern>/lend/unreg</url-pattern>
+    </filter-mapping>
+
+  <!-- /lend -->
+
+  <!-- borrow -->
+    <servlet>
+      <servlet-name>BorrowRequestBorrow</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.RequestBorrow</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BorrowRequestBorrow</servlet-name>
+      <url-pattern>/borrow/req-borrow</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BorrowAbort</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.Abort</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BorrowAbort</servlet-name>
+      <url-pattern>/borrow/abort</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BorrowReject</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.Reject</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BorrowReject</servlet-name>
+      <url-pattern>/borrow/reject</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BorrowAccept</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.Accept</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BorrowAccept</servlet-name>
+      <url-pattern>/borrow/accept</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BorrowConfirmBorrow</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.ConfirmBorrow</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BorrowConfirmBorrow</servlet-name>
+      <url-pattern>/borrow/conf-borrow</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BorrowRequestReturn</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.RequestReturn</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BorrowRequestReturn</servlet-name>
+      <url-pattern>/borrow/req-return</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BorrowConfirmReturn</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.ConfirmReturn</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BorrowConfirmReturn</servlet-name>
+      <url-pattern>/borrow/conf-return</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+      <filter-name>IsBorrowerVerifier</filter-name>
+      <filter-class>cn.edu.scau.librarica.lend.filter.IsBorrowerVerifier</filter-class>
+      <init-param>
+        <param-name>borrowSessionIdParamName</param-name>
+        <param-value>id</param-value>
+      </init-param>
+      <init-param>
+        <param-name>userIdParamName</param-name>
+        <param-value>uid</param-value>
+      </init-param>
+    </filter>
+    <filter-mapping>
+      <filter-name>IsBorrowerVerifier</filter-name>
+      <!--
+        borrowSessionIdParamName=id
+        userIdParamName=uid
+      -->
+      <url-pattern>/borrow/abort</url-pattern>
+      <url-pattern>/borrow/conf-borrow</url-pattern>
+      <url-pattern>/borrow/req-return</url-pattern>
+    </filter-mapping>
+
+    <filter>
+      <filter-name>IsLenderVerifier</filter-name>
+      <filter-class>cn.edu.scau.librarica.lend.filter.IsLenderVerifier</filter-class>
+      <init-param>
+        <param-name>borrowSessionIdParamName</param-name>
+        <param-value>id</param-value>
+      </init-param>
+      <init-param>
+        <param-name>userIdParamName</param-name>
+        <param-value>uid</param-value>
+      </init-param>
+    </filter>
+    <filter-mapping>
+      <filter-name>IsLenderVerifier</filter-name>
+      <!--
+        borrowSessionIdParamName=id
+        userIdParamName=uid
+      -->
+      <url-pattern>/borrow/accept</url-pattern>
+      <url-pattern>/borrow/reject</url-pattern>
+      <url-pattern>/borrow/conf-return</url-pattern>
+    </filter-mapping>
+
+    <filter>
+      <filter-name>IsBookEnvolvedBorrowSessionIntercepter</filter-name>
+      <filter-class>cn.edu.scau.librarica.lend.filter.IsBookInvolvedInterceptor</filter-class>
+      <init-param>
+        <param-name>bookIdParamName</param-name>
+        <param-value>id</param-value>
+      </init-param>
+    </filter>
+    <!--
+    <filter-mapping>
+      <filter-name>IsBookEnvolvedBorrowSessionIntercepter</filter-name>
+        bookIdParamName=id
+    </filter-mapping>
+    -->
+
+    <filter-mapping>
+      <filter-name>BookOwnerInterceptor</filter-name>
+      <!--
+        bookIdParamName=id
+      -->
+      <url-pattern>/borrow/req-borrow</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/borrow/req-borrow</url-pattern>
+      <url-pattern>/borrow/abort</url-pattern>
+      <url-pattern>/borrow/accept</url-pattern>
+      <url-pattern>/borrow/reject</url-pattern>
+      <url-pattern>/borrow/req-return</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>PasswordVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        passParamName=pass
+      -->
+      <url-pattern>/borrow/conf-borrow</url-pattern>
+      <url-pattern>/borrow/conf-return</url-pattern>
+    </filter-mapping>
+
+  <!-- borrow -->
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

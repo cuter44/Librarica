@@ -62,4 +62,14 @@ public class BookMgr
             throw(new EntityReferencedException(ex));
         }
     }
+
+    public static boolean isOwner(Long bookId, Long userId)
+    {
+        DetachedCriteria dc = DetachedCriteria.forClass(Book.class)
+            .add(Restrictions.eq("id",bookId))
+            .createCriteria("owner")
+            .add(Restrictions.eq("id",userId));
+
+        return(HiberDao.count(dc)==1);
+    }
 }

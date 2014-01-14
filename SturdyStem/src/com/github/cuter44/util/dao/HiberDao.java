@@ -11,6 +11,7 @@ import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.DetachedCriteria;
@@ -49,7 +50,7 @@ import org.apache.log4j.Logger;
  * 就是这么简单...
  * <br />
  * 切记要提交并且关闭会话, 否则出现内存溢出, 读写失败什么的概不负责.
- * @version 1.2.2 build 20131212
+ * @version 1.2.3 build 20140110
  */
 public class HiberDao
 {
@@ -109,14 +110,26 @@ public class HiberDao
     }
 
     /** 返回当前线程使用的Session
-     * 需要在 HiberDao.begin() 后使用
+     * @return 当前线程的 Session 或者 null (如果还没有启始线程)
      */
-    public static Session getSession()
+    public static Session getCurrentThreadSession()
     {
         return(threadSession.get());
     }
 
   // TRANSACTION
+    /**
+     * 对应方法的非线程绑定封装, 下同.
+     * @exception HibernateException 当 s 已经关闭时.
+     */
+    public static Session begin(Session s)
+    {
+        if (!s.getTransaction().isActive())
+            s.beginTransaction();
+
+        return(s);
+    }
+
     /**
      * 封装数据库事务的 begin 操作
      * <br />
@@ -125,80 +138,104 @@ public class HiberDao
      * 如果当前已存在session但未处于事务中, 将开启一个新事务, 如果已经处于事务中, 则重用已经存在的事务.
      * e.g. 允许重复调用begin(), 但实际的事务界限从第一次begin()开始计算,
      */
-    public static void begin()
+    public static Session begin()
     {
         if (!threadSession.get().isOpen())
             threadSession.set(newSession());
-        if (!threadSession.get().getTransaction().isActive())
-            threadSession.get().beginTransaction();
 
-        return;
+        return(begin(threadSession.get()));
+    }
+
+    public static Session flush(Session s)
+    {
+        s.flush();
+
+        return(s);
     }
 
     /** 封装 flush 操作
      */
-    public static void flush()
+    public static Session flush()
     {
-        threadSession.get()
-            .flush();
-        return;
+        return(
+            flush(threadSession.get())
+        );
     }
 
+    public static Session commit(Session s)
+    {
+        s.getTransaction()
+            .commit();
 
+        return(s);
+    }
     /**
      * 封装数据库事务的 commit 操作
      */
-    public static void commit()
+    public static Session commit()
     {
-        threadSession.get()
-            .getTransaction()
-            .commit();
-
-        return;
+        return(
+            commit(threadSession.get())
+        );
     }
 
+    public static Session rollback(Session s)
+    {
+        s.getTransaction()
+            .rollback();
+
+        return(s);
+    }
     /**
      * 封装数据库事务的 rollback 操作
      */
-    public static void rollback()
+    public static Session rollback()
     {
-        threadSession.get()
-            .getTransaction()
-            .rollback();
-
-        return;
+        return(
+            rollback(threadSession.get())
+        );
     }
 
     /**
+     * 支持重复关闭
+     */
+    public static void close(Session s)
+    {
+        if (s.isOpen())
+            s.close();
+
+        return;
+    }
+    /**
      * 封装数据库连接的 close 操作
+     * 支持重复关闭
      */
     public static void close()
     {
-        if (threadSession.get().isOpen())
-            threadSession.get()
-                .close();
+        close(threadSession.get());
 
         return;
     }
 
   // DAO
+    public static Object get(Session s, Class c, Serializable id)
+    {
+        return(
+            s.get(c, id)
+        );
+    }
     /** 按主键查询
      * @return Object 主键对应对象, 没有则返回 null
      */
     public static Object get(Class c, Serializable id)
     {
         return(
-            threadSession.get()
-                .get(c, id)
+            get(threadSession.get(), c, id)
         );
     }
 
-    /** 按照条件唯一选取
-     * @return 符合条件的对象, 存在0个或多于一个结果都返回null
-     */
-    public static Object get(DetachedCriteria dc)
+    public static Object get(Session s, DetachedCriteria dc)
     {
-        Session s = threadSession.get();
         Object o = null;
 
         try
@@ -216,56 +253,78 @@ public class HiberDao
         return(o);
 
     }
+    /** 按照条件唯一选取
+     * @return 符合条件的对象, 存在0个或多于一个结果都返回null
+     */
+    public static Object get(DetachedCriteria dc)
+    {
+        return(
+            get(threadSession.get(), dc)
+        );
+    }
 
+    public static void saveOrUpdate(Session s, Object o)
+    {
+        s.saveOrUpdate(o);
+
+        return;
+    }
     /** 创建或更新数据对象
      */
     public static void saveOrUpdate(Object o)
     {
-        threadSession.get()
-            .saveOrUpdate(o);
+        saveOrUpdate(threadSession.get(), o);
 
         return;
     }
 
+    public static void save(Session s, Object o)
+    {
+        s.save(o);
+
+        return;
+    }
     /** 创建数据对象
      */
     public static void save(Object o)
     {
-        threadSession.get()
-            .save(o);
+        save(threadSession.get(), o);
 
         return;
     }
 
+    public static void update(Session s, Object o)
+    {
+        s.update(o);
+
+        return;
+    }
     /** 更新数据对象
      */
     public static void update(Object o)
     {
-        threadSession.get()
-            .update(o);
+        update(threadSession.get(), o);
 
         return;
     }
 
+    public static void delete(Session s, Object o)
+    {
+        s.delete(o);
+
+        return;
+    }
     /** 删除数据对象
      */
     public static void delete(Object o)
     {
-        threadSession.get()
-            .delete(o);
+        delete(threadSession.get(), o);
 
         return;
     }
 
-    /** 搜索
-     * <br />
-     * @param dc 条件
-     * @param start 结果分页用, 从第#条记录开始
-     * @param limit 结果分页用, 限制最多返回#条记录
-     */
-    public static List search(DetachedCriteria dc, Integer start, Integer size)
+    public static List search(Session s, DetachedCriteria dc, Integer start, Integer size)
     {
-        Session s = threadSession.get();
         Criteria c = dc.getExecutableCriteria(s);
 
         if (start != null)
@@ -277,19 +336,35 @@ public class HiberDao
 
         return(li);
     }
+    /** 搜索
+     * <br />
+     * @param dc 条件
+     * @param start 结果分页用, 从第#条记录开始
+     * @param limit 结果分页用, 限制最多返回#条记录
+     */
+    public static List search(DetachedCriteria dc, Integer start, Integer size)
+    {
+        return(
+            search(threadSession.get(), dc, start, size)
+        );
+    }
+    public static List search(Session s, DetachedCriteria dc)
+    {
+        return(
+            search(s, dc, null, null)
+        );
+    }
     /** search(dc, start, limit) 的简化接口
      */
     public static List search(DetachedCriteria dc)
     {
-        return(search(dc, null, null));
+        return(
+            search(threadSession.get(), dc, null, null)
+        );
     }
 
-    /** 按照搜索条件计数
-     */
-    public static Long count(DetachedCriteria dc)
+    public static Long count(Session s, DetachedCriteria dc)
     {
-        Session s = threadSession.get();
-
         Criteria c = dc.getExecutableCriteria(s)
             .setProjection(
                 Projections.rowCount()
@@ -297,12 +372,26 @@ public class HiberDao
 
         return((Long)c.uniqueResult());
     }
+    /** 按照搜索条件计数
+     */
+    public static Long count(DetachedCriteria dc)
+    {
+        return(
+            count(threadSession.get(), dc)
+        );
+    }
+
   // HQL
+    public static Query createQuery(Session s, String hql)
+    {
+        return(
+            s.createQuery(hql)
+        );
+    }
     public static Query createQuery(String hql)
     {
         return(
-            threadSession.get()
-                .createQuery(hql)
+            createQuery(threadSession.get(), hql)
         );
     }
 }

@@ -34,7 +34,7 @@ public class BorrowSession
     {
         return(this.id);
     }
-    public void getId(Long aId)
+    public void setId(Long aId)
     {
         this.id = aId;
     }

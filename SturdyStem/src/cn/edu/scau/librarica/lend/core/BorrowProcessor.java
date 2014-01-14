@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.Iterator;
 
+import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 
@@ -39,63 +40,19 @@ public class BorrowProcessor
         return;
     }
 
-  // EVENT-DISPATCH
-    private static LinkedBlockingQueue<BorrowSession> statusChangedList = new LinkedBlockingQueue<BorrowSession>();
-
-    /** statusChange 事件分派器
-     * 分派器不负责启动数据库会话
-     * 除非另起线程, 否则请勿使用阻塞
-     */
-    private static Thread statusChangedDispatcher = new Thread(
-        new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                // shortcuts
-                ArrayList<StatusChangedListener> listeners = BorrowProcessor.statusChangedListeners;
-                LinkedBlockingQueue<BorrowSession> events = BorrowProcessor.statusChangedList;
-                try
-                {
-                    while (true)
-                    {
-                        BorrowSession bs = events.take();
-                        for (int i=0; i<listeners.size(); i++)
-                        {
-                            try
-                            {
-                                listeners.get(i).onStatusChanged(bs);
-                            }
-                            catch (Throwable ex)
-                            {
-                                ex.printStackTrace();
-                            }
-                        } // end_for
-                    } // end_while
-                }
-                catch (InterruptedException ex)
-                {
-                    ex.printStackTrace();
-                }
-                finally
-                {
-                    HiberDao.close();
-                }
-            } // end_run
-        } // end_Runnable
-    );
-
-    static
-    {
-        statusChangedDispatcher.setDaemon(true);
-        statusChangedDispatcher.setName("BorrowProcessor-StatusChangedDispatcher");
-        statusChangedDispatcher.start();
-    }
-
     private static void fireStatusChanged(BorrowSession bs)
     {
-        statusChangedList.offer(bs);
-        return;
+        for (int i=0; i<statusChangedListeners.size(); i++)
+        {
+            try
+            {
+                statusChangedListeners.get(i).onStatusChanged(bs);
+            }
+            catch (Throwable ex)
+            {
+                ex.printStackTrace();
+            }
+        }
     }
 
   // SELF-LISTENER
@@ -103,31 +60,58 @@ public class BorrowProcessor
      * 连接到 rejectAll() 上;
      * 用于排他拒绝对同一本书的其他借阅请求
      */
-    private static StatusChangedListener exclusive = new StatusChangedListener()
+    private static StatusChangedListener rejectOthersTrigger = new StatusChangedListener()
     {
         @Override
         public void onStatusChanged(BorrowSession bs)
         {
-            HiberDao.begin();
+            if (bs.getStatus() != BorrowSession.ACCEPTED)
+                return;
+
+            Session s = null;
+
             try
             {
-                BorrowProcessor.rejectAll(bs.getBook().getId());
+                s = HiberDao.begin(HiberDao.newSession());
+
+                DetachedCriteria dc = DetachedCriteria.forClass(BorrowSession.class)
+                    .add(Restrictions.ne("id", bs.getId()))
+                    .add(Restrictions.eq("status", BorrowSession.REQUESTED))
+                    .createCriteria("book")
+                    .add(Restrictions.eq("id", bs.getBook().getId()));
+
+                List<BorrowSession> requests = (List<BorrowSession>)HiberDao.search(s, dc);
+                Iterator<BorrowSession> itr = requests.iterator();
+
+                while (itr.hasNext())
+                {
+                    BorrowSession _bs = itr.next();
+
+                    _bs.setStatus(BorrowSession.REJECTED);
+                    HiberDao.update(s, _bs);
+
+                    BorrowProcessor.fireStatusChanged(_bs);
+                }
+
+                HiberDao.commit(s);
             }
             catch (Exception ex)
             {
-                HiberDao.rollback();
+                HiberDao.rollback(s);
                 ex.printStackTrace();
             }
             finally
             {
-                HiberDao.close();
+                HiberDao.close(s);
             }
+
+            return;
         }
     };
 
     static
     {
-        addListener(exclusive);
+        addListener(rejectOthersTrigger);
     }
 
   // CANCELIATION
@@ -162,20 +146,20 @@ public class BorrowProcessor
 
     /** 拒绝所有同一本书的请求
      */
-    public static void rejectAll(Long borrowableBookId)
-    {
-        DetachedCriteria dc = DetachedCriteria.forClass(BorrowSession.class)
-            .add(Restrictions.eq("status", BorrowSession.REQUESTED))
-            .createCriteria("book")
-            .add(Restrictions.eq("id", borrowableBookId));
-        List<BorrowSession> requests = (List<BorrowSession>)HiberDao.search(dc);
-        Iterator<BorrowSession> itr = requests.iterator();
+    //public static void rejectAll(Long borrowableBookId)
+    //{
+        //DetachedCriteria dc = DetachedCriteria.forClass(BorrowSession.class)
+            //.add(Restrictions.eq("status", BorrowSession.REQUESTED))
+            //.createCriteria("book")
+            //.add(Restrictions.eq("id", borrowableBookId));
+        //List<BorrowSession> requests = (List<BorrowSession>)HiberDao.search(dc);
+        //Iterator<BorrowSession> itr = requests.iterator();
 
-        while (itr.hasNext())
-            reject(itr.next());
+        //while (itr.hasNext())
+            //reject(itr.next());
 
-        return;
-    }
+        //return;
+    //}
 
     /** 取消借书请求
      * 状态: REQUESTED -> ABORTED
@@ -215,9 +199,25 @@ public class BorrowProcessor
      * 状态: - -> REQUESTED
      * @exception EntityNotFoundException 当 bookId 不可以出借时
      */
-    public static BorrowSession requestBorrow(Long borrowerId, Long bookId)
+    public static BorrowSession requestBorrow(Long bookId, Long borrowerId)
         throws EntityNotFoundException
     {
+        // TODO
+        // 黑名单拒绝
+
+        // if existed
+        DetachedCriteria dc = DetachedCriteria.forClass(BorrowSession.class)
+            .add(Restrictions.eq("status", BorrowSession.REQUESTED));
+        dc.createCriteria("borrower")
+            .add(Restrictions.eq("id", borrowerId));
+        dc.createCriteria("book")
+            .add(Restrictions.eq("id", bookId));
+        BorrowSession bs = (BorrowSession)HiberDao.get(dc);
+        if (bs != null)
+            return(bs);
+
+        // else
+        //
         User borrower = UserMgr.get(borrowerId);
         if (borrower == null)
             throw(new EntityNotFoundException("No such User:"+borrowerId));
@@ -227,7 +227,7 @@ public class BorrowProcessor
             throw(new EntityNotFoundException("No such BorrowableBook:"+bookId));
         Book book = bb.getBook();
 
-        BorrowSession bs = new BorrowSession(book, borrower);
+        bs = new BorrowSession(book, borrower);
 
         HiberDao.save(bs);
 
@@ -254,6 +254,15 @@ public class BorrowProcessor
 
         bs.setStatus(BorrowSession.ACCEPTED);
         HiberDao.update(bs);
+
+        // remove borrowable
+        try
+        {
+            BorrowableBookMgr.remove(bs.getBook().getId());
+        }
+        catch (EntityNotFoundException ex)
+        {
+        }
 
         fireStatusChanged(bs);
 

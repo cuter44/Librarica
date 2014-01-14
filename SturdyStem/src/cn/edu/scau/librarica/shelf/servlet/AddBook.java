@@ -32,9 +32,9 @@ import cn.edu.scau.librarica.shelf.core.*;
 
    <strong>响应</strong>
    application/json 对象:
-   bid:long, id
-   <del>isbn:string, isbn</del>
-   <del>uid:long, 书籍持有人的id</del>
+   id:long, 标记书籍对象的id
+   isbn:string, isbn
+   owner:long, 书籍持有人的id
 
    <strong>例外</strong>
    ownerId不正确时返回 Bad Request(400):{"flag":"!notfound"}
@@ -49,7 +49,19 @@ public class AddBook extends HttpServlet
     private static final String UID = "uid";
     private static final String S = "s";
     private static final String ISBN = "isbn";
-    private static final String BID = "bid";
+    private static final String ID = "id";
+    private static final String OWNER = "owner";
+
+    private static JSONObject jsonize(Book b)
+    {
+        JSONObject json = new JSONObject();
+
+        json.put(ID, b.getId());
+        json.put(ISBN, b.getIsbn());
+        json.put(OWNER, b.getOwner());
+
+        return(json);
+    }
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -85,7 +97,7 @@ public class AddBook extends HttpServlet
 
             HiberDao.commit();
 
-            json.put(BID, b.getId());
+            json.put(ID, b.getId());
             out.println(json.toJSONString());
         }
         catch (EntityNotFoundException ex)

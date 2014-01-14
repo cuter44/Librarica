@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
+//import java.util.concurrent.LinkedBlockingQueue;
 
 import com.github.cuter44.util.dao.*;
 import com.github.cuter44.util.crypto.CryptoUtil;
@@ -40,58 +40,24 @@ public class Authorizer
     }
 
   // EVENT-DISPATCH
-    private static LinkedBlockingQueue<User> statusChangedList = new LinkedBlockingQueue<User>();
-
-    private static Thread statusChangedDispatcher = new Thread(
-        new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                // shortcuts
-                ArrayList<StatusChangedListener> listeners = Authorizer.statusChangedListeners;
-                LinkedBlockingQueue<User> events = Authorizer.statusChangedList;
-                try
-                {
-                    while (true)
-                    {
-                        User u = events.take();
-                        for (int i=0; i<listeners.size(); i++)
-                        {
-                            try
-                            {
-                                listeners.get(i).onStatusChanged(u);
-                            }
-                            catch (Throwable ex)
-                            {
-                                ex.printStackTrace();
-                            }
-                        } // end_for
-                    } // end_while
-                }
-                catch (InterruptedException ex)
-                {
-                    ex.printStackTrace();
-                }
-                finally
-                {
-                    HiberDao.close();
-                }
-            } // end_run
-        } // end_Runnable
-    );
-
-    static
-    {
-        statusChangedDispatcher.setDaemon(true);
-        statusChangedDispatcher.setName("Authorizer-StatusChangedDispatcher");
-        statusChangedDispatcher.start();
-    }
-
+    /**
+     * For tomcat preventing thread forking, it is impossible to use a asynochronized diapatching queue.
+     * So time-consuming task or heavy concurrent traffic may TAKE DOWN the server, and I can do nothing about it.
+     * The only workaround is: if I have my own server, I can deploy another process to deal with it.
+     */
     private static void fireStatusChanged(User u)
     {
-        statusChangedList.offer(u);
-        return;
+        for (int i=0; i<statusChangedListeners.size(); i++)
+        {
+            try
+            {
+                statusChangedListeners.get(i).onStatusChanged(u);
+            }
+            catch (Throwable ex)
+            {
+                ex.printStackTrace();
+            }
+        }
     }
 
   // MAIN
@@ -158,9 +124,14 @@ public class Authorizer
         if (u == null)
             throw(new EntityNotFoundException("No such User:"+uid));
 
-        if (Arrays.equals(u.getPass(),activateCode) || User.REGISTERED.equals(u.getStatus()))
+        if (!User.REGISTERED.equals(u.getStatus()))
+            throw(new IllegalStateException("Not in status REGISTERED:"+uid));
+
+        if (Arrays.equals(u.getPass(),activateCode))
         {
             setPassword(uid, newPass);
+            u.setStatus(User.ACTIVATED);
+            HiberDao.update(u);
             fireStatusChanged(u);
             return(true);
         }
@@ -269,6 +240,9 @@ public class Authorizer
      */
     public static boolean verifyPassword(Long uid, byte[] pass)
     {
+        if (pass == null)
+            return(false);
+
         User u = UserMgr.get(uid);
         if (u == null)
             return(false);

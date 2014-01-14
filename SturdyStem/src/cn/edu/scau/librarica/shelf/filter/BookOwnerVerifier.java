@@ -1,4 +1,4 @@
-package cn.edu.scau.librarica.authorize.filter;
+package cn.edu.scau.librarica.shelf.filter;
 
 /* filter */
 import javax.servlet.Filter;
@@ -11,28 +11,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import cn.edu.scau.librarica.authorize.core.Authorizer;
 import com.github.cuter44.util.dao.*;
 import com.github.cuter44.util.servlet.*;
 
-/** 检查用户 id 和 session key 是否匹配
+import cn.edu.scau.librarica.shelf.dao.Book;
+import cn.edu.scau.librarica.shelf.core.BookMgr;
+
+/** 检查是否书籍的所有者, 如果不是, 则拦截请求
  * <br />
+ * 检查书籍id和用户id, 如用户id
  * 需要在 web.xml 中配置两个参数:
- * userIdParamName 表示用于查找用户ID的键名
- * sessionKeyParamName 表示用于查找用户Session Key的键名
+ * userIdParamName 表示用于查找所有者 id 的键名
+ * bookIdParamName 表示用于查找书籍 id 的键名
  *
  * <pre style="font-size:12px">
    <strong>例外</strong>
-   无法通过过滤器时, 返回 Unauthorized(401)
+   无法通过过滤器时, 返回 Forbidden(403)
  * </pre>
  */
-public class SessionKeyFilter
+public class BookOwnerVerifier
     implements Filter
 {
+    private static final String BOOK_ID_PARAM_NAME = "bookIdParamName";
     private static final String USER_ID_PARAM_NAME = "userIdParamName";
-    private static final String SESSION_KEY_PARAM_NAME = "sessionKeyParamName";
     private String UID;
-    private String S;
+    private String BID;
 
     private ServletContext context;
 
@@ -41,8 +44,8 @@ public class SessionKeyFilter
     {
         this.context = conf.getServletContext();
 
+        this.BID = conf.getInitParameter(BOOK_ID_PARAM_NAME);
         this.UID = conf.getInitParameter(USER_ID_PARAM_NAME);
-        this.S = conf.getInitParameter(SESSION_KEY_PARAM_NAME);
 
         return;
     }
@@ -69,15 +72,16 @@ public class SessionKeyFilter
             if (uid == null)
                 throw(new MissingParameterException(UID));
 
-            byte[] skey = HttpUtil.getByteArrayParam(req, S);
-            if (skey == null)
-                throw(new MissingParameterException(S));
+            Long bid = HttpUtil.getLongParam(req, BID);
+            if (bid == null)
+                throw(new MissingParameterException(BID));
 
             HiberDao.begin();
 
-            flag = Authorizer.verifySkey(uid, skey);
+            flag = BookMgr.isOwner(bid, uid);
 
             HiberDao.commit();
+
         }
         catch (MissingParameterException ex)
         {
@@ -102,7 +106,13 @@ public class SessionKeyFilter
             }
             else
             {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+
+                //resp.setCharacterEncoding("utf-8");
+                //resp.setContentType("application/json");
+                //PrintWriter out = resp.getWriter();
+                //out.println("{\"flag\":\"!notowner\"}");
+
                 return;
             }
         }

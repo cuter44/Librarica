@@ -2,7 +2,6 @@ package com.github.cuter44.util.crypto;
 
 import java.math.BigInteger;
 import java.util.Scanner;
-import java.util.Scanner;
 
 import java.security.KeyFactory;
 import java.security.PrivateKey;

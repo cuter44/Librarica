@@ -28,8 +28,7 @@ public class Configurator
         try
         {
             InputStreamReader is = new InputStreamReader(
-                Thread.currentThread()
-                    .getContextClassLoader()
+                this.getClass()
                     .getResourceAsStream("/librarica.properties"),
                 "utf-8"
             );

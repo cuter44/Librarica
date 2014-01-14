@@ -1,4 +1,4 @@
-package cn.edu.scau.librarica.shelf.filter;
+package cn.edu.scau.librarica.authorize.filter;
 
 /* filter */
 import javax.servlet.Filter;
@@ -10,31 +10,34 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.security.PrivateKey;
 
+import com.github.cuter44.util.crypto.*;
 import com.github.cuter44.util.dao.*;
 import com.github.cuter44.util.servlet.*;
 
-import cn.edu.scau.librarica.shelf.dao.Book;
-import cn.edu.scau.librarica.shelf.core.BookMgr;
+import cn.edu.scau.librarica.authorize.core.Authorizer;
+import cn.edu.scau.librarica.authorize.core.RSAKeyCache;
 
-/** 检查是否书籍的所有者
+/** 检查用户 id 和登录密码是否匹配
+ * 如果无法匹配, 则拦截请求.
  * <br />
  * 需要在 web.xml 中配置两个参数:
- * BookIdParamName 表示用于查找所有者 id 的键名
- * UserIdParamName 表示用于查找书籍 id 的键名
+ * userIdParamName 表示用于查找用户ID的键名
+ * passParamName 表示用于查找密码的键名, 密码应该按登录的方式加密传输
  *
  * <pre style="font-size:12px">
    <strong>例外</strong>
-   无法通过过滤器时, 返回 Bad Request(400)
+   无法通过过滤器时, 返回 Unauthorized(401)
  * </pre>
  */
-public class BookOwnerFilter
+public class PasswordVerifier
     implements Filter
 {
-    private static final String BOOK_ID_PARAM_NAME = "bookIdParamName";
     private static final String USER_ID_PARAM_NAME = "userIdParamName";
+    private static final String PASS_PARAM_NAME = "passParamName";
     private String UID;
-    private String BID;
+    private String PASS;
 
     private ServletContext context;
 
@@ -43,8 +46,8 @@ public class BookOwnerFilter
     {
         this.context = conf.getServletContext();
 
-        this.BID = conf.getInitParameter(BOOK_ID_PARAM_NAME);
         this.UID = conf.getInitParameter(USER_ID_PARAM_NAME);
+        this.PASS = conf.getInitParameter(PASS_PARAM_NAME);
 
         return;
     }
@@ -71,19 +74,27 @@ public class BookOwnerFilter
             if (uid == null)
                 throw(new MissingParameterException(UID));
 
-            Long bid = HttpUtil.getLongParam(req, BID);
-            if (bid == null)
-                throw(new MissingParameterException(BID));
+            byte[] pass = HttpUtil.getByteArrayParam(req, PASS);
+            if (pass == null)
+                throw(new MissingParameterException(PASS));
+
+            PrivateKey key = RSAKeyCache.get(uid);
+            if (key == null)
+                throw(new EntityNotFoundException("RSA private key not found."));
+
+            pass = CryptoUtil.RSADecrypt(pass, key);
 
             HiberDao.begin();
 
-            Book b = BookMgr.get(bid);
-            flag = uid.equals(b.getOwner().getId());
+            flag = Authorizer.verifyPassword(uid, pass);
 
             HiberDao.commit();
-
         }
         catch (MissingParameterException ex)
+        {
+            flag = false;
+        }
+        catch (EntityNotFoundException ex)
         {
             flag = false;
         }
@@ -91,7 +102,6 @@ public class BookOwnerFilter
         {
             flag = false;
             this.context.log("", ex);
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         finally
         {
@@ -106,13 +116,7 @@ public class BookOwnerFilter
             }
             else
             {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-                //resp.setCharacterEncoding("utf-8");
-                //resp.setContentType("application/json");
-                //PrintWriter out = resp.getWriter();
-                //out.println("{\"flag\":\"!notowner\"}");
-
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
         }

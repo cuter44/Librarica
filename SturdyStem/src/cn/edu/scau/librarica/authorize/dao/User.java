@@ -137,12 +137,7 @@ public class User
   // HASH
     public int hashCode()
     {
-        int hash = 17;
-
-        if (this.id != null)
-            hash = hash * 31 + this.id.hashCode();
-
-        return(hash);
+        return(this.id!=null?this.id.hashCode():0);
     }
 
     public boolean equals(Object o)

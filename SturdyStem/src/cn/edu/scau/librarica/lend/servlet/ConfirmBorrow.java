@@ -1,9 +1,8 @@
-package cn.edu.scau.librarica.shelf.servlet;
+package cn.edu.scau.librarica.lend.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.OutputStream;
-import java.util.List;
 
 import javax.servlet.http.*;
 import javax.servlet.ServletException;
@@ -13,39 +12,36 @@ import com.github.cuter44.util.servlet.*;
 
 import com.alibaba.fastjson.*;
 
-import cn.edu.scau.librarica.shelf.dao.*;
-import cn.edu.scau.librarica.shelf.core.*;
+import cn.edu.scau.librarica.lend.core.*;
 
-/** 删除藏书
+/** 确认借入
+ * 由借阅者调用该接口以承认接受书籍
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
-   GET/POST /book/remove
+   POST /borrow/conf-borrow
 
    <strong>参数</strong>
-   id:long, 删除书的id;
+   id:long, 必需, 借阅会话的id
    <i>鉴权</i>
-   uid:long, uid;
-   s:hex, session key;
+   uid:long, 必需, uid
+   pass:hex, 必需, RSA加密后的用户密码
 
    <strong>响应</strong>
-   成功时返回 OK(200), 无响应正文
+   成功时返回 OK(200), 没有响应正文.
 
    <strong>例外</strong>
-   指定id不存在时返回Bad Request(400):{"flag":"!notfound"}
-   因为外借中等状况无法删除时返回Bad Request(400):{"flag":"!referenced"}
-   不是藏书所有者时返回Bad Request(400), 无响应正文
+   指定的 id 不存在时返回 Bad Request(400):{"flag":"!notfound"}
+   指定的 id 已不可接受时返回 Bad Request(400):{"flag":"!status"}
 
    <strong>样例</strong>暂无
  * </pre>
  *
  */
-public class RemoveBook extends HttpServlet
+public class ConfirmBorrow extends HttpServlet
 {
     private static final String FLAG = "flag";
-    private static final String UID = "uid";
-    private static final String S = "s";
-    private static final String BID = "id";
+    private static final String ID = "id";
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -67,17 +63,13 @@ public class RemoveBook extends HttpServlet
 
         try
         {
-            Long uid = HttpUtil.getLongParam(req, UID);
-            if (uid == null)
-                throw(new MissingParameterException(UID));
-
-            Long id = HttpUtil.getLongParam(req, BID);
+            Long id = HttpUtil.getLongParam(req, ID);
             if (id == null)
-                throw(new MissingParameterException(BID));
+                throw(new MissingParameterException(ID));
 
             HiberDao.begin();
 
-            BookMgr.remove(id);
+            BorrowProcessor.confirmBorrow(id);
 
             HiberDao.commit();
         }
@@ -88,11 +80,18 @@ public class RemoveBook extends HttpServlet
             json.put(FLAG, "!notfound");
             out.println(json.toJSONString());
         }
-        catch (EntityReferencedException ex)
+        catch (IllegalStateException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!referenced");
+            json.put(FLAG, "!status");
+            out.println(json.toJSONString());
+        }
+        catch (MissingParameterException ex)
+        {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+            json.put(FLAG, "!parameter");
             out.println(json.toJSONString());
         }
         catch (Exception ex)

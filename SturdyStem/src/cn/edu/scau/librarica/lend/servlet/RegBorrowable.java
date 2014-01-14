@@ -25,7 +25,7 @@ import cn.edu.scau.librarica.lend.core.*;
    POST /lend/reg
 
    <strong>参数</strong>
-   bid:long, 必需, 准备上架的书id
+   id:long, 必需, 准备上架的书id
    <i>鉴权</i>
    uid:long, 必需, uid
    s:hex, 必需, session key
@@ -35,8 +35,8 @@ import cn.edu.scau.librarica.lend.core.*;
    由 /borrowable/update 生成
 
    <strong>例外</strong>
-   指定的 bid 不存在返回 Bad Request(400):{"flag":"!notfound"}
-   指定的 bid 已经是可借阅状态时返回 Bad Reuqest(400):{"flag":"!duplicated"}
+   指定的 id 不存在返回 Bad Request(400):{"flag":"!notfound"}
+   指定的 id 已经是可借阅状态时返回 Bad Reuqest(400):{"flag":"!duplicated"}
 
    <strong>样例</strong>暂无
  * </pre>
@@ -47,7 +47,7 @@ public class RegBorrowable extends HttpServlet
     private static final String FLAG = "flag";
     private static final String UID = "uid";
     private static final String S = "s";
-    private static final String BID = "bid";
+    private static final String ID = "id";
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -69,13 +69,13 @@ public class RegBorrowable extends HttpServlet
 
         try
         {
-            Long bid = HttpUtil.getLongParam(req, BID);
-            if (bid == null)
-                throw(new MissingParameterException(BID));
+            Long id = HttpUtil.getLongParam(req, ID);
+            if (id == null)
+                throw(new MissingParameterException(ID));
 
             HiberDao.begin();
 
-            BorrowableBook bb = BorrowableBookMgr.create(bid);
+            BorrowableBook bb = BorrowableBookMgr.create(id);
 
             HiberDao.commit();
 

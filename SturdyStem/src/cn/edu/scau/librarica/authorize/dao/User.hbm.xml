@@ -2,9 +2,9 @@
 <!DOCTYPE hibernate-mapping PUBLIC 
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<hibernate-mapping package="cn.edu.scau.librarica.authorize.dao">
-    <class name="User" table="authorize_user">
-        <id	name="id" type="long" column="id">
+<hibernate-mapping>
+    <class name="cn.edu.scau.librarica.authorize.dao.User" table="authorize_user">
+        <id	name="id" type="long">
             <generator class="identity"/>
         </id>
         

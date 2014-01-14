@@ -78,16 +78,30 @@
 	</java>
   </target>
 
-  <target name="rsaenc" description="RSAEncoder">
+  <target name="cli-rsaen" description="RSAEncoder">
     <property name="run.main" value="com.github.cuter44.util.crypto.RSAEncryptCLI" />
     <antcall target="run" />
   </target>
 
-  <target name="rsadec" description="RSADecoder">
+  <target name="cli-rsade" description="RSADecoder">
     <property name="run.main" value="com.github.cuter44.util.crypto.RSADecryptCLI" />
     <antcall target="run" />
   </target>
 
+  <target name="cli-encpass" description="加密密码">
+    <property name="run.main" value="cn.edu.scau.librarica.util.test.EncryptPasswordCLI" />
+    <antcall target="run" />
+  </target>
+
+  <target name="cli-act" description="激活用户">
+    <property name="run.main" value="cn.edu.scau.librarica.util.test.ActivateUserCLI" />
+    <antcall target="run" />
+  </target>
+
+  <target name="cli-login" description="模拟登录">
+    <property name="run.main" value="cn.edu.scau.librarica.util.test.LoginCLI" />
+    <antcall target="run" />
+  </target>
 
   <target name="debug" description="本地测试, 使用-Ddebug.main=&lt;类名&gt;指定jvm的入口类">
 	<java classname="${debug.main}" fork="true" dir="${destdir}">

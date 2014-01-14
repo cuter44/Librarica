@@ -34,9 +34,10 @@ import cn.edu.scau.librarica.authorize.core.*;
    s:hex, 成功时返回 session key
 
    <strong>例外</strong>
-   找不到对应 RSA 私钥返回 Bad Request(400):{flag:"!key"}
-   pass 不能正确地解密返回 Bad Request(400):{flag:"!pass"}
-   非可激活状态(包括已激活状态)/code不正确返回 Bad Request(400):{flag:"!fail"}, 密码/帐户状态不会变动
+   找不到对应 RSA 私钥返回 Bad Request(400):{flag:"!parameter"}
+   pass 不能正确地解密返回 Bad Request(400):{flag:"!parameter"}
+   非可激活状态(包括已激活状态)返回 Conflict(409):{flag:"!status"}
+   code不正确返回 Bad Request(400):{flag:"!fail"}, 密码/帐户状态不会变动
    uid 不存在返回 Bad Request(400):{flag:"!notfound"}
 
    <strong>样例</strong>暂无
@@ -50,6 +51,7 @@ public class Activate extends HttpServlet
     private static final String CODE = "code";
     private static final String PASS = "pass";
     private static final String S = "s";
+    private static final String KEY = "key";
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -86,25 +88,12 @@ public class Activate extends HttpServlet
             // key 不存在
             PrivateKey key = RSAKeyCache.get(uid);
             if (key == null)
-            {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                throw(new MissingParameterException(KEY));
 
-                json.put(FLAG, "!key");
-                out.println(json.toJSONString());
-
-                return;
-            }
             // pass 不正确
             pass = CryptoUtil.RSADecrypt(pass, key);
             if (pass == null)
-            {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-                json.put(FLAG, "!pass");
-                out.println(json.toJSONString());
-
-                return;
-            }
+                throw(new MissingParameterException(PASS));
 
             HiberDao.begin();
 
@@ -120,7 +109,7 @@ public class Activate extends HttpServlet
             // else
 
             byte[] skey = Authorizer.login(uid, pass);
-            json.put(S, skey);
+            json.put(S, CryptoUtil.byteToHex(skey));
 
             // !deprecated
             //// 发送邮件
@@ -133,6 +122,13 @@ public class Activate extends HttpServlet
 
             HiberDao.commit();
 
+            out.println(json.toJSONString());
+        }
+        catch (IllegalStateException ex)
+        {
+            resp.setStatus(HttpServletResponse.SC_CONFLICT);
+
+            json.put(FLAG, "!status");
             out.println(json.toJSONString());
         }
         catch (EntityNotFoundException ex)

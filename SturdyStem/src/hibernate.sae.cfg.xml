@@ -9,20 +9,19 @@
 		<!-- 指定连接数据库所用的驱动 -->
 		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
 		<!-- 指定连接数据库的url，hibernate连接的数据库名 -->
-		<property name="connection.url">jdbc:mysql://localhost:3306/librarica</property>
+		<property name="connection.url">jdbc:mysql://w.rdc.sae.sina.com.cn:3307/app_librarica</property>
 		<!-- 指定连接数据库的用户名 -->
-		<property name="connection.username">root</property>
+		<property name="connection.username">l3j2ljm2mx</property>
 		<!-- 指定连接数据库的密码 -->
-		<property name="connection.password"></property>
+		<property name="connection.password">kmzy1m5jhyz0i0zh23i44m4wzwx44h4whhii0yh5</property>
 		<!-- 指定连接池里最大连接数 -->
 		<property name="hibernate.c3p0.max_size">20</property>
 		<!-- 指定连接池里最小连接数 -->
 		<property name="hibernate.c3p0.min_size">1</property>
 		<!-- 指定连接池里连接的超时时长 -->
-		<property name="hibernate.c3p0.timeout">5000</property>
+        <property name="hibernate.c3p0.imeout">30</property>
 		<!-- 指定连接池里最大缓存多少个Statement对象 -->
 		<property name="hibernate.c3p0.max_statements">100</property>
-		<property name="hibernate.c3p0.idle_test_period">3000</property>
 		<property name="hibernate.c3p0.acquire_increment">2</property>
 		<property name="hibernate.c3p0.validate">true</property>
 		<!-- 指定数据库方言 -->
@@ -30,16 +29,17 @@
 		<!-- 根据需要自动创建数据表 -->
 		<property name="hbm2ddl.auto">update</property>
 		<!-- 显示Hibernate持久化操作所生成的SQL -->
-		<property name="show_sql">true</property>
+		<property name="show_sql">false</property>
 		<!-- 将SQL脚本进行格式化后再输出 -->
-		<property name="hibernate.format_sql">true</property>
-		<property name="connection.characterEncoding">UTF-8</property>
+		<property name="hibernate.format_sql">false</property>
+		<property name="connection.characterEncoding">UTF-8</property> 
 
-    <!-- 映射持久类 -->
-		<mapping resource="cn/edu/scau/librarica/authorize/dao/User.hbm.xml" />
-		<mapping resource="cn/edu/scau/librarica/shelf/dao/Book.hbm.xml" />
-		<mapping resource="cn/edu/scau/librarica/lend/dao/BorrowableBook.hbm.xml" />
-    <mapping resource="cn/edu/scau/librarica/lend/dao/BorrowSession.hbm.xml" />
-
+        <!-- 映射持久类 -->
+		<mapping resource="cn/edu/scau/librarica/dao/User.hbm.xml" />
+        <mapping resource="cn/edu/scau/librarica/dao/Book.hbm.xml" />		
+        <mapping resource="cn/edu/scau/librarica/dao/MessageSession.hbm.xml" />
+        <mapping resource="cn/edu/scau/librarica/dao/Message.hbm.xml" />
+        <mapping resource="cn/edu/scau/librarica/dao/NotifyItem.hbm.xml" />
+        <mapping resource="cn/edu/scau/librarica/dao/NotifyList.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
