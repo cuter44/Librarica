@@ -244,7 +244,6 @@
       <url-pattern>/lend/update</url-pattern>
       <url-pattern>/lend/unreg</url-pattern>
     </filter-mapping>
-
   <!-- /lend -->
 
   <!-- borrow -->
@@ -402,8 +401,36 @@
       <url-pattern>/borrow/conf-borrow</url-pattern>
       <url-pattern>/borrow/conf-return</url-pattern>
     </filter-mapping>
+  <!-- /borrow -->
 
-  <!-- borrow -->
+  <!-- msg  -->
+  <servlet>
+    <servlet-name>MsgSend</servlet-name>
+    <servlet-class>cn.edu.scau.librarica.msg.servlet.SendMsg</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MsgSend</servlet-name>
+    <url-pattern>/msg/send</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>MsgReceive</servlet-name>
+    <servlet-class>cn.edu.scau.librarica.msg.servlet.ReceiveMsg</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MsgReceive</servlet-name>
+    <url-pattern>/msg/receive</url-pattern>
+  </servlet-mapping>
+
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/msg/send</url-pattern>
+      <url-pattern>/msg/receive</url-pattern>
+    </filter-mapping>
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

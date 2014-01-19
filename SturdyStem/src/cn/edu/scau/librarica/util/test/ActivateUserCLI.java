@@ -31,13 +31,19 @@ public class ActivateUserCLI
 
             User u = UserMgr.get(uid);
 
+            assert(u!=null);
+
             HiberDao.close();
 
             String encrypted = CryptoUtil.byteToHex(
                 EncryptPasswordCLI.encrypt(uid, pass)
             );
 
+            assert(encrypted!=null);
+
             String baseurl = Configurator.get("librarica.server.web.baseurl");
+
+            assert(baseurl!=null);
             resp = Request.Post(baseurl+"/user/activate")
                 .bodyForm(
                     Form.form()

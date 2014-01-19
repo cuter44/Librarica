@@ -66,7 +66,12 @@ public class Book
   // HASH
     public int hashCode()
     {
-        return(this.id!=null?this.id.hashCode():0);
+        int hash = 17;
+
+        if (this.id != null)
+            hash = hash * 31 + this.id.hashCode();
+
+        return(hash);
     }
 
     public boolean equals(Object o)

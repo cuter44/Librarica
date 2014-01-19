@@ -67,7 +67,7 @@ public class Authorizer
 
     /** session 长度
      */
-    private static final int SKEY_LENGTH = 8;
+    private static final int SKEY_LENGTH = 4;
     /** 盐长度
      */
     private static final int SALT_LENGTH = 8;
@@ -107,7 +107,7 @@ public class Authorizer
                 return(u);
             }
             else
-                throw(new EntityDuplicatedException("Mail address is occupied."));
+                throw(new EntityDuplicatedException("Mail address is occupied:"+mail));
         }
     }
 

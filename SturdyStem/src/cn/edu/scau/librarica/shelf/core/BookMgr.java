@@ -43,7 +43,7 @@ public class BookMgr
         return(b);
     }
 
-    //public static Book update(id)
+    //public static void update()
 
     public static void remove(Long id)
         throws EntityReferencedException

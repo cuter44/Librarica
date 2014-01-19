@@ -1,4 +1,4 @@
-package cn.edu.scau.librarica.shelf.servlet;
+package cn.edu.scau.librarica.msg.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,56 +12,39 @@ import com.github.cuter44.util.servlet.*;
 
 import com.alibaba.fastjson.*;
 
-import cn.edu.scau.librarica.shelf.dao.*;
-import cn.edu.scau.librarica.shelf.core.*;
+import cn.edu.scau.librarica.msg.dao.*;
+import cn.edu.scau.librarica.msg.core.*;
 
-/** 增加藏书
- * 书被以实体形式添加, i.e. 不会根据isbn被判重
- * <br />
- * 所以出借/出售的书也被以实体的形式区分.
+/** 发送消息
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
-   POST /book/add
+   POST /msg/send
 
    <strong>参数</strong>
-   isbn:string, 必需, isbn
+   t:long, 必需, 对方的uid
+   c:string, 必需, 消息内容
    <i>鉴权</i>
    uid:long, 必需, uid
    s:hex, 必需, session key
 
    <strong>响应</strong>
-   application/json 对象:
-   id:long, 标记书籍对象的id
-   isbn:string, isbn
-   owner:long, 书籍持有人的id
+   成功则返回200(OK), 没有响应正文
+   该状态码仅表明服务器正确接受消息, 而非将消息发送到对方客户端
 
    <strong>例外</strong>
-   ownerId不正确时返回 Bad Request(400):{"flag":"!notfound"}
+   to不正确时返回 Bad Request(400):{"flag":"!notfound"}
 
    <strong>样例</strong>暂无
  * </pre>
  *
  */
-public class AddBook extends HttpServlet
+public class SendMsg extends HttpServlet
 {
     private static final String FLAG = "flag";
-    private static final String UID = "uid";
-    private static final String S = "s";
-    private static final String ISBN = "isbn";
-    private static final String ID = "id";
-    private static final String OWNER = "owner";
-
-    private static JSONObject jsonize(Book b)
-    {
-        JSONObject json = new JSONObject();
-
-        json.put(ID, b.getId());
-        json.put(ISBN, b.getIsbn());
-        json.put(OWNER, b.getOwner());
-
-        return(json);
-    }
+    private static final String F = "uid";
+    private static final String T = "t";
+    private static final String C = "c";
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -83,26 +66,29 @@ public class AddBook extends HttpServlet
 
         try
         {
-            Long uid = HttpUtil.getLongParam(req, UID);
-            if (uid == null)
-                throw(new MissingParameterException(UID));
+            Long f = HttpUtil.getLongParam(req, F);
+            if (f == null)
+                throw(new MissingParameterException(F));
 
-            String isbn = HttpUtil.getParam(req, ISBN);
-            if (isbn == null)
-                throw(new MissingParameterException(ISBN));
+            Long t = HttpUtil.getLongParam(req, T);
+            if (t == null)
+                throw(new MissingParameterException(T));
+
+            String c = HttpUtil.getParam(req, C);
+            if (c == null)
+                throw(new MissingParameterException(C));
+
 
             HiberDao.begin();
 
-            Book b = BookMgr.create(isbn, uid);
+            Msg msg = MsgMgr.createTransient(f, t, c);
+            MsgRouter.send(msg);
 
             HiberDao.commit();
-
-            json = jsonize(b);
-            out.println(json.toJSONString());
         }
         catch (EntityNotFoundException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
             json.put(FLAG, "!notfound");
             out.println(json.toJSONString());
