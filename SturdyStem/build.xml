@@ -66,8 +66,7 @@
   <!-- 追加-Dhbm.cfg可以指定使用的数据库环境, 请参见conf -->
   <target name="war" description="生成war, 追加-Dconf.env可以指定使用的数据库环境">
     <antcall target="conf"/>
-    <jar destfile="librarica.war" basedir="web"
-      exclude="hibernate.sae.cfg.xml" />
+    <jar destfile="librarica.war" basedir="web" />
   </target>
 
 

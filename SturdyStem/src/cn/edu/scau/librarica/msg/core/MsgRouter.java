@@ -10,7 +10,7 @@ import cn.edu.scau.librarica.msg.dao.*;
 
 public class MsgRouter
 {
-    private static int maxWaitSecond= Configurator.getInt("librarica.msg.maxwaitsecond");
+    private static int maxWaitSecond = Configurator.getInt("librarica.msg.maxwaitsecond", 120);
 
   // BLOCKING
     private static class Token
@@ -20,22 +20,19 @@ public class MsgRouter
         /** wait certain second
          */
         public synchronized void waitMsg(Long millis)
+            throws InterruptedException
         {
-            try
-            {
-                this.wait(millis);
-            }
-            catch (InterruptedException ex)
-            {
-                // TODO:log
-                ex.printStackTrace();
-            }
+            this.wait(millis);
+
+            return;
         }
 
         public synchronized void notifyMsg(Msg m)
         {
             this.msg = m;
             this.notifyAll();
+
+            return;
         }
 
         private Token()
@@ -54,16 +51,18 @@ public class MsgRouter
     public static void send(Msg m)
     {
         Token t = tokens.remove(m.getT().getId());
-        // dispatch to client
         if (t != null)
         {
+            // push to client
             t.notifyMsg(m);
-            return;
+        }
+        else
+        {
+            // store to database
+            HiberDao.save(m);
         }
 
-        // else
-        // store to database
-        HiberDao.save(m);
+        return;
     }
 
   // DEPARTURE
@@ -71,7 +70,7 @@ public class MsgRouter
      * @param waitSecond 等待的秒数, 实际等待的时间受服务器配置限制, 指定为 0 或负数则变为非阻塞.
      */
     public static List<Msg> receive(Long uid, int waitSecond)
-        throws IllegalArgumentException
+        throws IllegalArgumentException, InterruptedException
     {
         // from database
         List<Msg> l = MsgMgr.retrieve(uid);
@@ -85,7 +84,15 @@ public class MsgRouter
         {
             Token t = new Token();
             tokens.put(uid, t);
-            t.waitMsg(waitMillis);
+            try
+            {
+                t.waitMsg(waitMillis);
+            }
+            catch (InterruptedException ex)
+            {
+                tokens.remove(uid);
+                throw(ex);
+            }
 
             // waken
             if (t.msg != null)
@@ -98,6 +105,7 @@ public class MsgRouter
     /** 接受服务器端缓存或转交的信息, 在没有消息时等待一定的秒数
      */
     public static List<Msg> receive(Long uid)
+        throws InterruptedException
     {
         return(
             receive(uid, 0)

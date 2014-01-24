@@ -69,6 +69,15 @@
       <url-pattern>/user/logout</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+      <servlet-name>AuthorizeSearchUserBasic</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.SearchUser</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>AuthorizeSearchUserBasic</servlet-name>
+      <url-pattern>/user/search-basic</url-pattern>
+    </servlet-mapping>
+
     <filter>
       <filter-name>PasswordVerifier</filter-name>
       <filter-class>cn.edu.scau.librarica.authorize.filter.PasswordVerifier</filter-class>
@@ -404,23 +413,23 @@
   <!-- /borrow -->
 
   <!-- msg  -->
-  <servlet>
-    <servlet-name>MsgSend</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.msg.servlet.SendMsg</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>MsgSend</servlet-name>
-    <url-pattern>/msg/send</url-pattern>
-  </servlet-mapping>
+    <servlet>
+      <servlet-name>MsgSend</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.msg.servlet.SendMsg</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>MsgSend</servlet-name>
+      <url-pattern>/msg/send</url-pattern>
+    </servlet-mapping>
 
-  <servlet>
-    <servlet-name>MsgReceive</servlet-name>
-    <servlet-class>cn.edu.scau.librarica.msg.servlet.ReceiveMsg</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>MsgReceive</servlet-name>
-    <url-pattern>/msg/receive</url-pattern>
-  </servlet-mapping>
+    <servlet>
+      <servlet-name>MsgReceive</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.msg.servlet.ReceiveMsg</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>MsgReceive</servlet-name>
+      <url-pattern>/msg/receive</url-pattern>
+    </servlet-mapping>
 
     <filter-mapping>
       <filter-name>SessionKeyVerifier</filter-name>
@@ -431,6 +440,18 @@
       <url-pattern>/msg/send</url-pattern>
       <url-pattern>/msg/receive</url-pattern>
     </filter-mapping>
+  <!-- /msg -->
+
+  <!-- remind -->
+    <servlet>
+      <servlet-name>RemindReceiveRemind</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.remind.servlet.ReceiveRemind</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>RemindReceiveRemind</servlet-name>
+      <url-pattern>/remind/receive</url-pattern>
+    </servlet-mapping>
+  <!-- /remind -->
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

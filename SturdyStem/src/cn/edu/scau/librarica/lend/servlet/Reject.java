@@ -30,8 +30,8 @@ import cn.edu.scau.librarica.lend.core.*;
    成功时返回 OK(200), 没有响应正文.
 
    <strong>例外</strong>
-   指定的 id 不存在时返回 Bad Request(400):{"flag":"!notfound"}
-   指定的 id 已不可拒绝时返回 Bad Request(400):{"flag":"!status"}
+   指定的 id 不存在时返回 Forbidden(403):{"flag":"!notfound"}
+   指定的 id 已不可拒绝时返回 Conflict(409):{"flag":"!status"}
 
    <strong>样例</strong>暂无
  * </pre>
@@ -58,8 +58,6 @@ public class Reject extends HttpServlet
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        JSONObject json = new JSONObject();
-
         try
         {
             Long id = HttpUtil.getLongParam(req, ID);
@@ -74,24 +72,21 @@ public class Reject extends HttpServlet
         }
         catch (EntityNotFoundException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            json.put(FLAG, "!notfound");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!notfound\"}");
         }
         catch (IllegalStateException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_CONFLICT);
 
-            json.put(FLAG, "!status");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!status\"}");
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!parameter");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!parameter\"}");
         }
         catch (Exception ex)
         {

@@ -36,7 +36,7 @@ import cn.edu.scau.librarica.authorize.core.*;
    e:hex, public exponent
 
    <strong>例外</strong>
-   uid不存在时返回Bad Request(400):{flag:"!notfound"}
+   uid不存在时返回Frobidden(403):{flag:"!notfound"}
 
    <strong>样例</strong>暂无
  * </pre>
@@ -65,8 +65,6 @@ public class GetRsaKey extends HttpServlet
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        JSONObject json = new JSONObject();
-
         try
         {
             Long uid = HttpUtil.getLongParam(req, UID);
@@ -77,6 +75,8 @@ public class GetRsaKey extends HttpServlet
             RSAPublicKey pk = (RSAPublicKey)kp.getPublic();
             RSAKeyCache.put(uid, kp.getPrivate());
 
+            JSONObject json = new JSONObject();
+
             json.put(M, pk.getModulus().toString(16));
             json.put(E, pk.getPublicExponent().toString(16));
 
@@ -84,17 +84,15 @@ public class GetRsaKey extends HttpServlet
         }
         catch (EntityNotFoundException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            json.put(FLAG, "!notfound");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!notfound\"}");
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!parameter");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!parameter\"}");
         }
         catch (Exception ex)
         {

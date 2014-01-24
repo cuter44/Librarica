@@ -1,94 +1,90 @@
-package cn.edu.scau.librarica.shelf.servlet;
+package cn.edu.scau.librarica.authorize.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Iterator;
-
 import javax.servlet.http.*;
 import javax.servlet.ServletException;
 
-import com.github.cuter44.util.dao.*;
-import com.github.cuter44.util.servlet.*;
-
 import com.alibaba.fastjson.*;
-
-import cn.edu.scau.librarica.shelf.dao.*;
-import cn.edu.scau.librarica.shelf.core.*;
-import cn.edu.scau.librarica.util.conf.Configurator;
-
 import org.hibernate.criterion.*;
 
-/** 搜索/列出藏书
- * 可借/出售书籍搜索现在通过另外的接口提供
+import com.github.cuter44.util.dao.*;
+import com.github.cuter44.util.servlet.*;
+import cn.edu.scau.librarica.util.conf.*;
+import cn.edu.scau.librarica.authorize.dao.*;
+
+/** 搜索用户, 主要用于用户 uid, mail, uname.
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
-   GET/POST /book/search
+   POST /user/search-basic
 
    <strong>参数</strong>
    <i>以下零至多个参数组, 按参数名分组, 组内以,分隔以or逻辑连接, 组间以and逻辑连接, 完全匹配</i>
-   bid:long, 指定书的id;
-   uid:long, 指定书拥有者id;
-   isbn:string, 指定isbn;
+   uid:long, uid
+   mail:string(60), 邮件地址
+   uname:string, 用户名字, 不包含显示名
    <i>分页</i>
-   start:int, 返回结果的起始笔数
-   size:int, 返回结果的最大笔数
+   start:int, 开始笔数
+   limit:int, 最多数据笔数, 缺省使用服务器配置
 
    <strong>响应</strong>
-   application/json Array:
-   bid:long, bid
-   isbn:string, isbn
-   uid:long, 书籍持有人的id
+   application/json 数组:
+   uid:long, 用户id.
+   mail:string, 用户邮件地址
+   uname:string, 用户名字
+   regDate:unix-time-in-millis, 注册日期
+   status:byte, 帐户状态
 
    <strong>例外</strong>
+   传入空的参数将返回意外的结果.
 
    <strong>样例</strong>暂无
  * </pre>
  *
  */
-@Deprecated
-public class SearchBook extends HttpServlet
+public class SearchUser extends HttpServlet
 {
     private static final String FLAG = "flag";
-    private static final String UID = "uid";
-    private static final String ISBN = "isbn";
-    private static final String BID = "bid";
     private static final String START = "start";
     private static final String SIZE = "size";
+    private static final String UID = "uid";
+    private static final String MAIL = "mail";
+    private static final String UNAME = "uname";
+    private static final String STATUS = "status";
+    private static final String REGDATE = "regDate";
 
     private static final Integer defaultPageSize = Configurator.getInt("librarica.search.defaultpagesize", 20);
 
-    /** 将参数翻译为 Criteria<Book>
-     * @param dc 附着的Criteria, 必需传入一个Criteria<Book>
-     * @param req 带参数请求, 处理其中的 bid, uid, isbn 参数
-     */
     public static DetachedCriteria parseCriteria(DetachedCriteria dc, HttpServletRequest req)
     {
-        List<Long> bids = HttpUtil.getLongListParam(req, BID);
-        if (bids!=null && bids.size()>0)
-            dc.add(Restrictions.in("id", bids));
+        List<Long> ids = HttpUtil.getLongListParam(req, UID);
+        if (ids!=null && ids.size()>0)
+            dc.add(Restrictions.in("id", ids));
 
-        List<String> isbns = HttpUtil.getStringListParam(req, ISBN);
-        if (isbns!=null && isbns.size()>0)
-            dc.add(Restrictions.in("isbn", isbns));
+        List<String> mails = HttpUtil.getStringListParam(req, MAIL);
+        if (mails!=null && mails.size()>0)
+            dc.add(Restrictions.in("mail", mails));
 
-        DetachedCriteria dcOwner = dc.createCriteria("owner");
-        List<Long> uids = HttpUtil.getLongListParam(req, UID);
-        if (uids!=null && uids.size()>0)
-            dcOwner.add(Restrictions.in("id", uids));
+        List<String> unames = HttpUtil.getStringListParam(req, UNAME);
+        if (unames!=null && unames.size()>0)
+            dc.add(Restrictions.in("uname", unames));
 
         return(dc);
     }
 
-    private static JSONObject jsonize(Book b)
+    private static JSONObject jsonize(User u)
     {
         JSONObject json = new JSONObject();
 
-        json.put(BID, b.getId());
-        json.put(ISBN, b.getIsbn());
-        json.put(UID, b.getOwner().getId());
+        json.put(UID, u.getId());
+        json.put(MAIL, u.getMail());
+        json.put(UNAME, u.getUname());
+        json.put(STATUS, u.getStatus());
+        json.put(REGDATE, u.getRegDate());
 
         return(json);
     }
@@ -112,7 +108,7 @@ public class SearchBook extends HttpServlet
         try
         {
             DetachedCriteria dc = parseCriteria(
-                DetachedCriteria.forClass(Book.class),
+                DetachedCriteria.forClass(User.class),
                 req
             );
 
@@ -122,17 +118,17 @@ public class SearchBook extends HttpServlet
 
             HiberDao.begin();
 
-            List<Book> l = (List<Book>)HiberDao.search(dc, start, size);
+            List<User> l = (List<User>)HiberDao.search(dc, start, size);
 
             HiberDao.commit();
 
             JSONArray json = new JSONArray();
-
-            Iterator<Book> itr = l.iterator();
+            Iterator<User> itr = l.iterator();
             while (itr.hasNext())
                 json.add(jsonize(itr.next()));
 
             out.println(json.toJSONString());
+
         }
         catch (Exception ex)
         {

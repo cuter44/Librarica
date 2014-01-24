@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 /* util */
 import java.util.List;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.Cookie;
@@ -138,29 +139,6 @@ public class HttpUtil
         }
     }
 
-    public static List<Long> getLongListParam(HttpServletRequest req, String name)
-    {
-        try
-        {
-            String v = getParam(req, name);
-            if (v == null)
-                return(null);
-
-            StringTokenizer st = new StringTokenizer(v, ",");
-            List<Long> l = new ArrayList<Long>(st.countTokens());
-
-            while (st.hasMoreTokens())
-                l.add(Long.valueOf(st.nextToken()));
-
-            return(l);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-            return(null);
-        }
-    }
-
     public static byte[] getByteArrayParam(HttpServletRequest req, String name)
     {
         try
@@ -195,5 +173,54 @@ public class HttpUtil
         String v = getParam(req, name);
         return(v==null?null:Boolean.valueOf(v));
     }
+
+    public static List<String> getStringListParam(HttpServletRequest req, String name)
+    {
+        try
+        {
+            String v = getParam(req, name);
+            if (v == null)
+                return(null);
+            if (v.length() == 0)
+                return(new ArrayList<String>());
+
+            StringTokenizer st = new StringTokenizer(v, ",");
+            List<String> l = new ArrayList<String>(st.countTokens());
+
+            while (st.hasMoreTokens())
+                l.add(st.nextToken());
+
+            return(l);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return(null);
+        }
+    }
+
+
+    public static List<Long> getLongListParam(HttpServletRequest req, String name)
+    {
+        try
+        {
+            List<String> ls = getStringListParam(req, name);
+            if (ls == null)
+                return(null);
+
+            List<Long> l = new ArrayList<Long>();
+            Iterator<String> itr = ls.iterator();
+            while (itr.hasNext())
+                l.add(Long.valueOf(itr.next()));
+
+            return(l);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return(null);
+        }
+    }
+
 
 }

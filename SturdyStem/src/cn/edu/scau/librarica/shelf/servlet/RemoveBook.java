@@ -32,9 +32,9 @@ import cn.edu.scau.librarica.shelf.core.*;
    成功时返回 OK(200), 无响应正文
 
    <strong>例外</strong>
-   指定id不存在时返回Bad Request(400):{"flag":"!notfound"}
-   因为外借中等状况无法删除时返回Bad Request(400):{"flag":"!referenced"}
-   不是藏书所有者时返回Bad Request(400), 无响应正文
+   指定id不存在时返回Forbidden(403):{"flag":"!notfound"}
+   因为外借中等状况无法删除时返回Forbidden(403):{"flag":"!referred"}
+   不是藏书所有者时返回Forbidden(403), 无响应正文
 
    <strong>样例</strong>暂无
  * </pre>
@@ -63,8 +63,6 @@ public class RemoveBook extends HttpServlet
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        JSONObject json = new JSONObject();
-
         try
         {
             Long uid = HttpUtil.getLongParam(req, UID);
@@ -83,17 +81,21 @@ public class RemoveBook extends HttpServlet
         }
         catch (EntityNotFoundException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            json.put(FLAG, "!notfound");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!notfound\"}");
         }
         catch (EntityReferencedException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            json.put(FLAG, "!referenced");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!referred\"}");
+        }
+        catch (MissingParameterException ex)
+        {
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+
+            out.println("{\"flag\":\"!parameter\"}");
         }
         catch (Exception ex)
         {

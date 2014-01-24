@@ -1,4 +1,4 @@
-package cn.edu.scau.librarica.msg.servlet;
+package cn.edu.scau.librarica.remind.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,14 +14,14 @@ import com.github.cuter44.util.servlet.*;
 
 import com.alibaba.fastjson.*;
 
-import cn.edu.scau.librarica.msg.dao.*;
-import cn.edu.scau.librarica.msg.core.*;
+import cn.edu.scau.librarica.remind.dao.*;
+import cn.edu.scau.librarica.remind.core.*;
 
 /** 发送消息
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
-   POST /msg/receive
+   POST /remind/receive
 
    <strong>参数</strong>
    uid:long, 表示收件人id
@@ -32,71 +32,33 @@ import cn.edu.scau.librarica.msg.core.*;
 
    <strong>响应</strong>
    application/json:
-   压缩的 json 对象, 结构如下所列:
-   Map&lt;fromId, Map&lt;timestamp, content&gt;&gt;
+   List&lt;type, id&gt;
    其中,
-   fromId:long, 表示发送者id.
-   timestamp:unix-time-in-second, 发送时间戳
-   content:string, 消息正文
-   因为 fastjson 的特性, timestamp:content 对会被按字典序升序排列, 这在大部分情况下不会构成问题, 所以不会被修正.
+   type:string, 事件类型, 通常是 POJO 的类名, 比如 BorrowSession, Msg
+   value:string-of-decimal, id, 通常就是 POJO 的 id, 对于 Msg 则为收件人 id
 
    <strong>例外</strong>
-   没有可用消息时返回 OK(200):{}
+   没有可用通知时返回 OK(200):{}
    uid 不正确时返回 Forbidden(403):{"flag":"!notfound"}
 
    <strong>样例</strong>
-    GET /librarica/msg/receive?uid=4&s=f00a551d&wait=100
-
-    HTTP/1.1 200 OK
-    Server: Apache-Coyote/1.1
-    Content-Type: application/json;charset=utf-8
-    Content-Length: 84
-    Date: Sun, 19 Jan 2014 15:12:14 GMT
-
-    {
-      "1":{
-        "1390144276":"blabla3",
-        "1390144286":"blabla4"
-      },
-      "2":{
-        "1390144320":"blabla4"
-      }
-    }
-
-
+   なし
  * </pre>
  *
  */
-public class ReceiveMsg extends HttpServlet
+public class ReceiveRemind extends HttpServlet
 {
     private static final String FLAG = "flag";
-    private static final String T = "uid";
+    private static final String UID = "uid";
     private static final String WAIT = "wait";
 
-    public static JSONObject jsonize(List<Msg> l)
+    public static JSONObject jsonize(Remind r)
     {
-        JSONObject packed = new JSONObject();
+        JSONObject json = new JSONObject();
 
-        Iterator<Msg> itr = l.iterator();
-        while (itr.hasNext())
-        {
-            Msg m = itr.next();
-            String uid = m.getF().getId().toString();
+        json.put(r.getT(), r.getV());
 
-            JSONObject grouped = packed.getJSONObject(uid);
-            if (grouped == null)
-            {
-                grouped = new JSONObject();
-                packed.put(uid, grouped);
-            }
-
-            grouped.put(
-                String.format("%ts", m.getM()),
-                m.getC()
-            );
-        }
-
-        return(packed);
+        return(json);
     }
 
     @Override
@@ -117,9 +79,9 @@ public class ReceiveMsg extends HttpServlet
 
         try
         {
-            Long t = HttpUtil.getLongParam(req, T);
-            if (t == null)
-                throw(new MissingParameterException(T));
+            Long uid = HttpUtil.getLongParam(req, UID);
+            if (uid == null)
+                throw(new MissingParameterException(UID));
 
             Integer wait = HttpUtil.getIntParam(req, WAIT);
             if (wait == null)
@@ -127,11 +89,14 @@ public class ReceiveMsg extends HttpServlet
 
             HiberDao.begin();
 
-            List<Msg> ml = MsgRouter.receive(t, wait);
+            List<Remind> rl = RemindRouter.receive(uid, wait);
 
             HiberDao.commit();
 
-            JSONObject json = jsonize(ml);
+            JSONArray json = new JSONArray();
+            Iterator<Remind> itr = rl.iterator();
+            while (itr.hasNext())
+                json.add(jsonize(itr.next()));
 
             out.println(json.toJSONString());
         }

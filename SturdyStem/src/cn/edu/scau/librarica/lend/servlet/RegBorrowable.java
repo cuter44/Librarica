@@ -35,8 +35,8 @@ import cn.edu.scau.librarica.lend.core.*;
    由 /borrowable/update 生成
 
    <strong>例外</strong>
-   指定的 id 不存在返回 Bad Request(400):{"flag":"!notfound"}
-   指定的 id 已经是可借阅状态时返回 Bad Reuqest(400):{"flag":"!duplicated"}
+   指定的 id 不存在返回 Forbidden(403):{"flag":"!notfound"}
+   指定的 id 已经是可借阅状态时返回 Forbidden(403):{"flag":"!duplicated"}
 
    <strong>样例</strong>暂无
  * </pre>
@@ -65,8 +65,6 @@ public class RegBorrowable extends HttpServlet
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        JSONObject json = new JSONObject();
-
         try
         {
             Long id = HttpUtil.getLongParam(req, ID);
@@ -83,24 +81,21 @@ public class RegBorrowable extends HttpServlet
         }
         catch (EntityNotFoundException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            json.put(FLAG, "!notfound");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!notfound\"}");
         }
         catch (EntityDuplicatedException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            json.put(FLAG, "!duplicated");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!duplicated\"}");
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!parameter");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!parameter\"}");
         }
         catch (Exception ex)
         {

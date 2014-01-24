@@ -106,7 +106,7 @@ public class IsLenderVerifier
             }
             else
             {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
                 //resp.setCharacterEncoding("utf-8");
                 //resp.setContentType("application/json");

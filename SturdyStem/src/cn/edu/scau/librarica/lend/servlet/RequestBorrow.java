@@ -37,7 +37,7 @@ import cn.edu.scau.librarica.lend.core.*;
    borrower:long, 借阅者的id
 
    <strong>例外</strong>
-   指定的 uid/id 不存在/不可借阅时返回 Bad Request(400):{"flag":"!notfound"}
+   指定的 uid/id 不存在/不可借阅时返回 Forbidden(403):{"flag":"!notfound"}
 
    <strong>样例</strong>暂无
  * </pre>
@@ -81,8 +81,6 @@ public class RequestBorrow extends HttpServlet
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        JSONObject json = new JSONObject();
-
         try
         {
             Long uid = HttpUtil.getLongParam(req, UID);
@@ -99,23 +97,21 @@ public class RequestBorrow extends HttpServlet
 
             HiberDao.commit();
 
-            json = jsonize(bs);
+            JSONObject json = jsonize(bs);
 
             out.println(json.toJSONString());
         }
         catch (EntityNotFoundException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            json.put(FLAG, "!notfound");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!notfound\"}");
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!parameter");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!parameter\"}");
         }
         catch (Exception ex)
         {

@@ -33,7 +33,7 @@ import cn.edu.scau.librarica.msg.core.*;
    该状态码仅表明服务器正确接受消息, 而非将消息发送到对方客户端
 
    <strong>例外</strong>
-   to不正确时返回 Bad Request(400):{"flag":"!notfound"}
+   to不正确时返回 Forbidden(403):{"flag":"!notfound"}
 
    <strong>样例</strong>暂无
  * </pre>
@@ -62,8 +62,6 @@ public class SendMsg extends HttpServlet
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        JSONObject json = new JSONObject();
-
         try
         {
             Long f = HttpUtil.getLongParam(req, F);
@@ -90,15 +88,13 @@ public class SendMsg extends HttpServlet
         {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            json.put(FLAG, "!notfound");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!notfound\"}");
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!parameter");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!parameter\"}");
         }
         catch (Exception ex)
         {

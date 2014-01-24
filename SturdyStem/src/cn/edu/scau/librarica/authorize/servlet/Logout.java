@@ -36,10 +36,10 @@ import cn.edu.scau.librarica.authorize.core.*;
    flag:string, 成功时返回 success
 
    <strong>例外</strong>
-   找不到对应 RSA 私钥返回 Bad Request(400):{flag:"!key"}
-   pass 不能正确地解密返回 Bad Request(400):{flag:"!pass"}
-   执行失败返回Bad Request(400):{flag:"!fail"}
-   uid 不存在返回 Bad Request(400):{flag:"!notfound"}
+   找不到对应 RSA 私钥返回 Bad Request(400):{flag:"!parameter"}
+   pass 不能正确地解密返回 Bad Request(400):{flag:"!parameter"}
+   执行失败返回 Forbidden(403):{flag:"!fail"}
+   uid 不存在返回 Forbidden(403):{flag:"!notfound"}
 
    <strong>样例</strong>暂无
  * </pre>
@@ -49,6 +49,7 @@ public class Logout extends HttpServlet
 {
     private static final String FLAG = "flag";
     private static final String UID = "uid";
+    private static final String KEY = "key";
     private static final String PASS = "pass";
     private static final String S = "s";
 
@@ -68,10 +69,10 @@ public class Logout extends HttpServlet
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        JSONObject json = new JSONObject();
-
         try
         {
+            JSONObject json = new JSONObject();
+
             Long uid = HttpUtil.getLongParam(req, UID);
             if (uid == null)
                 throw(new MissingParameterException(UID));
@@ -88,7 +89,7 @@ public class Logout extends HttpServlet
                 }
                 else
                 {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     json.put(FLAG, "!fail");
                 }
 
@@ -105,25 +106,13 @@ public class Logout extends HttpServlet
                 // key 不存在
                 PrivateKey key = RSAKeyCache.get(uid);
                 if (key == null)
-                {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    throw(new MissingParameterException(KEY));
 
-                    json.put(FLAG, "!key");
-                    out.println(json.toJSONString());
-
-                    return;
-                }
                 // pass 不正确
                 pass = CryptoUtil.RSADecrypt(pass, key);
                 if (pass == null)
-                {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    throw(new MissingParameterException(PASS));
 
-                    json.put(FLAG, "!pass");
-                    out.println(json.toJSONString());
-
-                    return;
-                }
                 // else
                 if (Authorizer.logoutViaPass(uid, pass))
                 {
@@ -131,7 +120,7 @@ public class Logout extends HttpServlet
                 }
                 else
                 {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     json.put(FLAG, "!fail");
                 }
 
@@ -146,17 +135,15 @@ public class Logout extends HttpServlet
         }
         catch (EntityNotFoundException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            json.put(FLAG, "!notfound");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!notfound\"}");
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!parameter");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!parameter\"}");
         }
         catch (Exception ex)
         {

@@ -109,27 +109,24 @@ public class Msg
         if (this == o)
             return(true);
 
-        if (o != null && !this.getClass().equals(o.getClass()))
+        if (o!=null && !this.getClass().equals(o.getClass()))
             return(false);
 
         Msg msg = (Msg)o;
 
         return(
             (
-            (this.id == msg.id) ||
-            (this.id != null && this.id.equals(msg.id))
+                (this.f == msg.f) ||
+                (this.f != null && this.f.equals(msg.f))
             ) && (
-            (this.f == msg.f) ||
-            (this.f != null && this.f.equals(msg.f))
+                (this.t == msg.t) ||
+                (this.t != null && this.t.equals(msg.t))
             ) && (
-            (this.t == msg.t) ||
-            (this.t != null && this.t.equals(msg.t))
+                (this.c == msg.c) ||
+                (this.c != null && this.c.equals(msg.c))
             ) && (
-            (this.c == msg.c) ||
-            (this.c != null && this.c.equals(msg.c))
-            ) && (
-            (this.m == msg.m) ||
-            (this.m != null && this.m.equals(msg.m))
+                (this.m == msg.m) ||
+                (this.m != null && this.m.equals(msg.m))
             )
         );
     }

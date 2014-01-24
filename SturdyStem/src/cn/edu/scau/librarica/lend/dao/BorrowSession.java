@@ -96,7 +96,7 @@ public class BorrowSession
         if (this == o)
             return(true);
 
-        if (o != null && !this.getClass().equals(o.getClass()))
+        if (o!=null && !this.getClass().equals(o.getClass()))
             return(false);
 
         BorrowSession bs = (BorrowSession)o;

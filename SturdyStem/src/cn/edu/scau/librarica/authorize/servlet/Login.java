@@ -33,10 +33,10 @@ import cn.edu.scau.librarica.authorize.core.*;
    s:hex 成功时返回 session key
 
    <strong>例外</strong>
-   找不到对应 RSA 私钥返回 Bad Request(400):{flag:"!key"}
-   pass 不能正确地解密返回 Bad Request(400):{flag:"!pass"}
-   执行失败返回Bad Request(400):{flag:"!fail"}
-   uid 不存在返回 Bad Request(400):{flag:"!notfound"}
+   找不到对应 RSA 私钥返回 Bad Request(400):{flag:"!parameter"}
+   pass 不能正确地解密返回 Bad Request(400):{flag:"!parameter"}
+   执行失败返回 Frobidden(403):{flag:"!fail"}
+   uid 不存在返回 Frobidden(403):{flag:"!notfound"}
 
    <strong>样例</strong>暂无
  * </pre>
@@ -46,6 +46,7 @@ public class Login extends HttpServlet
 {
     private static final String FLAG = "flag";
     private static final String UID = "uid";
+    private static final String KEY = "key";
     private static final String PASS = "pass";
     private static final String S = "s";
 
@@ -65,8 +66,6 @@ public class Login extends HttpServlet
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        JSONObject json = new JSONObject();
-
         try
         {
             Long uid = HttpUtil.getLongParam(req, UID);
@@ -80,57 +79,41 @@ public class Login extends HttpServlet
             // key 不存在
             PrivateKey key = RSAKeyCache.get(uid);
             if (key == null)
-            {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                throw(new MissingParameterException(KEY));
 
-                json.put(FLAG, "!key");
-                out.println(json.toJSONString());
-
-                return;
-            }
             // pass 不正确
             pass = CryptoUtil.RSADecrypt(pass, key);
             if (pass == null)
-            {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-                json.put(FLAG, "!pass");
-                out.println(json.toJSONString());
-
-                return;
-            }
+                throw(new MissingParameterException(PASS));
 
             HiberDao.begin();
 
             byte[] skey = Authorizer.login(uid, pass);
             if (skey == null)
             {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-                json.put(FLAG, "!fail");
-                out.println(json.toJSONString());
-
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                out.println("{\"flag\":\"!notfound\"}");
                 return;
             }
 
             HiberDao.commit();
+
+            JSONObject json = new JSONObject();
 
             json.put(S, CryptoUtil.byteToHex(skey));
             out.println(json.toJSONString());
         }
         catch (EntityNotFoundException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            json.put(FLAG, "!notfound");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!notfound\"}");
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!parameter");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!parameter\"}");
         }
         catch (Exception ex)
         {

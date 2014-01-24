@@ -37,7 +37,6 @@ import cn.edu.scau.librarica.shelf.core.*;
    owner:long, 书籍持有人的id
 
    <strong>例外</strong>
-   ownerId不正确时返回 Bad Request(400):{"flag":"!notfound"}
 
    <strong>样例</strong>暂无
  * </pre>
@@ -79,8 +78,6 @@ public class AddBook extends HttpServlet
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        JSONObject json = new JSONObject();
-
         try
         {
             Long uid = HttpUtil.getLongParam(req, UID);
@@ -97,22 +94,14 @@ public class AddBook extends HttpServlet
 
             HiberDao.commit();
 
-            json = jsonize(b);
-            out.println(json.toJSONString());
-        }
-        catch (EntityNotFoundException ex)
-        {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-            json.put(FLAG, "!notfound");
+            JSONObject json = jsonize(b);
             out.println(json.toJSONString());
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!parameter");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!parameter\"}");
         }
         catch (Exception ex)
         {

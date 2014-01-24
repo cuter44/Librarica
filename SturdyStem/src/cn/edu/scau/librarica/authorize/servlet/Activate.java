@@ -37,8 +37,8 @@ import cn.edu.scau.librarica.authorize.core.*;
    找不到对应 RSA 私钥返回 Bad Request(400):{flag:"!parameter"}
    pass 不能正确地解密返回 Bad Request(400):{flag:"!parameter"}
    非可激活状态(包括已激活状态)返回 Conflict(409):{flag:"!status"}
-   code不正确返回 Bad Request(400):{flag:"!fail"}, 密码/帐户状态不会变动
-   uid 不存在返回 Bad Request(400):{flag:"!notfound"}
+   code不正确返回 Frobidden(403):{flag:"!fail"}, 密码/帐户状态不会变动
+   uid 不存在返回 Frobidden(403):{flag:"!notfound"}
 
    <strong>样例</strong>暂无
  * </pre>
@@ -69,8 +69,6 @@ public class Activate extends HttpServlet
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        JSONObject json = new JSONObject();
-
         try
         {
             Long uid = HttpUtil.getLongParam(req, UID);
@@ -99,51 +97,38 @@ public class Activate extends HttpServlet
 
             if (!Authorizer.activate(uid, code, pass))
             {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-                json.put(FLAG, "!fail");
-                out.println(json.toJSONString());
-
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                out.println("{\"flag\":\"!fail\"}");
                 return;
             }
             // else
 
             byte[] skey = Authorizer.login(uid, pass);
-            json.put(S, CryptoUtil.byteToHex(skey));
-
-            // !deprecated
-            //// 发送邮件
-            //String mp = Configurator.get("librarica.mail.ActivateMailProvider");
-            //if ((mp != null) && mp.length()!=0)
-            //{
-                //MailProvider m = (MailProvider)Class.forName(mp).getConstructor().newInstance();
-                //m.sendMail(req);
-            //}
 
             HiberDao.commit();
 
+            JSONObject json = new JSONObject();
+
+            json.put(S, CryptoUtil.byteToHex(skey));
             out.println(json.toJSONString());
         }
         catch (IllegalStateException ex)
         {
             resp.setStatus(HttpServletResponse.SC_CONFLICT);
 
-            json.put(FLAG, "!status");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!status\"}");
         }
         catch (EntityNotFoundException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            json.put(FLAG, "!notfound");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!notfound\"}");
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!parameter");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!parameter\"}");
         }
         catch (Exception ex)
         {

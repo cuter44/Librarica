@@ -24,7 +24,7 @@ import cn.edu.scau.librarica.authorize.core.*;
    POST /user/register
 
    <strong>参数</strong>
-   mail:string, 邮件地址
+   mail:string(60), 邮件地址
 
    <strong>响应</strong>
    application/json 对象:
@@ -32,7 +32,7 @@ import cn.edu.scau.librarica.authorize.core.*;
    uid:long, 成功时返回分配的UID
 
    <strong>例外</strong>
-   邮件地址已被使用时返回 Bad Request(400): {"flag":"!duplicated"}
+   邮件地址已被使用时返回 Forbidden(403): {"flag":"!duplicated"}
 
    <strong>样例</strong>暂无
  * </pre>
@@ -60,8 +60,6 @@ public class Register extends HttpServlet
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
-        JSONObject json = new JSONObject();
-
         try
         {
             String mail = HttpUtil.getParam(req, MAIL);
@@ -72,14 +70,9 @@ public class Register extends HttpServlet
 
             User u = Authorizer.register(mail);
 
-            //// 发送邮件
-            //MailProvider m = (MailProvider)Class.forName(
-                //Configurator.get("librarica.mail.RegisterMailProvider")
-            //).getConstructor().newInstance();
-            //m.sendMail(req);
-
             HiberDao.commit();
 
+            JSONObject json = new JSONObject();
             json.put(MAIL, u.getMail());
             json.put(UID, u.getId());
 
@@ -87,17 +80,15 @@ public class Register extends HttpServlet
         }
         catch (EntityDuplicatedException ex)
         {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-            json.put(FLAG, "!duplicated");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!duplicated\"}");
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-            json.put(FLAG, "!parameter");
-            out.println(json.toJSONString());
+            out.println("{\"flag\":\"!parameter\"}");
         }
         catch (Exception ex)
         {
