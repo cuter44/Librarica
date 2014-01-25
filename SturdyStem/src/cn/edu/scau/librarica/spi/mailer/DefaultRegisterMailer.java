@@ -12,6 +12,7 @@ import cn.edu.scau.librarica.authorize.core.*;
  * 将类名注册在 librarica.xml 以在启动时注入监听器
  */
 public class DefaultRegisterMailer
+    implements Authorizer.StatusChangedListener
 {
     private static String baseURL = Configurator.get("librarica.server.web.baseurl");
 
@@ -19,19 +20,18 @@ public class DefaultRegisterMailer
     static
     {
         Authorizer.addListener(
-            new Authorizer.StatusChangedListener()
-            {
-                @Override
-                public void onStatusChanged(User u)
-                {
-                    if (User.REGISTERED.equals(u.getStatus()))
-                        DefaultRegisterMailer.sendRegisteredMail(u);
-                }
-            }
+            new DefaultRegisterMailer()
         );
     }
 
-    public static void sendRegisteredMail(User u)
+    @Override
+    public void onStatusChanged(User u)
+    {
+        if (User.REGISTERED.equals(u.getStatus()))
+            this.sendRegisteredMail(u);
+    }
+
+    public void sendRegisteredMail(User u)
     {
         String activateURL =
             baseURL + "/user/activate.jsp?" +

@@ -36,21 +36,50 @@ public class RemindMgr
     /**
      * 如果数据库中存有重合对象, 则返回重合对象.
      */
-    public static Remind createTransient(Long userId, String t, String v)
+    public static Remind createTransient(User u, String t, String v)
     {
         // 再利用
-        Remind r = get(userId, t, v);
+        Remind r = get(u.getId(), t, v);
         if (r != null)
             return(r);
 
         // else
+        r = new Remind(u, t, v);
+
+        return(r);
+    }
+
+    public static Remind createTransient(User u, String t, Long v)
+    {
+        return(
+            createTransient(
+                u,
+                t,
+                v!=null?v.toString():(String)null
+            )
+        );
+    }
+
+    public static Remind createTransient(Long userId, String t, String v)
+    {
         User u = UserMgr.get(userId);
         if (u == null)
             throw(new EntityNotFoundException("No such User:"+userId));
 
-        r = new Remind(u, t, v);
+        return(
+            createTransient(u, t, v)
+        );
+    }
 
-        return(r);
+    public static Remind createTransient(Long userId, String t, Long v)
+    {
+        return(
+            createTransient(
+                userId,
+                t,
+                v!=null?v.toString():(String)null
+            )
+        );
     }
 
     //public static void create()

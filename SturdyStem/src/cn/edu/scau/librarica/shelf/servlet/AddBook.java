@@ -57,7 +57,7 @@ public class AddBook extends HttpServlet
 
         json.put(ID, b.getId());
         json.put(ISBN, b.getIsbn());
-        json.put(OWNER, b.getOwner());
+        json.put(OWNER, b.getOwner().getId());
 
         return(json);
     }

@@ -10,6 +10,6 @@
 
         <many-to-one name="user" class="cn.edu.scau.librarica.authorize.dao.User" index="idx_remind_user" />
         <property name="t" type="string" />
-        <property name="v" type="timestamp" />
+        <property name="v" type="string" />
     </class>
 </hibernate-mapping>

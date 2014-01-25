@@ -42,7 +42,16 @@ import cn.edu.scau.librarica.remind.core.*;
    uid 不正确时返回 Forbidden(403):{"flag":"!notfound"}
 
    <strong>样例</strong>
-   なし
+    GET /librarica/remind/receive?uid=4&wait=180 HTTP/1.1
+
+    HTTP/1.1 200 OK
+    Server: Apache-Coyote/1.1
+    Content-Type: application/json;charset=utf-8
+    Content-Length: 25
+    Date: Sat, 25 Jan 2014 15:28:07 GMT
+
+    [{"BorrowSession":"3"}]
+
  * </pre>
  *
  */

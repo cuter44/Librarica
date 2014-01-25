@@ -45,6 +45,8 @@
     <mapping resource="cn/edu/scau/librarica/lend/dao/BorrowSession.hbm.xml" />
     
     <mapping resource="cn/edu/scau/librarica/msg/dao/Msg.hbm.xml" />
+    
+    <mapping resource="cn/edu/scau/librarica/remind/dao/Remind.hbm.xml" />
 
 	</session-factory>
 </hibernate-configuration>
