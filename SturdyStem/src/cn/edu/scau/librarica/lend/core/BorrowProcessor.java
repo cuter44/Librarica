@@ -81,11 +81,11 @@ public class BorrowProcessor
                     .add(Restrictions.eq("id", bs.getBook().getId()));
 
                 List<BorrowSession> requests = (List<BorrowSession>)HiberDao.search(s, dc);
-                Iterator<BorrowSession> itr = requests.iterator();
+                Iterator<BorrowSession> i = requests.iterator();
 
-                while (itr.hasNext())
+                while (i.hasNext())
                 {
-                    BorrowSession _bs = itr.next();
+                    BorrowSession _bs = i.next();
 
                     _bs.setStatus(BorrowSession.REJECTED);
                     HiberDao.update(s, _bs);
@@ -153,10 +153,10 @@ public class BorrowProcessor
             //.createCriteria("book")
             //.add(Restrictions.eq("id", borrowableBookId));
         //List<BorrowSession> requests = (List<BorrowSession>)HiberDao.search(dc);
-        //Iterator<BorrowSession> itr = requests.iterator();
+        //Iterator<BorrowSession> i = requests.iterator();
 
-        //while (itr.hasNext())
-            //reject(itr.next());
+        //while (i.hasNext())
+            //reject(i.next());
 
         //return;
     //}

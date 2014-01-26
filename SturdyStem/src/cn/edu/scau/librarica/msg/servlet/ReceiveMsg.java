@@ -77,10 +77,10 @@ public class ReceiveMsg extends HttpServlet
     {
         JSONObject packed = new JSONObject();
 
-        Iterator<Msg> itr = l.iterator();
-        while (itr.hasNext())
+        Iterator<Msg> i = l.iterator();
+        while (i.hasNext())
         {
-            Msg m = itr.next();
+            Msg m = i.next();
             String uid = m.getF().getId().toString();
 
             JSONObject grouped = packed.getJSONObject(uid);

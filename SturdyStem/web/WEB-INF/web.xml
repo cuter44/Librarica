@@ -23,6 +23,12 @@
     </listener>
   <!-- /bootstrap -->
 
+  <!-- audit -->
+    <listener>
+      <listener-class>cn.edu.scau.librarica.util.audit.UriAuditListener</listener-class>
+    </listener>
+  <!-- /audit -->
+
   <!-- authorize -->
     <servlet>
       <servlet-name>AuthorizeRegisterUser</servlet-name>

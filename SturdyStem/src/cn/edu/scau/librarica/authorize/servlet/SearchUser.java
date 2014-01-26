@@ -123,9 +123,9 @@ public class SearchUser extends HttpServlet
             HiberDao.commit();
 
             JSONArray json = new JSONArray();
-            Iterator<User> itr = l.iterator();
-            while (itr.hasNext())
-                json.add(jsonize(itr.next()));
+            Iterator<User> i = l.iterator();
+            while (i.hasNext())
+                json.add(jsonize(i.next()));
 
             out.println(json.toJSONString());
 

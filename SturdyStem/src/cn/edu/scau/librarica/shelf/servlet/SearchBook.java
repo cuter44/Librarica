@@ -128,9 +128,9 @@ public class SearchBook extends HttpServlet
 
             JSONArray json = new JSONArray();
 
-            Iterator<Book> itr = l.iterator();
-            while (itr.hasNext())
-                json.add(jsonize(itr.next()));
+            Iterator<Book> i = l.iterator();
+            while (i.hasNext())
+                json.add(jsonize(i.next()));
 
             out.println(json.toJSONString());
         }

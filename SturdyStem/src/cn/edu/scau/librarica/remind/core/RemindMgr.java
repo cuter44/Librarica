@@ -107,9 +107,9 @@ public class RemindMgr
 
         List<Remind> l = (List<Remind>)HiberDao.search(dc);
 
-        Iterator<Remind> itr = l.iterator();
-        while (itr.hasNext())
-            HiberDao.delete(itr.next());
+        Iterator<Remind> i = l.iterator();
+        while (i.hasNext())
+            HiberDao.delete(i.next());
 
         return(l);
     }

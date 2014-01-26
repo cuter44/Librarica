@@ -76,9 +76,9 @@ public class MsgMgr
 
         List<Msg> l = (List<Msg>)HiberDao.search(dc);
 
-        Iterator<Msg> itr = l.iterator();
-        while (itr.hasNext())
-            HiberDao.delete(itr.next());
+        Iterator<Msg> i = l.iterator();
+        while (i.hasNext())
+            HiberDao.delete(i.next());
 
         return(l);
     }

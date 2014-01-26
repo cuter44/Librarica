@@ -209,9 +209,9 @@ public class HttpUtil
                 return(null);
 
             List<Long> l = new ArrayList<Long>();
-            Iterator<String> itr = ls.iterator();
-            while (itr.hasNext())
-                l.add(Long.valueOf(itr.next()));
+            Iterator<String> i = ls.iterator();
+            while (i.hasNext())
+                l.add(Long.valueOf(i.next()));
 
             return(l);
         }

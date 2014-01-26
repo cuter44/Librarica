@@ -103,9 +103,9 @@ public class ReceiveRemind extends HttpServlet
             HiberDao.commit();
 
             JSONArray json = new JSONArray();
-            Iterator<Remind> itr = rl.iterator();
-            while (itr.hasNext())
-                json.add(jsonize(itr.next()));
+            Iterator<Remind> i = rl.iterator();
+            while (i.hasNext())
+                json.add(jsonize(i.next()));
 
             out.println(json.toJSONString());
         }

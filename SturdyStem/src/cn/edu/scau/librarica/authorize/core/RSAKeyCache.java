@@ -1,5 +1,6 @@
 package cn.edu.scau.librarica.authorize.core;
 
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,72 +20,74 @@ public class RSAKeyCache
         public static RSAKeyCache instance = new RSAKeyCache();
     }
 
-    private static class KeyPool extends HashMap<Long, PrivateKey>
+  // BUCKET
+    private static class Bucket
     {
-        public KeyPool()
+        public Map<Long, PrivateKey> m;
+
+      // CONSTRUCT
+        public Bucket()
         {
-            super();
+            this.m = new HashMap<Long, PrivateKey>();
         }
 
-        public PrivateKey put(Long id, PrivateKey key)
-        {
-            return(super.put(id, key));
-        }
-
-        public PrivateKey get(Long id)
-        {
-            return(super.get(id));
-        }
     };
 
-    private KeyPool[] cache;
+    private Bucket[] buckets;
     private int active;
-    private long timestamp;
+    private long lastSwitched;
     private long interval;
 
     public static void put(Long id, PrivateKey key)
     {
-        Singleton.instance.cache[Singleton.instance.active].put(id, key);
+        Singleton.instance.buckets[Singleton.instance.active].m.put(id, key);
 
         return;
     }
 
     /**
-     * @warning 包含 synchronized 调用所以性能有待观察
      */
     public static PrivateKey get(Long id)
     {
-        expire();
+        gc();
 
-        PrivateKey k = Singleton.instance.cache[Singleton.instance.active].get(id);
+        PrivateKey k = Singleton.instance.buckets[Singleton.instance.active].m.get(id);
 
-        return(k!=null?k:Singleton.instance.cache[1-Singleton.instance.active].get(id));
+        return(k!=null?k:Singleton.instance.buckets[1-Singleton.instance.active].m.get(id));
     }
 
-    /** 检查并消去过期的 key
+    /** 检查上一次过期时间, 如果超过间隔则除去过期的key.
      * get() 包含这个方法
      */
-    public static synchronized void expire()
+    public static void gc()
     {
-        long elapsed = System.currentTimeMillis() - Singleton.instance.timestamp;
-
-        if (elapsed > Singleton.instance.interval)
+        if (System.currentTimeMillis() - Singleton.instance.lastSwitched
+            > Singleton.instance.interval)
         {
-            Singleton.instance.cache[1 - Singleton.instance.active].clear();
-            Singleton.instance.active = 1 - Singleton.instance.active;
+            synchronized(Singleton.instance)
+            {
+                if (System.currentTimeMillis() - Singleton.instance.lastSwitched
+                    > Singleton.instance.interval)
+                {
+                    Singleton.instance.buckets[1 - Singleton.instance.active].m.clear();
+                    Singleton.instance.active = 1 - Singleton.instance.active;
 
-            Singleton.instance.timestamp = System.currentTimeMillis();
+                    Singleton.instance.lastSwitched = System.currentTimeMillis();
+                }
+            }
         }
+
+        return;
     }
 
   // CONSTRUCT
     private RSAKeyCache()
     {
-        this.cache = new KeyPool[2];
-        this.cache[0] = new KeyPool();
-        this.cache[1] = new KeyPool();
+        this.buckets = new Bucket[2];
+        this.buckets[0] = new Bucket();
+        this.buckets[1] = new Bucket();
         this.active = 0;
-        this.timestamp = System.currentTimeMillis();
+        this.lastSwitched = System.currentTimeMillis();
         this.interval = Configurator.getLong("librarica.authorize.rsakeylifetime", 100000L);
 
         return;
