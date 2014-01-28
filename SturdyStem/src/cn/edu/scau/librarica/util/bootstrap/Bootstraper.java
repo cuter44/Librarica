@@ -25,12 +25,9 @@ public class Bootstraper
                     continue;
 
                 Class c = Class.forName(name);
-
-                logger.info("DONE");
             }
             catch (Exception ex)
             {
-                ex.printStackTrace();
                 logger.error("Bootstrap FAILED", ex);
             }
         }

@@ -457,7 +457,45 @@
       <servlet-name>RemindReceiveRemind</servlet-name>
       <url-pattern>/remind/receive</url-pattern>
     </servlet-mapping>
+
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/remind/receive</url-pattern>
+    </filter-mapping>
   <!-- /remind -->
+
+  <!-- buddy -->
+    <servlet>
+      <servlet-name>BuddyLike</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.buddy.servlet.Like</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuddyLike</servlet-name>
+      <url-pattern>/buddy/like</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BuddyHate</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.buddy.servlet.Hate</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuddyHate</servlet-name>
+      <url-pattern>/buddy/hate</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BuddyUnset</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.buddy.servlet.Unset</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuddyUnset</servlet-name>
+      <url-pattern>/buddy/unset</url-pattern>
+    </servlet-mapping>
+  <!-- /buddy -->
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

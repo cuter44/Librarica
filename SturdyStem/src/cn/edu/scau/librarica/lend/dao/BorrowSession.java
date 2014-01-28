@@ -1,6 +1,7 @@
 package cn.edu.scau.librarica.lend.dao;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import cn.edu.scau.librarica.authorize.dao.User;
 import cn.edu.scau.librarica.shelf.dao.Book;
@@ -28,6 +29,18 @@ public class BorrowSession
 
     private Book book;
     private User borrower;
+
+    /**
+     * 在 ABORTED, REJECTED, REQUESTED, ACCEPTED 状态下表示请求始发时间
+     * 在 BORROWED, RETURNING, CLOSED 状态下表示实际借出交接时间
+     */
+    private Date tmBorrow;
+    /**
+     * 在 RETURNING 状态下表示归还请求时间
+     * 在 CLOSED 状态下表示表示实际归还时间
+     * 在其他状态下无定义
+     */
+    private Date tmReturn;
 
   // GETTER/SETTER
     public Long getId()
@@ -66,10 +79,27 @@ public class BorrowSession
         this.book = aBook;
     }
 
+    public Date getTmBorrow()
+    {
+        return(this.tmBorrow);
+    }
+    public void setTmBorrow(Date aTmBorrow)
+    {
+        this.tmBorrow = aTmBorrow;
+    }
+
+    public Date getTmReturn()
+    {
+        return(this.tmReturn);
+    }
+    public void setTmReturn(Date aTmReturn)
+    {
+        this.tmReturn = aTmReturn;
+    }
+
   // CONSTRUCT
     public BorrowSession()
     {
-        this.status = REQUESTED;
     }
 
     public BorrowSession(Book book, User borrower)
@@ -78,6 +108,8 @@ public class BorrowSession
 
         this.setBorrower(borrower);
         this.setBook(book);
+        this.setStatus(REQUESTED);
+        this.setTmBorrow(new Date(System.currentTimeMillis()));
     }
 
   // HASH

@@ -2,8 +2,8 @@ package cn.edu.scau.librarica.lend.core;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.Iterator;
+import java.util.Date;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
@@ -286,6 +286,7 @@ public class BorrowProcessor
             throw(new IllegalStateException("Status must be ACCEPTED, BorrowSession id:"+id));
 
         bs.setStatus(BorrowSession.BORROWED);
+        bs.setTmBorrow(new Date(System.currentTimeMillis()));
         HiberDao.update(bs);
 
         fireStatusChanged(bs);
@@ -310,6 +311,7 @@ public class BorrowProcessor
             throw(new IllegalStateException("Status must be BORROWED, BorrowSession id:"+id));
 
         bs.setStatus(BorrowSession.RETURNING);
+        bs.setTmReturn(new Date(System.currentTimeMillis()));
         HiberDao.update(bs);
 
         fireStatusChanged(bs);
@@ -334,6 +336,7 @@ public class BorrowProcessor
             throw(new IllegalStateException("Status must be RETURNING, BorrowSession id:"+id));
 
         bs.setStatus(BorrowSession.CLOSED);
+        bs.setTmReturn(new Date(System.currentTimeMillis()));
         HiberDao.update(bs);
 
         fireStatusChanged(bs);

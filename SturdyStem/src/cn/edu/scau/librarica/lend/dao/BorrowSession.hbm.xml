@@ -11,5 +11,7 @@
         <property name="status" type="byte" />
         <many-to-one name="book" class="cn.edu.scau.librarica.shelf.dao.Book" />
         <many-to-one name="borrower" class="cn.edu.scau.librarica.authorize.dao.User" />
+        <property name="tmBorrow" type="timestamp" />
+        <property name="tmReturn" type="timestamp" />
     </class>
 </hibernate-mapping>
