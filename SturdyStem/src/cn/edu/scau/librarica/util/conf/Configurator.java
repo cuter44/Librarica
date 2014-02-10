@@ -1,15 +1,19 @@
 package cn.edu.scau.librarica.util.conf;
 
 import java.util.Properties;
-
 import java.io.InputStreamReader;
 
+import org.apache.log4j.Logger;
+
 /**
- * 从 /tvprotal.properties 读取参数并供应给应用程序
+ * 从 /tvprotal.properties 和 /tvprotal.public.properties 读取参数并供应给应用程序
  */
 public class Configurator
 {
-    private Properties prop = null;
+    private static Logger logger = Logger.getLogger(Configurator.class);
+
+    private Properties publicProp;
+    private Properties prop;
 
     private static class Singleton
     {
@@ -27,20 +31,31 @@ public class Configurator
     {
         try
         {
-            InputStreamReader is = new InputStreamReader(
+            InputStreamReader is;
+
+            is = new InputStreamReader(
+                this.getClass()
+                    .getResourceAsStream("/librarica.public.properties"),
+                "utf-8"
+            );
+
+            this.publicProp = new Properties();
+            this.publicProp.load(is);
+            is.close();
+
+            is = new InputStreamReader(
                 this.getClass()
                     .getResourceAsStream("/librarica.properties"),
                 "utf-8"
             );
 
-            this.prop = new Properties();
+            this.prop = new Properties(this.publicProp);
             this.prop.load(is);
-
             is.close();
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            logger.error("Load configuration failed.", ex);
         }
     }
 
@@ -51,9 +66,9 @@ public class Configurator
         Singleton.instance.load();
     }
 
-    /** 获得整个 Properties 的引用
-     * 事实上是将内置的 Properties 作为后备返回.
-     * 因此这个方法是线程安全的, 也可以随便向其中添加新的属性而不影响读入的值
+    /** 获得整个属性库的只读副本
+     * 本质上是将原有 prop 作为默认表创建新表并返回.
+     * 因此, 对得到的表作出的修改不会影响到原表.
      */
     public static Properties getProperties()
     {
@@ -61,6 +76,19 @@ public class Configurator
 
         return(prop);
     }
+
+    /** 获得公开属性库的只读副本
+     * 本质上是将原有 prop 作为默认表创建新表并返回.
+     * 因此, 对得到的表作出的修改不会影响到原表.
+     * 主要用于将服务器端设置值告诉客户端.
+     */
+    public static Properties getPublicProperties()
+    {
+        Properties prop = new Properties(Singleton.instance.publicProp);
+
+        return(prop);
+    }
+
 
     /**
      * 提取配置文件中的参数

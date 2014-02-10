@@ -676,9 +676,18 @@
         bookIdParamName=id
     </filter-mapping>
     -->
-
-
   <!-- /buy -->
+
+  <!-- config -->
+    <servlet>
+      <servlet-name>ServerConfigBroadcaster</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.util.conf.ServerConfigBroadcaster</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>ServerConfigBroadcaster</servlet-name>
+      <url-pattern>/server/config</url-pattern>
+    </servlet-mapping>
+  <!-- /config -->
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
