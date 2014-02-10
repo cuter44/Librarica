@@ -36,17 +36,28 @@
 		<property name="connection.characterEncoding">UTF-8</property>
 
     <!-- 映射持久类 -->
-    
+    <!-- authorize -->
 		<mapping resource="cn/edu/scau/librarica/authorize/dao/User.hbm.xml" />
-
+    
+    <!-- shelf -->
 		<mapping resource="cn/edu/scau/librarica/shelf/dao/Book.hbm.xml" />
-
+    
+    <!-- lend -->
 		<mapping resource="cn/edu/scau/librarica/lend/dao/BorrowableBook.hbm.xml" />
     <mapping resource="cn/edu/scau/librarica/lend/dao/BorrowSession.hbm.xml" />
     
+    <!-- msg -->
     <mapping resource="cn/edu/scau/librarica/msg/dao/Msg.hbm.xml" />
     
+    <!-- remind -->
     <mapping resource="cn/edu/scau/librarica/remind/dao/Remind.hbm.xml" />
 
-	</session-factory>
+    <!-- buddy -->
+    <mapping resource="cn/edu/scau/librarica/buddy/dao/Buddy.hbm.xml" />
+
+    <!-- sale -->
+    <mapping resource="cn/edu/scau/librarica/sale/dao/SalableBook.hbm.xml" />
+    <mapping resource="cn/edu/scau/librarica/sale/dao/BuySession.hbm.xml" />
+
+  </session-factory>
 </hibernate-configuration>

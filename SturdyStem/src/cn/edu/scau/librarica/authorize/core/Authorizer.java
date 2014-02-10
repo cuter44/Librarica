@@ -87,6 +87,7 @@ public class Authorizer
             u = new User(mail);
 
             u.setStatus(User.REGISTERED);
+            u.setUserType(User.INDIVIDUAL);
             u.setRegDate(new Date(System.currentTimeMillis()));
 
             byte[] pass = ByteBuffer.allocate(16).put(CryptoUtil.randomBytes(16)).array();

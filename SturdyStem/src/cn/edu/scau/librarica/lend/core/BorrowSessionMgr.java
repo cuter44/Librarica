@@ -22,7 +22,16 @@ public class BorrowSessionMgr
 
     //public static update()
 
-    //public static remove()
+    public static void remove(Long id)
+    {
+        BorrowSession bs = get(id);
+        if (bs == null)
+            throw(new EntityNotFoundException("No such BorrowSession:"+bs));
+
+        HiberDao.delete(bs);
+
+        return;
+    }
 
     public static boolean isBorrower(Long borrowSessionId, Long userId)
     {

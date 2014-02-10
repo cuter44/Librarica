@@ -43,7 +43,7 @@ public class Buddy
     {
         return(this.me);
     }
-    public void setO(User aMe)
+    public void setMe(User aMe)
     {
         this.me = aMe;
     }
@@ -72,6 +72,7 @@ public class Buddy
     }
 
   // HASH
+    @Override
     public int hashCode()
     {
         int hash = 17;
@@ -82,6 +83,7 @@ public class Buddy
         return(hash);
     }
 
+    @Override
     public boolean equals(Object o)
     {
         if (this == o)

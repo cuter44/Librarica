@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="cn.edu.scau.librarica.sale.dao.SalableBook" table="sale_salable_book">
+        <id name="id" type="long">
+            <generator class="foreign">
+                <param name="property">book</param>
+            </generator>
+        </id>
+        <one-to-one name="book" class="cn.edu.scau.librarica.shelf.dao.Book" constrained="true" />
+        <property name="geohash" type="string" index="idx_borrowablebook_geohash" length="24"/>
+        <property name="ps" type="string" />
+        <property name="price" type="float" length="6" precision="2" />
+    </class>
+</hibernate-mapping>

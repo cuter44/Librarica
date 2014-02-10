@@ -1,34 +1,26 @@
-package cn.edu.scau.librarica.lend.dao;
+package cn.edu.scau.librarica.sale.dao;
 
 import java.io.Serializable;
 
-import cn.edu.scau.librarica.shelf.dao.Book;
-import cn.edu.scau.librarica.shelf.core.BookMgr;
+import cn.edu.scau.librarica.shelf.dao.*;
 
-/** 表示可出借书籍的实体
- * 书籍从自身的藏书经上架后成为可出借书籍, 然后可以被搜索到, 直到被借出下架.
- * <br />
- * 同一书籍只能被登记出借于一个出借实体.
- *
- */
-public class BorrowableBook
+public class SalableBook
     implements Serializable
 {
-    public static final long serialVersionUID = 1L;
+    public static long serialVersionUID = 1L;
 
   // FIELDS
-    // ref book id
     private Long id;
 
     private Book book;
     private String geohash;
+    private Float price;
 
     /** postscript
-     * 附言, 与搜索结果一起显示
      */
     private String ps;
 
-  // GETTER/SETTER
+  // GETSET
     public Long getId()
     {
         return(this.id);
@@ -65,17 +57,26 @@ public class BorrowableBook
         this.ps = aPs;
     }
 
+    public Float getPrice()
+    {
+        return(this.price);
+    }
+    public void setPrice(Float aPrice)
+    {
+        this.price = aPrice;
+    }
+
   // CONSTRUCT
-    public BorrowableBook()
+    public SalableBook()
     {
         return;
     }
 
-    public BorrowableBook(Book book)
+    public SalableBook(Book book)
     {
-        this();
-
         this.setBook(book);
+
+        return;
     }
 
   // HASH
@@ -99,11 +100,11 @@ public class BorrowableBook
         if (o!=null && !this.getClass().equals(o.getClass()))
             return(false);
 
-        BorrowableBook bb = (BorrowableBook)o;
+        SalableBook sb = (SalableBook)o;
 
         return(
-            (this.id == bb.id) ||
-            (this.id != null && this.id.equals(bb.id))
+            (this.id == sb.id) ||
+            (this.id != null && this.id.equals(sb.id))
         );
     }
 }

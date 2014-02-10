@@ -29,6 +29,7 @@ import cn.edu.scau.librarica.lend.core.*;
 
    <strong>响应</strong>
    成功时返回 OK(200), 没有响应正文.
+   同时拒绝其余对于相同书籍的请求.
 
    <strong>例外</strong>
    指定的 id 不存在时返回 Forbidden(403):{"flag":"!notfound"}

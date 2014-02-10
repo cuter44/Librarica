@@ -9,7 +9,9 @@
         </id>
 
         <property name="r" type="byte" />
-        <many-to-one name="me" class="cn.edu.scau.librarica.authorize.dao.User" />
-        <many-to-one name="op" class="cn.edu.scau.librarica.authorize.dao.User" />
+        <!--<properties unique="true" name='pair' >-->
+          <many-to-one name="me" class="cn.edu.scau.librarica.authorize.dao.User" unique-key="unique_buddy_edge" />
+          <many-to-one name="op" class="cn.edu.scau.librarica.authorize.dao.User" unique-key="unique_buddy_edge" />
+        <!--</properties>-->
     </class>
 </hibernate-mapping>

@@ -23,6 +23,13 @@ public class User
      */
     public static final Byte BANNED = -2;
 
+    // 帐户类型, 影响某些操作的附加行为
+    /** 个人用户
+     */
+    public static final Byte INDIVIDUAL = 1;
+    /** 商户
+     */
+    public static final Byte ENTERPRISE = 2;
   // FIELDS
     private Long id;
 
@@ -46,9 +53,15 @@ public class User
     /** 帐户状态
      */
     private Byte status;
+    /** 用户类型
+     * 影响某些操作的附加行为
+     * 通过邮件注册的自动为个人用户
+     */
+    private Byte userType;
     /** 注册日期
      */
     private Date regDate;
+
 
   // GETTER/SETTER
     public Long getId()
@@ -114,6 +127,15 @@ public class User
         this.status = aStatus;
     }
 
+    public Byte getUserType()
+    {
+        return(this.userType);
+    }
+    public void setUserType(Byte aUserType)
+    {
+        this.userType = aUserType;
+    }
+
     public Date getRegDate()
     {
         return(regDate);
@@ -135,6 +157,7 @@ public class User
         this.mail = aMail;
     }
   // HASH
+    @Override
     public int hashCode()
     {
         int hash = 17;
@@ -145,6 +168,7 @@ public class User
         return(hash);
     }
 
+    @Override
     public boolean equals(Object o)
     {
         if (this == o)

@@ -16,6 +16,7 @@
         <property name="pass" type="binary" length="16" />
 
         <property name="status" type="byte" not-null="true" />
+        <property name="userType" type="byte" not-null="true" />
         <property name="regDate" type="timestamp" />
     </class>
 </hibernate-mapping>

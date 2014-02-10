@@ -1,4 +1,4 @@
-package cn.edu.scau.librarica.lend.servlet;
+package cn.edu.scau.librarica.sale.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,42 +12,59 @@ import com.github.cuter44.util.servlet.*;
 
 import com.alibaba.fastjson.*;
 
-import cn.edu.scau.librarica.shelf.dao.*;
-import cn.edu.scau.librarica.shelf.core.*;
-import cn.edu.scau.librarica.lend.dao.*;
-import cn.edu.scau.librarica.lend.core.*;
+import cn.edu.scau.librarica.sale.dao.*;
+import cn.edu.scau.librarica.sale.core.*;
 
 /** 登记出借
  * 登记自身的藏书为可出借
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
-   POST /lend/reg
+   POST /sale/update
 
    <strong>参数</strong>
    id:long, 必需, 准备上架的书id
+   <1>可变更项目</i>
+   geohash:base32(24), 地理标记
+   ps:string, 附言
    <i>鉴权</i>
    uid:long, 必需, uid
    s:hex, 必需, session key
-   <i>接受额外的参数, 请参见 /lend/update </i>
 
    <strong>响应</strong>
-   由 /lend/update 生成
+   application/json Object:
+   id:long, 等于 id;
+   geohash:base32, 地理标记
+   ps:string, 附言
 
    <strong>例外</strong>
    指定的 id 不存在返回 Forbidden(403):{"flag":"!notfound"}
-   指定的 id 已经是可借阅状态时返回 Forbidden(403):{"flag":"!duplicated"}
 
    <strong>样例</strong>暂无
  * </pre>
  *
  */
-public class RegBorrowable extends HttpServlet
+public class UpdateSalable extends HttpServlet
 {
     private static final String FLAG = "flag";
     private static final String UID = "uid";
     private static final String S = "s";
     private static final String ID = "id";
+    private static final String GEOHASH = "geohash";
+    private static final String PRICE = "price";
+    private static final String PS = "ps";
+
+    private static JSONObject jsonize(SalableBook sb)
+    {
+        JSONObject json = new JSONObject();
+
+        json.put(ID, sb.getId());
+        json.put(GEOHASH, sb.getGeohash());
+        json.put(PS, sb.getPs());
+        json.put(PRICE, sb.getPrice());
+
+        return(json);
+    }
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -73,23 +90,35 @@ public class RegBorrowable extends HttpServlet
 
             HiberDao.begin();
 
-            BorrowableBook bb = BorrowableBookMgr.create(id);
+            SalableBook sb = SalableBookMgr.get(id);
+            if (sb == null)
+                throw(new EntityNotFoundException("No such SalableBook:"+id));
+
+            String geohash = HttpUtil.getParam(req, GEOHASH);
+            if (geohash != null)
+                sb.setGeohash(geohash);
+
+            String ps = HttpUtil.getParam(req, PS);
+            if (ps != null)
+                sb.setPs(ps);
+
+            Float price = HttpUtil.getFloatParam(req, PRICE);
+            if (price != null)
+                sb.setPrice(price);
+
+            HiberDao.update(sb);
 
             HiberDao.commit();
 
-            req.getRequestDispatcher("/lend/update").forward(req, resp);
+            JSONObject json = jsonize(sb);
+
+            out.println(json.toJSONString());
         }
         catch (EntityNotFoundException ex)
         {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
             out.println("{\"flag\":\"!notfound\"}");
-        }
-        catch (EntityDuplicatedException ex)
-        {
-            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-
-            out.println("{\"flag\":\"!duplicated\"}");
         }
         catch (MissingParameterException ex)
         {

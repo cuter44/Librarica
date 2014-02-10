@@ -1,4 +1,4 @@
-package cn.edu.scau.librarica.lend.dao;
+package cn.edu.scau.librarica.sale.dao;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -8,7 +8,7 @@ import cn.edu.scau.librarica.shelf.dao.Book;
 
 /** 表示借阅的关联
  */
-public class BorrowSession
+public class BuySession
     implements Serializable
 {
     public static final long serialVersionUID = 1L;
@@ -18,9 +18,7 @@ public class BorrowSession
     public static final Byte REJECTED = -1;
     public static final Byte REQUESTED = 0;
     public static final Byte ACCEPTED = 1;
-    public static final Byte BORROWED = 2;
-    public static final Byte RETURNING = 3;
-    public static final Byte CLOSED = 4;
+    public static final Byte CLOSED = 2;
 
   // FIELDS
     // 流水号
@@ -28,19 +26,13 @@ public class BorrowSession
     private Byte status;
 
     private Book book;
-    private User borrower;
+    private User buyer;
 
-    /**
-     * 在 ABORTED, REJECTED, REQUESTED, ACCEPTED 状态下表示请求始发时间
-     * 在 BORROWED, RETURNING, CLOSED 状态下表示实际借出交接时间
+    /** 交易状态上一次变化的时间
      */
-    private Date tmBorrow;
-    /**
-     * 在 RETURNING 状态下表示归还请求时间
-     * 在 CLOSED 状态下表示表示实际归还时间
-     * 在其他状态下无定义
-     */
-    private Date tmReturn;
+    private Date tmStatus;
+
+    private Integer qty;
 
   // GETTER/SETTER
     public Long getId()
@@ -61,13 +53,13 @@ public class BorrowSession
         this.status = aStatus;
     }
 
-    public User getBorrower()
+    public User getBuyer()
     {
-        return(this.borrower);
+        return(this.buyer);
     }
-    public void setBorrower(User aBorrower)
+    public void setBuyer(User aBuyer)
     {
-        this.borrower = aBorrower;
+        this.buyer = aBuyer;
     }
 
     public Book getBook()
@@ -79,38 +71,44 @@ public class BorrowSession
         this.book = aBook;
     }
 
-    public Date getTmBorrow()
+    public Date getTmStatus()
     {
-        return(this.tmBorrow);
+        return(this.tmStatus);
     }
-    public void setTmBorrow(Date aTmBorrow)
+    public void setTmStatus(Date aTmStatus)
     {
-        this.tmBorrow = aTmBorrow;
+        this.tmStatus = aTmStatus;
     }
 
-    public Date getTmReturn()
+    public Integer getQty()
     {
-        return(this.tmReturn);
+        return(this.qty);
     }
-    public void setTmReturn(Date aTmReturn)
+    public void setQty(Integer aQty)
     {
-        this.tmReturn = aTmReturn;
+        this.qty = aQty;
     }
 
   // CONSTRUCT
-    public BorrowSession()
+    public BuySession()
     {
     }
 
-    public BorrowSession(Book book, User borrower)
+    public BuySession(Book book, User buyer, Integer qty)
     {
         this();
 
-        this.setBorrower(borrower);
+        this.setBuyer(buyer);
         this.setBook(book);
         this.setStatus(REQUESTED);
-        this.setTmBorrow(new Date(System.currentTimeMillis()));
+        this.setTmStatus(new Date(System.currentTimeMillis()));
+        this.setQty(qty);
     }
+
+    //public SaleSession(Book book, User buyer)
+    //{
+        //this(book, buyer, 1);
+    //}
 
   // HASH
     @Override
@@ -133,7 +131,7 @@ public class BorrowSession
         if (o!=null && !this.getClass().equals(o.getClass()))
             return(false);
 
-        BorrowSession bs = (BorrowSession)o;
+        BuySession bs = (BuySession)o;
 
         return(
             (this.id == bs.id) ||

@@ -169,6 +169,7 @@
       <filter-name>BookOwnerVerifier</filter-name>
       <!--
         bookIdParamName=id
+        userIdParamName=uid
       -->
       <url-pattern>/book/remove</url-pattern>
     </filter-mapping>
@@ -189,6 +190,7 @@
     <filter-mapping>
       <filter-name>BookOwnerInterceptor</filter-name>
         bookIdParamName=id
+        userIdParamName=uid
     </filter-mapping>
     -->
 
@@ -209,6 +211,15 @@
       -->
       <url-pattern>/book/remove</url-pattern>
     </filter-mapping>  
+
+    <filter-mapping>
+      <filter-name>IsBookEnvolvedBuySessionIntercepter</filter-name>
+      <!--
+        bookIdParamName=id
+      -->
+      <url-pattern>/book/remove</url-pattern>
+    </filter-mapping>
+
   <!-- /shelf -->
 
   <!-- lend -->
@@ -243,6 +254,7 @@
       <filter-name>BookOwnerVerifier</filter-name>
       <!--
         bookIdParamName=id
+        userIdParamName=uid
       -->
       <url-pattern>/lend/reg</url-pattern>
       <url-pattern>/lend/update</url-pattern>
@@ -495,7 +507,178 @@
       <servlet-name>BuddyUnset</servlet-name>
       <url-pattern>/buddy/unset</url-pattern>
     </servlet-mapping>
+
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/buddy/like</url-pattern>
+      <url-pattern>/buddy/hate</url-pattern>
+      <url-pattern>/buddy/unset</url-pattern>
+    </filter-mapping>
   <!-- /buddy -->
+
+  <!-- sale -->
+    <servlet>
+      <servlet-name>SaleRegSalable</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.RegSalable</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>SaleRegSalable</servlet-name>
+      <url-pattern>/sale/reg</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>SaleUpdateSalable</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.UpdateSalable</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>SaleUpdateSalable</servlet-name>
+      <url-pattern>/sale/update</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>SaleUnregSalable</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.UnregSalable</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>SaleUnregSalable</servlet-name>
+      <url-pattern>/sale/unreg</url-pattern>
+    </servlet-mapping>
+
+    <filter-mapping>
+      <filter-name>BookOwnerVerifier</filter-name>
+      <!--
+        bookIdParamName=id
+        userIdParamName=uid
+      -->
+      <url-pattern>/sale/reg</url-pattern>
+      <url-pattern>/sale/update</url-pattern>
+      <url-pattern>/sale/unreg</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/sale/reg</url-pattern>
+      <url-pattern>/sale/update</url-pattern>
+      <url-pattern>/sale/unreg</url-pattern>
+    </filter-mapping>
+  
+  <!-- /sale -->
+
+  <!-- buy -->
+    <servlet>
+      <servlet-name>BuyRequest</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.Request</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuyRequest</servlet-name>
+      <url-pattern>/buy/request</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BuyAbort</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.Abort</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuyAbort</servlet-name>
+      <url-pattern>/buy/abort</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BuyReject</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.Reject</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuyReject</servlet-name>
+      <url-pattern>/buy/reject</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BuyAccept</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.Accept</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuyAccept</servlet-name>
+      <url-pattern>/buy/accept</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BuyClose</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.Close</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuyClose</servlet-name>
+      <url-pattern>/buy/close</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+      <filter-name>IsBuyerVerifier</filter-name>
+      <filter-class>cn.edu.scau.librarica.sale.filter.IsBuyerVerifier</filter-class>
+      <init-param>
+        <param-name>buySessionIdParamName</param-name>
+        <param-value>id</param-value>
+      </init-param>
+      <init-param>
+        <param-name>userIdParamName</param-name>
+        <param-value>uid</param-value>
+      </init-param>
+    </filter>
+    <filter-mapping>
+      <filter-name>IsBuyerVerifier</filter-name>
+      <!--
+        buySessionIdParamName=id
+        userIdParamName=uid
+      -->
+      <url-pattern>/buy/abort</url-pattern>
+      <url-pattern>/buy/close</url-pattern>
+    </filter-mapping>
+
+    <filter>
+      <filter-name>IsSellerVerifier</filter-name>
+      <filter-class>cn.edu.scau.librarica.sale.filter.IsSellerVerifier</filter-class>
+      <init-param>
+        <param-name>buySessionIdParamName</param-name>
+        <param-value>id</param-value>
+      </init-param>
+      <init-param>
+        <param-name>userIdParamName</param-name>
+        <param-value>uid</param-value>
+      </init-param>
+    </filter>
+    <filter-mapping>
+      <filter-name>IsSellerVerifier</filter-name>
+      <!--
+        buySessionIdParamName=id
+        userIdParamName=uid
+      -->
+      <url-pattern>/buy/accept</url-pattern>
+      <url-pattern>/buy/reject</url-pattern>
+    </filter-mapping>
+
+    <filter>
+      <filter-name>IsBookEnvolvedBuySessionIntercepter</filter-name>
+      <filter-class>cn.edu.scau.librarica.sale.filter.IsBookInvolvedInterceptor</filter-class>
+      <init-param>
+        <param-name>bookIdParamName</param-name>
+        <param-value>id</param-value>
+      </init-param>
+    </filter>
+    <!--
+    <filter-mapping>
+      <filter-name>IsBookEnvolvedBuySessionIntercepter</filter-name>
+        bookIdParamName=id
+    </filter-mapping>
+    -->
+
+
+  <!-- /buy -->
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

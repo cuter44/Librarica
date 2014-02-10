@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="cn.edu.scau.librarica.sale.dao.BuySession" table="sale_buy_session">
+        <id	name="id" type="long">
+            <generator class="identity" />
+        </id>
+        <property name="status" type="byte" not-null="true" />
+        <many-to-one name="book" class="cn.edu.scau.librarica.shelf.dao.Book" />
+        <many-to-one name="buyer" class="cn.edu.scau.librarica.authorize.dao.User" />
+        <property name="tmStatus" type="timestamp" />
+        <property name="qty" type="integer" />
+    </class>
+</hibernate-mapping>

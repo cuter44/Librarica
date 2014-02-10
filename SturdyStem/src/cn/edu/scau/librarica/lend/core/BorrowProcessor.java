@@ -65,7 +65,7 @@ public class BorrowProcessor
         @Override
         public void onStatusChanged(BorrowSession bs)
         {
-            if (bs.getStatus() != BorrowSession.ACCEPTED)
+            if (!BorrowSession.ACCEPTED.equals(bs.getStatus()))
                 return;
 
             Session s = null;
@@ -126,7 +126,6 @@ public class BorrowProcessor
     /** 拒绝借书请求
      * 状态: REQUESTED | ACCEPTED -> REJECTED
      * @warning 没有身份验证保护
-     * @warning 不应该从 ACCEPTED 变成 REJECTED, 因为有交付书之后误操作的可能性
      * @param id BorrowSession id
      * @exception IllegalStateException 当不是 REQUESTED 状态时
      */
@@ -137,8 +136,10 @@ public class BorrowProcessor
         if (bs == null)
             throw(new EntityNotFoundException("No such BorrowSession:"+id));
 
-        if (!BorrowSession.REQUESTED.equals(bs.getStatus()))
-            throw(new IllegalStateException("Status must be REQUESTED, BorrowSession id:"+id));
+        Byte status = bs.getStatus();
+        if (!(BorrowSession.REQUESTED.equals(status) ||
+            BorrowSession.ACCEPTED.equals(status)))
+            throw(new IllegalStateException("BorrowSession must be REQUESTED||ACCEPTED:"+id));
 
         reject(bs);
         return;
@@ -207,7 +208,8 @@ public class BorrowProcessor
 
         // if existed
         DetachedCriteria dc = DetachedCriteria.forClass(BorrowSession.class)
-            .add(Restrictions.eq("status", BorrowSession.REQUESTED));
+            .add(Restrictions.ge("status", BorrowSession.REQUESTED))
+            .add(Restrictions.lt("status", BorrowSession.CLOSED));
         dc.createCriteria("borrower")
             .add(Restrictions.eq("id", borrowerId));
         dc.createCriteria("book")
@@ -294,7 +296,7 @@ public class BorrowProcessor
         return;
     }
 
-    /** 接受借书请求
+    /** 请求还书
      * @warning 没有身份验证, 没有登录密码验证
      * 状态: BORROWED -> RETURNING
      * @param id BorrowSession id
@@ -319,7 +321,7 @@ public class BorrowProcessor
         return;
     }
 
-    /** 接受借书请求
+    /** 确认还书
      * @warning 没有身份验证, 没有登录密码验证
      * 状态: RETURNING -> CLOSED
      * @param id BorrowSession id

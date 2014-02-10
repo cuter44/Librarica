@@ -14,11 +14,19 @@ public class Msg
   // FIELDS
     private Long id;
 
-    private User f; // from
-    private User t; // to
+    /** from
+     */
+    private User f;
+    /** to
+     */
+    private User t;
 
-    public Date m; // timestamp
-    private String c; // content
+    /** timestamp
+     */
+    public Date m;
+    /** content
+     */
+    private String c;
 
   // GETTER/SETTER
     public Long getId()

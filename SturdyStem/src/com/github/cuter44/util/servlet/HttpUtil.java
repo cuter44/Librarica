@@ -79,6 +79,20 @@ public class HttpUtil
         }
     }
 
+    public static Float getFloatParam(HttpServletRequest req, String name)
+    {
+        try
+        {
+            String v = getParam(req, name);
+            return(v==null?null:Float.valueOf(v));
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return(null);
+        }
+    }
+
     /**
      * 同 getParam() 但是转换为 Double 返回
      *

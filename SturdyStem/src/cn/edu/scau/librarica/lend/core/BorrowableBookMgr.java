@@ -17,15 +17,15 @@ public class BorrowableBookMgr
 
     public static BorrowableBook create(Long id)
     {
-        Book b = BookMgr.get(id);
-        // Existence check
-        if (b == null)
-            throw(new EntityNotFoundException("No such Book:"+id));
-
         // Duplication check
         BorrowableBook bb = get(id);
         if (bb != null)
             throw(new EntityDuplicatedException("BorrowableBook already exists:"+id));
+
+        Book b = BookMgr.get(id);
+        // Existence check
+        if (b == null)
+            throw(new EntityNotFoundException("No such Book:"+id));
 
         bb = new BorrowableBook(b);
 

@@ -15,8 +15,8 @@ import com.alibaba.fastjson.*;
 import cn.edu.scau.librarica.lend.dao.*;
 import cn.edu.scau.librarica.lend.core.*;
 
-/** 登记出借
- * 登记自身的藏书为可出借
+/** 撤销登记出借
+ * 撤销登记出借之后不再被搜索到, 并且不会影响任何已存在的借阅会话
  * <pre style="font-size:12px">
 
    <strong>请求</strong>

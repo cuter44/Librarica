@@ -21,9 +21,9 @@ public class BuddyMgr
     public static Buddy get(Long meId, Long opId)
     {
         DetachedCriteria dc = DetachedCriteria.forClass(Buddy.class);
-        dc.createCriteria("o")
+        dc.createCriteria("me")
             .add(Restrictions.eq("id", meId));
-        dc.createCriteria("s")
+        dc.createCriteria("op")
             .add(Restrictions.eq("id", opId));
 
         return(
