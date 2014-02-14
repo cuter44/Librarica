@@ -19,7 +19,7 @@ public class LoginCLI
      */
     public static byte[] login(Long uid, String pass)
     {
-        String resp = "";
+        String resp = null;
         try
         {
             String baseurl = Configurator.get("librarica.server.web.baseurl");

@@ -38,7 +38,8 @@ SturdyStem/data/
 #SturdyStem/web/WEB-INF/lib/sae-local-1.1.0.jar
 
 # compiled classes
-SturdyStem/web/WEB-INF/classes
+# SturdyStem/web/WEB-INF/classes
+# ^ is now included to create an empty folder
 SturdyStem/librarica.war
 
 # javadoc
