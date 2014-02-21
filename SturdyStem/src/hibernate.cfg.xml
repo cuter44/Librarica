@@ -59,5 +59,8 @@
     <mapping resource="cn/edu/scau/librarica/sale/dao/SalableBook.hbm.xml" />
     <mapping resource="cn/edu/scau/librarica/sale/dao/BuySession.hbm.xml" />
 
+    <!-- conn.douban -->
+    <mapping resource="cn/edu/scau/librarica/conn/douban/dao/DoubanProfile.hbm.xml" />
+
   </session-factory>
 </hibernate-configuration>

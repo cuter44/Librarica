@@ -124,19 +124,38 @@
     <jar destfile="${ant.project.name}.war" basedir="${webdir}" />
   </target>
 
-  <!-- 工具类 -->
+  <!-- 运行 -->
   <target name="run" description="直接运行, 使用-Drun.main=&lt;类名&gt;指定入口类">
     <java classname="${run.main}" fork="true" dir="${destdir}">
       <classpath refid="classpath" />
 	  </java>
   </target>
 
+  <!-- 调试 -->
+  <target name="debug" description="本地测试, 使用-Ddebug.main=&lt;类名&gt;指定jvm的入口类">
+    <java classname="${debug.main}" fork="true" dir="${destdir}">
+      <!-- 启用断言 -->
+      <jvmarg value="-ea" />
+      <!-- 启用调试 -->
+      <jvmarg value="-Xdebug"/> 
+      <!-- 启用远程调试 -->
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8288,suspend=y,server=y"/>
+      <classpath refid="classpath" />
+    </java>
+  </target>
+
+  <!-- 工具类 -->
+  <!-- 注意这些工具都会影响数据库, 某些可能还需要直接读取数据库 -->
+  <!-- 目标服务器通过 librarica.public.properties#librarica.server.api.baseurl 查找 -->
+  <!-- 直接数据库连接通过 hibernate.xml 查找 -->
   <target name="cli-rsaen" description="RSAEncoder">
+    <!-- 不依赖服务器, 不依赖数据库 -->
     <property name="run.main" value="com.github.cuter44.util.crypto.RSAEncryptCLI" />
     <antcall target="run" />
   </target>
 
   <target name="cli-rsade" description="RSADecoder">
+    <!-- 不依赖服务器, 不依赖数据库 -->
     <property name="run.main" value="com.github.cuter44.util.crypto.RSADecryptCLI" />
     <antcall target="run" />
   </target>
@@ -147,6 +166,7 @@
   </target>
 
   <target name="cli-act" description="激活用户">
+    <!-- 依赖SMTP服务器 -->
     <property name="run.main" value="cn.edu.scau.librarica.util.test.ActivateUserCLI" />
     <antcall target="run" />
   </target>
@@ -156,28 +176,16 @@
     <antcall target="run" />
   </target>
 
-  <target name="cli-db-code2token" description="使用豆瓣code换取token">
+  <target name="cli-db-code2token" description="使用豆瓣code换取token, 如果不需要解析token请使用curl-db-code2token">
+    <!-- 执行结果影响服务器 -->
     <property name="run.main" value="cn.edu.scau.librarica.util.test.RetrieveDoubanTokenViaCode" />
     <antcall target="run" />
   </target>
 
-  <target name="cli-db-auth" description="打开豆瓣授权引导页">
+  <target name="db-auth" description="打开豆瓣授权引导页">
+    <!-- 执行结果影响服务器 -->
     <property name="run.main" value="cn.edu.scau.librarica.util.test.LaunchDoubanAuthPage" />
     <antcall target="run" />
-  </target>
-
-
-  <!-- 调试 -->
-  <target name="debug" description="本地测试, 使用-Ddebug.main=&lt;类名&gt;指定jvm的入口类">
-	<java classname="${debug.main}" fork="true" dir="${destdir}">
-      <!-- 启用断言 -->
-      <jvmarg value="-ea" />
-      <!-- 启用调试 -->
-      <jvmarg value="-Xdebug"/> 
-      <!-- 启用远程调试 -->
-      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8288,suspend=y,server=y"/>
-      <classpath refid="classpath" />
-	</java>
   </target>
 
 </project>

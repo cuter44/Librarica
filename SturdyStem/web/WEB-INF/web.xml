@@ -689,6 +689,17 @@
     </servlet-mapping>
   <!-- /config -->
 
+  <!-- config -->
+    <servlet>
+      <servlet-name>DoubanAuthAgent</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.conn.douban.servlet.DoubanAuthAgent</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>DoubanAuthAgent</servlet-name>
+      <url-pattern>/conn/douban/auth</url-pattern>
+    </servlet-mapping>
+  <!-- /config -->
+
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
