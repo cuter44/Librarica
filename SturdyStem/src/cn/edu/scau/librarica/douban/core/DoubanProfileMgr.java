@@ -1,8 +1,8 @@
-package cn.edu.scau.librarica.conn.douban.core;
+package cn.edu.scau.librarica.douban.core;
 
 import com.github.cuter44.util.dao.*;
 
-import cn.edu.scau.librarica.conn.douban.dao.*;
+import cn.edu.scau.librarica.douban.dao.*;
 import cn.edu.scau.librarica.authorize.dao.User;
 import cn.edu.scau.librarica.authorize.core.UserMgr;
 

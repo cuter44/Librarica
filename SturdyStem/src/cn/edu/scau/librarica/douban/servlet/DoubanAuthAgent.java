@@ -1,4 +1,4 @@
-package cn.edu.scau.librarica.conn.douban.servlet;
+package cn.edu.scau.librarica.douban.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,26 +11,26 @@ import com.github.cuter44.util.dao.*;
 import com.github.cuter44.util.servlet.*;
 import com.alibaba.fastjson.*;
 
-import cn.edu.scau.librarica.conn.douban.dao.*;
-import cn.edu.scau.librarica.conn.douban.core.*;
+import cn.edu.scau.librarica.douban.dao.*;
+import cn.edu.scau.librarica.douban.core.*;
 
 /** 接受豆瓣授权
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
-   GET /conn/douban/auth
+   GET /douban/auth
 
    <strong>参数</strong>
    <i>用于被豆瓣回调的接口</i>
    code:hex, 豆瓣授权code.
    state:json,URLEncoded:
-     action:string="conn", 目前只支持该操作, 表示关联豆瓣帐号
+     action:string="bind", 目前只支持该操作, 表示关联豆瓣帐号
      id:long, 关联到本系统上的uid
      s:string, session key
      html:string, 可选, 为true(忽略大小写)时返回人机友好的html页面(暂不可用)
 
    <strong>响应</strong>
-   对于?code=..., 成功时响应正文由 /conn/douban/get-token 生成.
+   对于?code=..., 成功时响应正文由 /douban/get-token 生成.
 
    <strong>例外</strong>
    对于在第一步时授权失败, 返回 Forbidden(403):{"flag":"!rejected","error":"${豆瓣回调的error字段}"}
@@ -50,7 +50,7 @@ public class DoubanAuthAgent extends HttpServlet
     private static final String STATE = "state";
     private static final String ID = "id";
     private static final String ACTION = "action";
-    private static final String CONN = "conn";
+    private static final String BIND = "bind";
     private static final String S = "s";
 
     public void doConn(HttpServletRequest req, HttpServletResponse resp, JSONObject state)
@@ -99,7 +99,7 @@ public class DoubanAuthAgent extends HttpServlet
             JSONObject stateJson = JSON.parseObject(state);
             String action = stateJson.getString(ACTION);
 
-            if (CONN.equals(action))
+            if (BIND.equals(action))
                 this.doConn(req, resp, stateJson);
 
             HiberDao.commit();

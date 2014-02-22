@@ -40,12 +40,16 @@
 
   <!-- 初始化目录树 -->
   <target name="init" description="初始化目录树及默认配置文件, 注意会覆盖 web.xml">
+    <antcall target="init-dir" />
+    <antcall target="init-genwebxml" />
+    <antcall target="init-gendeploy" />
+  </target>
+
+  <target name="init-dir">
 	  <mkdir dir="${srcdir}" />
 	  <mkdir dir="${dtlibdir}" />
 	  <mkdir dir="${rtlibdir}" />
 	  <mkdir dir="${destdir}" />
-    <antcall target="init-genwebxml" />
-    <antcall target="init-gendeploy" />
   </target>
 
   <target name="init-genwebxml" description="初始化默认的 web.xml">

@@ -1,20 +1,20 @@
-package cn.edu.scau.librarica.conn.douban.core;
+package cn.edu.scau.librarica.douban.core;
 
 import org.apache.http.client.fluent.*;
 import com.alibaba.fastjson.*;
 import com.github.cuter44.util.dao.*;
 import cn.edu.scau.librarica.util.conf.*;
 
-import cn.edu.scau.librarica.conn.douban.dao.*;
+import cn.edu.scau.librarica.douban.dao.*;
 
 /** 以 HttpClient 取得用户授权 token 并存入数据库中
  */
 public class DoubanTokenRetriever
 {
-    private static String client_id = Configurator.get("librarica.conn.douban.client_id");
-    private static String client_secret = Configurator.get("librarica.conn.douban.client_secret");
-    private static String redirect_uri = Configurator.get("librarica.conn.douban.redirect_uri");
-    private static final String doubanTokenURL = Configurator.get("librarica.conn.douban.tokenurl");
+    private static String client_id = Configurator.get("librarica.douban.client_id");
+    private static String client_secret = Configurator.get("librarica.douban.client_secret");
+    private static String redirect_uri = Configurator.get("librarica.douban.redirect_uri");
+    private static final String doubanTokenURL = Configurator.get("librarica.douban.tokenurl");
 
     /** 以 code 换取 token 并存入数据库
      * @return 豆瓣返回的json

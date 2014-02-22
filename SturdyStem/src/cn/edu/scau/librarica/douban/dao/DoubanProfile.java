@@ -1,4 +1,4 @@
-package cn.edu.scau.librarica.conn.douban.dao;
+package cn.edu.scau.librarica.douban.dao;
 
 import java.io.Serializable;
 

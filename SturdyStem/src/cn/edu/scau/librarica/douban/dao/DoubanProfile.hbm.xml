@@ -3,7 +3,7 @@
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="cn.edu.scau.librarica.conn.douban.dao.DoubanProfile" table="conn_douban_profile">
+    <class name="cn.edu.scau.librarica.douban.dao.DoubanProfile" table="conn_douban_profile">
         <id	name="id" type="long">
             <generator class="foreign">
                 <param name="property">user</param>

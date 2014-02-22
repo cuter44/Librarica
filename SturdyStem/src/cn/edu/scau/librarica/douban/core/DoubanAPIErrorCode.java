@@ -1,3 +1,5 @@
+package cn.edu.scau.librarica.douban.core;
+
 public class DoubanAPIErrorCode
 {
     public static String toString(int statusCode)
