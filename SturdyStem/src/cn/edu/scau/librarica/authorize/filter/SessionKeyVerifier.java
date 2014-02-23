@@ -1,12 +1,14 @@
 package cn.edu.scau.librarica.authorize.filter;
 
 /* filter */
+import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -24,7 +26,9 @@ import com.github.cuter44.util.servlet.*;
  *
  * <pre style="font-size:12px">
    <strong>例外</strong>
-   无法通过过滤器时, 返回 Unauthorized(401)
+   参数不全时返回 Bad Request(400): {"flag":"!parameter"}
+   userId不存在时, 返回 Unauthorized(401): {"flag":"!notfound"}
+   密码不匹配时, 返回 Unauthorized(401): {"flag":"!incorrect"}
  * </pre>
  */
 public class SessionKeyVerifier
@@ -56,11 +60,13 @@ public class SessionKeyVerifier
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException
     {
         this.doFilter((HttpServletRequest)request, (HttpServletResponse)response, chain);
     }
 
     public void doFilter(HttpServletRequest req, HttpServletResponse resp, FilterChain chain)
+        throws IOException, ServletException
     {
         boolean flag = false;
 
@@ -82,35 +88,38 @@ public class SessionKeyVerifier
         }
         catch (MissingParameterException ex)
         {
-            flag = false;
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setContentType("application/json; charset=utf-8");
+            resp.getWriter().println("{\"flag\":\"!parameter\"}");
+            return;
+        }
+        catch (EntityNotFoundException ex)
+        {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.setContentType("application/json; charset=utf-8");
+            resp.getWriter().println("{\"flag\":\"!notfound\"}");
+            return;
         }
         catch (Exception ex)
         {
-            flag = false;
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             this.context.log("", ex);
+            return;
         }
         finally
         {
             HiberDao.close();
         }
 
-        try
+        if (flag)
         {
-            if (flag)
-            {
-                chain.doFilter(req, resp);
-            }
-            else
-            {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
+            chain.doFilter(req, resp);
         }
-        catch (Exception ex)
+        else
         {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
-            this.context.log("", ex);
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.setContentType("application/json; charset=utf-8");
+            resp.getWriter().println("{\"flag\":\"!incorrect\"}");
             return;
         }
 

@@ -180,15 +180,8 @@
     <antcall target="run" />
   </target>
 
-  <target name="cli-db-code2token" description="使用豆瓣code换取token, 如果不需要解析token请使用curl-db-code2token">
-    <!-- 执行结果影响服务器 -->
-    <property name="run.main" value="cn.edu.scau.librarica.util.test.RetrieveDoubanTokenViaCode" />
-    <antcall target="run" />
-  </target>
-
-  <target name="db-auth" description="打开豆瓣授权引导页">
-    <!-- 执行结果影响服务器 -->
-    <property name="run.main" value="cn.edu.scau.librarica.util.test.LaunchDoubanAuthPage" />
+  <target name="db-bind" description="绑定豆瓣帐号, 调试目标由 client_id 决定">
+    <property name="run.main" value="cn.edu.scau.librarica.util.test.BindDoubanAccount" />
     <antcall target="run" />
   </target>
 

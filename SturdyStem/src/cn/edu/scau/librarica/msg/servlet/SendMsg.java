@@ -58,8 +58,7 @@ public class SendMsg extends HttpServlet
         throws ServletException, IOException
     {
         req.setCharacterEncoding("utf-8");
-        resp.setCharacterEncoding("utf-8");
-        resp.setContentType("application/json");
+        resp.setContentType("application/json; charset=utf-8");
         PrintWriter out = resp.getWriter();
 
         try

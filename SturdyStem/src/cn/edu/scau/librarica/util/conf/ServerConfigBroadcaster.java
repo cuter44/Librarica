@@ -46,7 +46,7 @@ public class ServerConfigBroadcaster extends HttpServlet
     public void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
-        resp.setCharacterEncoding("utf-8");
+        resp.setContentType("application/json; charset=utf-8");
 
         // Dequote if pend to write binary
         //resp.setContentType("?MIME?");

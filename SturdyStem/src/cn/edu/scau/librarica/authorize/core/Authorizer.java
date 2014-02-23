@@ -237,16 +237,18 @@ public class Authorizer
      * @param uid
      * @param pass 登录密码, UTF-8编码
      * @return boolean 密码正确与否
-     * @exception NullPointerException 当uid为null
+     * @exception IllegalArgumentException 当用户名或密码为空时
+     * @exception EntityNotFoundException 当 uid 不存在时
      */
     public static boolean verifyPassword(Long uid, byte[] pass)
+        throws IllegalArgumentException, EntityNotFoundException
     {
-        if (pass == null)
-            return(false);
+        if (uid == null || pass == null)
+            throw(new IllegalArgumentException());
 
         User u = UserMgr.get(uid);
         if (u == null)
-            return(false);
+            throw(new EntityNotFoundException("No such User:"+uid));
 
         byte[] salt = u.getSalt();
         byte[] buf = ByteBuffer.allocate(pass.length + salt.length)
@@ -268,10 +270,14 @@ public class Authorizer
      * @exception NullPointerException 当uid为null
      */
     public static boolean verifySkey(Long uid, byte[] skey)
+        throws IllegalArgumentException, EntityNotFoundException
     {
+        if (uid == null || skey == null)
+            throw(new IllegalArgumentException());
+
         User u = UserMgr.get(uid);
         if (u == null)
-            return(false);
+            throw(new EntityNotFoundException("No such User:"+uid));
 
         if (Arrays.equals(skey, u.getSkey()))
             return(true);

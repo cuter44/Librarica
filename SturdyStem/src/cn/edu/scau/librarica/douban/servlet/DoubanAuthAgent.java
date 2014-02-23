@@ -78,7 +78,7 @@ public class DoubanAuthAgent extends HttpServlet
         throws ServletException, IOException
     {
         req.setCharacterEncoding("utf-8");
-        resp.setCharacterEncoding("utf-8");
+        resp.setContentType("application/json; charset=utf-8");
         PrintWriter out = resp.getWriter();
 
         String error = HttpUtil.getParam(req, ERROR);

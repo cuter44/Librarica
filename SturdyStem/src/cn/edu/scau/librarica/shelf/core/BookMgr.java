@@ -2,13 +2,14 @@ package cn.edu.scau.librarica.shelf.core;
 
 import java.util.List;
 
-import cn.edu.scau.librarica.shelf.dao.*;
-import cn.edu.scau.librarica.authorize.dao.User;
-import cn.edu.scau.librarica.authorize.core.UserMgr;
 import com.github.cuter44.util.dao.*;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
+
+import cn.edu.scau.librarica.shelf.dao.*;
+import cn.edu.scau.librarica.authorize.dao.User;
+import cn.edu.scau.librarica.authorize.core.UserMgr;
 
 public class BookMgr
 {
@@ -64,12 +65,16 @@ public class BookMgr
     }
 
     public static boolean isOwner(Long bookId, Long userId)
+        throws EntityNotFoundException
     {
-        DetachedCriteria dc = DetachedCriteria.forClass(Book.class)
-            .add(Restrictions.eq("id",bookId))
-            .createCriteria("owner")
-            .add(Restrictions.eq("id",userId));
+        Book b = get(bookId);
+        if (b == null)
+            throw(new EntityNotFoundException("No such Book:"+bookId));
 
-        return(HiberDao.count(dc)==1);
+        User u = b.getOwner();
+        return(
+            u!=null &&
+            u.getId()!=null && u.getId().equals(userId)
+        );
     }
 }
