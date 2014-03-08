@@ -29,7 +29,7 @@ import cn.edu.scau.librarica.sale.core.BuySessionMgr;
  * <pre style="font-size:12px">
    <strong>例外</strong>
    缺少参数时返回 Bad Request(400):{"flag":"!parameter"}
-   交易会话/用户不存在/用户不是买家时返回 Forbidden(403):{"flag":""}
+   交易会话/用户不存在/用户不是买家时返回 Forbidden(403):{"flag":"!role"}
  * </pre>
  */
 public class IsSellerVerifier
@@ -116,7 +116,7 @@ public class IsSellerVerifier
         {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             resp.setContentType("application/json; charset=utf-8");
-            resp.getWriter().println("{\"flag\":\"\"}");
+            resp.getWriter().println("{\"flag\":\"!role\"}");
             return;
         }
     }

@@ -10,7 +10,7 @@
             </generator>
         </id>
         <one-to-one name="book" class="cn.edu.scau.librarica.shelf.dao.Book" constrained="true" />
-        <property name="geohash" type="string" index="idx_borrowablebook_geohash" length="24"/>
+        <property name="pos" type="string" index="idx_borrowablebook_geohash" length="24"/>
         <property name="ps" type="string" />
     </class>
 </hibernate-mapping>

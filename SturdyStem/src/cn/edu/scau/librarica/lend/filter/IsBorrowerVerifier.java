@@ -29,7 +29,7 @@ import cn.edu.scau.librarica.lend.core.BorrowSessionMgr;
  * <pre style="font-size:12px">
    <strong>例外</strong>
    缺少参数时返回 Bad Request(400):{"flag":"!parameter"}
-   指定借阅会话/用户不存在/用户不是借阅人时返回 Forbidden(403):{"flag":""}
+   指定借阅会话/用户不存在/用户不是借阅人时返回 Forbidden(403):{"flag":"!role"}
  * </pre>
  */
 public class IsBorrowerVerifier
@@ -114,7 +114,7 @@ public class IsBorrowerVerifier
         {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             resp.setContentType("application/json; charset=utf-8");
-            resp.getWriter().println("{\"flag\":\"\"}");
+            resp.getWriter().println("{\"flag\":\"role\"}");
             return;
         }
     }

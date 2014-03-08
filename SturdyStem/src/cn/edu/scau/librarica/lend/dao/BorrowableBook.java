@@ -21,7 +21,7 @@ public class BorrowableBook
     private Long id;
 
     private Book book;
-    private String geohash;
+    private String pos;
 
     /** postscript
      * 附言, 与搜索结果一起显示
@@ -47,13 +47,13 @@ public class BorrowableBook
         this.book = aBook;
     }
 
-    public String getGeohash()
+    public String getPos()
     {
-        return(this.geohash);
+        return(this.pos);
     }
-    public void setGeohash(String aGeohash)
+    public void setPos(String aPos)
     {
-        this.geohash = aGeohash;
+        this.pos = aPos;
     }
 
     public String getPs()

@@ -11,6 +11,9 @@ import cn.edu.scau.librarica.authorize.core.*;
 
 public class BuddyMgr
 {
+    /**
+     * @param Buddy 的 id
+     */
     public static Buddy get(Long id)
     {
         return(
@@ -18,6 +21,10 @@ public class BuddyMgr
         );
     }
 
+    /**
+     * @param meId 己方的 uid
+     * @param opId 对方的 uid
+     */
     public static Buddy get(Long meId, Long opId)
     {
         DetachedCriteria dc = DetachedCriteria.forClass(Buddy.class);
@@ -55,6 +62,25 @@ public class BuddyMgr
         return(b);
     }
 
+    /**
+     * @param Buddy 的 id
+     */
+    public static void remove(Long id)
+        throws EntityNotFoundException
+    {
+        Buddy b = get(id);
+        if (b == null)
+            throw(new EntityNotFoundException("No such Buddy:"+id));
+
+        HiberDao.delete(b);
+
+        return;
+    }
+
+    /**
+     * @param meId 己方的 uid
+     * @param opId 对方的 uid
+     */
     public static void remove(Long meId, Long opId)
         throws EntityNotFoundException
     {
@@ -96,14 +122,20 @@ public class BuddyMgr
 
     public static void setNull(Long meId, Long opId)
     {
-        try
-        {
-
-        }
-        catch (EntityNotFoundException ex)
-        {
-        }
+        Buddy b = get(meId, opId);
+        if (b != null)
+            HiberDao.delete(b);
 
         return;
+    }
+
+    public static boolean isHated(Long meId, Long opId)
+    {
+        Buddy b = get(opId, meId);
+
+        if (b != null && Buddy.HATE.equals(b.getR()))
+            return(false);
+        // else
+        return(true);
     }
 }

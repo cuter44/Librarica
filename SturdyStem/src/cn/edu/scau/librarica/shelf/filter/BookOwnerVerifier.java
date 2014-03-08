@@ -30,7 +30,7 @@ import cn.edu.scau.librarica.shelf.core.BookMgr;
    <strong>例外</strong>
    缺少参数时返回 Bad Request(400):{"flag":"!parameter"}
    书籍不存在时返回 Forbidden(403):{"flag":"!notfound"}
-   不是书籍所有者时返回 Forbidden(403):{"flag":""}
+   不是书籍所有者时返回 Forbidden(403):{"flag":"!owner"}
  * </pre>
  */
 public class BookOwnerVerifier
@@ -122,7 +122,7 @@ public class BookOwnerVerifier
         {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             resp.setContentType("application/json; charset=utf-8");
-            resp.getWriter().println("{\"flag\":\"\"}");
+            resp.getWriter().println("{\"flag\":\"!owner\"}");
             return;
         }
     }

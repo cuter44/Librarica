@@ -25,7 +25,7 @@ import cn.edu.scau.librarica.lend.core.*;
    <strong>参数</strong>
    id:long, 必需, 准备上架的书id
    <1>可变更项目</i>
-   geohash:base32(24), 地理标记
+   pos:base32(24), 地理标记
    ps:string, 附言
    <i>鉴权</i>
    uid:long, 必需, uid
@@ -34,7 +34,7 @@ import cn.edu.scau.librarica.lend.core.*;
    <strong>响应</strong>
    application/json Object:
    id:long, 等于 id;
-   geohash:base32, 地理标记
+   pos:geohash-base32, 地理标记
    ps:string, 附言
 
    <strong>例外</strong>
@@ -50,7 +50,7 @@ public class UpdateBorrowable extends HttpServlet
     private static final String UID = "uid";
     private static final String S = "s";
     private static final String ID = "id";
-    private static final String GEOHASH = "geohash";
+    private static final String POS = "pos";
     private static final String PS = "ps";
 
     private static JSONObject jsonize(BorrowableBook bb)
@@ -58,7 +58,7 @@ public class UpdateBorrowable extends HttpServlet
         JSONObject json = new JSONObject();
 
         json.put(ID, bb.getId());
-        json.put(GEOHASH, bb.getGeohash());
+        json.put(POS, bb.getPos());
         json.put(PS, bb.getPs());
 
         return(json);
@@ -89,9 +89,9 @@ public class UpdateBorrowable extends HttpServlet
 
             BorrowableBook bb = BorrowableBookMgr.get(id);
 
-            String geohash = HttpUtil.getParam(req, GEOHASH);
-            if (geohash != null)
-                bb.setGeohash(geohash);
+            String pos = HttpUtil.getParam(req, POS);
+            if (pos != null)
+                bb.setPos(pos);
 
             String ps = HttpUtil.getParam(req, PS);
             if (ps != null)

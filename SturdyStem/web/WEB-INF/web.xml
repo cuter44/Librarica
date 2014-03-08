@@ -219,7 +219,6 @@
       -->
       <url-pattern>/book/remove</url-pattern>
     </filter-mapping>
-
   <!-- /shelf -->
 
   <!-- lend -->
@@ -248,6 +247,15 @@
     <servlet-mapping>
       <servlet-name>LendUnregBorrowable</servlet-name>
       <url-pattern>/lend/unreg</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>LendSearchBorrowable</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.SearchBorrowable</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>LendSearchBorrowable</servlet-name>
+      <url-pattern>/lend/search</url-pattern>
     </servlet-mapping>
 
     <filter-mapping>
@@ -430,96 +438,6 @@
     </filter-mapping>
   <!-- /borrow -->
 
-  <!-- msg  -->
-    <servlet>
-      <servlet-name>MsgSend</servlet-name>
-      <servlet-class>cn.edu.scau.librarica.msg.servlet.SendMsg</servlet-class>
-    </servlet>
-    <servlet-mapping>
-      <servlet-name>MsgSend</servlet-name>
-      <url-pattern>/msg/send</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-      <servlet-name>MsgReceive</servlet-name>
-      <servlet-class>cn.edu.scau.librarica.msg.servlet.ReceiveMsg</servlet-class>
-    </servlet>
-    <servlet-mapping>
-      <servlet-name>MsgReceive</servlet-name>
-      <url-pattern>/msg/receive</url-pattern>
-    </servlet-mapping>
-
-    <filter-mapping>
-      <filter-name>SessionKeyVerifier</filter-name>
-      <!--
-        userIdParamName=uid
-        sessionKeyParamName=s
-      -->
-      <url-pattern>/msg/send</url-pattern>
-      <url-pattern>/msg/receive</url-pattern>
-    </filter-mapping>
-  <!-- /msg -->
-
-  <!-- remind -->
-    <servlet>
-      <servlet-name>RemindReceiveRemind</servlet-name>
-      <servlet-class>cn.edu.scau.librarica.remind.servlet.ReceiveRemind</servlet-class>
-    </servlet>
-    <servlet-mapping>
-      <servlet-name>RemindReceiveRemind</servlet-name>
-      <url-pattern>/remind/receive</url-pattern>
-    </servlet-mapping>
-
-    <filter-mapping>
-      <filter-name>SessionKeyVerifier</filter-name>
-      <!--
-        userIdParamName=uid
-        sessionKeyParamName=s
-      -->
-      <url-pattern>/remind/receive</url-pattern>
-    </filter-mapping>
-  <!-- /remind -->
-
-  <!-- buddy -->
-    <servlet>
-      <servlet-name>BuddyLike</servlet-name>
-      <servlet-class>cn.edu.scau.librarica.buddy.servlet.Like</servlet-class>
-    </servlet>
-    <servlet-mapping>
-      <servlet-name>BuddyLike</servlet-name>
-      <url-pattern>/buddy/like</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-      <servlet-name>BuddyHate</servlet-name>
-      <servlet-class>cn.edu.scau.librarica.buddy.servlet.Hate</servlet-class>
-    </servlet>
-    <servlet-mapping>
-      <servlet-name>BuddyHate</servlet-name>
-      <url-pattern>/buddy/hate</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-      <servlet-name>BuddyUnset</servlet-name>
-      <servlet-class>cn.edu.scau.librarica.buddy.servlet.Unset</servlet-class>
-    </servlet>
-    <servlet-mapping>
-      <servlet-name>BuddyUnset</servlet-name>
-      <url-pattern>/buddy/unset</url-pattern>
-    </servlet-mapping>
-
-    <filter-mapping>
-      <filter-name>SessionKeyVerifier</filter-name>
-      <!--
-        userIdParamName=uid
-        sessionKeyParamName=s
-      -->
-      <url-pattern>/buddy/like</url-pattern>
-      <url-pattern>/buddy/hate</url-pattern>
-      <url-pattern>/buddy/unset</url-pattern>
-    </filter-mapping>
-  <!-- /buddy -->
-
   <!-- sale -->
     <servlet>
       <servlet-name>SaleRegSalable</servlet-name>
@@ -569,7 +487,6 @@
       <url-pattern>/sale/update</url-pattern>
       <url-pattern>/sale/unreg</url-pattern>
     </filter-mapping>
-  
   <!-- /sale -->
 
   <!-- buy -->
@@ -677,6 +594,111 @@
     </filter-mapping>
     -->
   <!-- /buy -->
+
+  <!-- msg  -->
+    <servlet>
+      <servlet-name>MsgSend</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.msg.servlet.SendMsg</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>MsgSend</servlet-name>
+      <url-pattern>/msg/send</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>MsgReceive</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.msg.servlet.ReceiveMsg</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>MsgReceive</servlet-name>
+      <url-pattern>/msg/receive</url-pattern>
+    </servlet-mapping>
+
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/msg/send</url-pattern>
+      <url-pattern>/msg/receive</url-pattern>
+    </filter-mapping>
+  <!-- /msg -->
+
+  <!-- remind -->
+    <servlet>
+      <servlet-name>RemindReceiveRemind</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.remind.servlet.ReceiveRemind</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>RemindReceiveRemind</servlet-name>
+      <url-pattern>/remind/receive</url-pattern>
+    </servlet-mapping>
+
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/remind/receive</url-pattern>
+    </filter-mapping>
+  <!-- /remind -->
+
+  <!-- buddy -->
+    <servlet>
+      <servlet-name>BuddyLike</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.buddy.servlet.Like</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuddyLike</servlet-name>
+      <url-pattern>/buddy/like</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BuddyHate</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.buddy.servlet.Hate</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuddyHate</servlet-name>
+      <url-pattern>/buddy/hate</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BuddyUnset</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.buddy.servlet.Unset</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuddyUnset</servlet-name>
+      <url-pattern>/buddy/unset</url-pattern>
+    </servlet-mapping>
+
+<!--
+    <filter>
+      <filter-name>IsUserHatedInterceptor</filter-name>
+      <filter-class>cn.edu.scau.librarica.lend.filter.IsHatedInterceptor</filter-class>
+      <init-param>
+        <param-name>meIdParamName</param-name>
+        <param-value>uid</param-value>
+      </init-param>
+      <init-param>
+        <param-name>opIdParamName</param-name>
+        <param-value>opId?</param-value>
+      </init-param>
+    </filter>
+-->
+
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/buddy/like</url-pattern>
+      <url-pattern>/buddy/hate</url-pattern>
+      <url-pattern>/buddy/unset</url-pattern>
+    </filter-mapping>
+  <!-- /buddy -->
 
   <!-- config -->
     <servlet>

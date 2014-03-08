@@ -1,4 +1,4 @@
-package cn.edu.scau.librarica.sale.filter;
+package cn.edu.scau.librarica.buddy.filter;
 
 /* filter */
 import java.io.IOException;
@@ -16,29 +16,28 @@ import javax.servlet.http.HttpSession;
 import com.github.cuter44.util.dao.*;
 import com.github.cuter44.util.servlet.*;
 
-import cn.edu.scau.librarica.sale.dao.BuySession;
-import cn.edu.scau.librarica.sale.core.BuySessionMgr;
+import cn.edu.scau.librarica.buddy.core.BuddyMgr;
 
-/** 检查是否 买家 的角色
- * 检查用户id在指定的借阅会话中是否作为借阅人, 如果不是则拦截请求
+/** 检查是否被对方拉黑
+ * 检查己方的uid和对方的uid, 如果对方将己方列为黑名单, 则拦截请求.
  * <br />
  * 需要在 web.xml 中配置两个参数:
- * borrowSessionIdParamName 表示用于查找会话 id 的键名
- * userIdParamName 表示用于查找用户 id 的键名
+ * meIdParamName 表示己方uid的键名
+ * opIdParamName 表示对方uid的键名
  *
  * <pre style="font-size:12px">
    <strong>例外</strong>
-   缺少参数时返回 Bad Request(400):{"flag":"!parameter"}
-   交易会话/用户不存在/用户不是买家时返回 Forbidden(403):{"flag":"!role"}
+   被对方拉黑时返回 Forbidden(403): {"flag":"!hated"}
+   没有相应记录/uid不存在时放行请求
  * </pre>
  */
-public class IsBuyerVerifier
+public class IsHatedInterceptor
     implements Filter
 {
-    private static final String BUY_SESSION_ID_PARAM_NAME = "buySessionIdParamName";
-    private static final String USER_ID_PARAM_NAME = "userIdParamName";
-    private String BSID;
-    private String UID;
+    private static final String ME_ID_PARAM_NAME = "meIdParamName";
+    private static final String OP_ID_PARAM_NAME = "opIdParamName";
+    private String MEID;
+    private String OPID;
 
     private ServletContext context;
 
@@ -47,8 +46,8 @@ public class IsBuyerVerifier
     {
         this.context = conf.getServletContext();
 
-        this.BSID = conf.getInitParameter(BUY_SESSION_ID_PARAM_NAME);
-        this.UID = conf.getInitParameter(USER_ID_PARAM_NAME);
+        this.MEID = conf.getInitParameter(ME_ID_PARAM_NAME);
+        this.OPID = conf.getInitParameter(OP_ID_PARAM_NAME);
 
         return;
     }
@@ -73,17 +72,17 @@ public class IsBuyerVerifier
 
         try
         {
-            Long uid = HttpUtil.getLongParam(req, UID);
-            if (uid == null)
-                throw(new MissingParameterException(UID));
+            Long meId = HttpUtil.getLongParam(req, MEID);
+            if (meId == null)
+                throw(new MissingParameterException(MEID));
 
-            Long bsid = HttpUtil.getLongParam(req, BSID);
-            if (bsid == null)
-                throw(new MissingParameterException(BSID));
+            Long opId = HttpUtil.getLongParam(req, OPID);
+            if (opId == null)
+                throw(new MissingParameterException(OPID));
 
             HiberDao.begin();
 
-            flag = BuySessionMgr.isBuyer(bsid, uid);
+            flag = BuddyMgr.isHated(meId, opId);
 
             HiberDao.commit();
 
@@ -114,8 +113,9 @@ public class IsBuyerVerifier
         {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             resp.setContentType("application/json; charset=utf-8");
-            resp.getWriter().println("{\"flag\":\"!role\"}");
+            resp.getWriter().println("{\"flag\":\"!hated\"}");
             return;
         }
+
     }
 }

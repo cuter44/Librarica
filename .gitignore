@@ -47,4 +47,8 @@ SturdyStem/librarica.war
 # You can use "ant javadoc -s" to create them from source code
 SturdyStem/javadoc
 
+# temp/backup
+*.tmp
+*.bak
+
 # end code_by

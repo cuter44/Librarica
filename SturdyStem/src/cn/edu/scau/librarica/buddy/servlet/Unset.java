@@ -14,7 +14,7 @@ import com.alibaba.fastjson.*;
 
 import cn.edu.scau.librarica.buddy.core.*;
 
-/** 加关注
+/** 清除关注或黑名单
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
