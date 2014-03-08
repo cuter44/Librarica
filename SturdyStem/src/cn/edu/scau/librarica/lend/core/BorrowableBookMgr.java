@@ -1,10 +1,14 @@
 package cn.edu.scau.librarica.lend.core;
 
+import java.util.List;
+
 import com.github.cuter44.util.dao.*;
+import org.hibernate.criterion.*;
 
 import cn.edu.scau.librarica.lend.dao.*;
 import cn.edu.scau.librarica.shelf.dao.*;
 import cn.edu.scau.librarica.shelf.core.*;
+
 
 public class BorrowableBookMgr
 {
@@ -46,4 +50,31 @@ public class BorrowableBookMgr
 
         return;
     }
+
+  // EX
+  // FILTER
+    public static List<Long> filterBids(List<Long> l)
+    {
+        DetachedCriteria dc = DetachedCriteria.forClass(BorrowableBook.class)
+            .setProjection(Projections.property("id"))
+            .add(Restrictions.in("id", l));
+
+        return(
+            (List<Long>)HiberDao.search(dc)
+        );
+    }
+
+    public static List<String> filterIsbns(List<String> l)
+    {
+        for (int i=0; i<l.size(); i++)
+            System.out.println(l.get(i));
+
+        List<String> borrowables =
+            HiberDao.createQuery("SELECT b.isbn FROM BorrowableBook bb INNER JOIN bb.book b WHERE (b.isbn IN (:isbns))")
+                .setParameterList("isbns", l)
+                .list();
+
+        return(borrowables);
+    }
+
 }

@@ -33,6 +33,8 @@ public class BorrowSessionMgr
         return;
     }
 
+  // EX
+  // JUDGE
     public static boolean isBorrower(Long borrowSessionId, Long userId)
     {
         DetachedCriteria dc = DetachedCriteria.forClass(BorrowSession.class)
@@ -64,5 +66,4 @@ public class BorrowSessionMgr
 
         return(HiberDao.count(dc)>0);
     }
-
 }

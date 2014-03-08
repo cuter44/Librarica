@@ -258,6 +258,24 @@
       <url-pattern>/lend/search</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+      <servlet-name>LendFilterBorrowableBids</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.FilterBorrowableId</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>LendFilterBorrowableBids</servlet-name>
+      <url-pattern>/lend/filter-bid</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>LendFilterBorrowableIsbns</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.FilterBorrowableIsbn</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>LendFilterBorrowableIsbns</servlet-name>
+      <url-pattern>/lend/filter-isbn</url-pattern>
+    </servlet-mapping>
+
     <filter-mapping>
       <filter-name>BookOwnerVerifier</filter-name>
       <!--
@@ -464,6 +482,24 @@
     <servlet-mapping>
       <servlet-name>SaleUnregSalable</servlet-name>
       <url-pattern>/sale/unreg</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>SaleFilterSalableBids</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.FilterSalableId</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>SaleFilterSalableBids</servlet-name>
+      <url-pattern>/sale/filter-bid</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>SaleFilterSalableIsbns</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.FilterSalableIsbn</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>SaleFilterSalableIsbns</servlet-name>
+      <url-pattern>/sale/filter-isbn</url-pattern>
     </servlet-mapping>
 
     <filter-mapping>
