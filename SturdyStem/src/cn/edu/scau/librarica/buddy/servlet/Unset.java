@@ -30,8 +30,7 @@ import cn.edu.scau.librarica.buddy.core.*;
    成功时返回 OK(200), 没有响应正文.
 
    <strong>例外</strong>
-   無し
-   (即使指定的 uid 不正确也会被接受)
+   無し(即使指定的 uid 不正确也会被接受)
 
    <strong>样例</strong>暂无
  * </pre>

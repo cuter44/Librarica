@@ -31,6 +31,7 @@ import cn.edu.scau.librarica.buddy.core.*;
 
    <strong>例外</strong>
    op 不正确返回 Forbidden(403):{"flag":"!notfound"}
+   uid=op 是允许的但是没有意义.
 
    <strong>样例</strong>暂无
  * </pre>

@@ -650,6 +650,24 @@
       <url-pattern>/msg/receive</url-pattern>
     </servlet-mapping>
 
+    <!-- Blacklist control -->
+    <filter>
+     <filter-name>MsgSend-HatedInterceptor</filter-name>
+      <filter-class>cn.edu.scau.librarica.buddy.filter.IsHatedInterceptor</filter-class>
+      <init-param>
+        <param-name>meIdParamName</param-name>
+        <param-value>uid</param-value>
+      </init-param>
+      <init-param>
+        <param-name>opIdParamName</param-name>
+        <param-value>t</param-value>
+      </init-param>
+    </filter>
+    <filter-mapping>
+      <filter-name>MsgSend-HatedInterceptor</filter-name>
+      <url-pattern>/msg/send</url-pattern>
+    </filter-mapping>
+
     <filter-mapping>
       <filter-name>SessionKeyVerifier</filter-name>
       <!--
@@ -709,20 +727,25 @@
       <url-pattern>/buddy/unset</url-pattern>
     </servlet-mapping>
 
-<!--
+    <!--
     <filter>
       <filter-name>IsUserHatedInterceptor</filter-name>
-      <filter-class>cn.edu.scau.librarica.lend.filter.IsHatedInterceptor</filter-class>
+      <filter-class>cn.edu.scau.librarica.buddy.filter.IsHatedInterceptor</filter-class>
       <init-param>
         <param-name>meIdParamName</param-name>
         <param-value>uid</param-value>
       </init-param>
       <init-param>
         <param-name>opIdParamName</param-name>
-        <param-value>opId?</param-value>
+        <param-value>opId</param-value>
       </init-param>
     </filter>
--->
+
+    <filter-mapping>
+      <filter-name>IsUserHatedInterceptor</filter-name>
+    </filter-mapping>
+    -->
+
 
     <filter-mapping>
       <filter-name>SessionKeyVerifier</filter-name>
@@ -747,7 +770,7 @@
     </servlet-mapping>
   <!-- /config -->
 
-  <!-- config -->
+  <!-- douban -->
     <servlet>
       <servlet-name>DoubanAuthAgent</servlet-name>
       <servlet-class>cn.edu.scau.librarica.douban.servlet.DoubanAuthAgent</servlet-class>
@@ -756,7 +779,7 @@
       <servlet-name>DoubanAuthAgent</servlet-name>
       <url-pattern>/douban/auth</url-pattern>
     </servlet-mapping>
-  <!-- /config -->
+  <!-- /douban -->
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
