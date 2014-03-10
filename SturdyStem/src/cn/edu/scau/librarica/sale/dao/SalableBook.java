@@ -13,7 +13,7 @@ public class SalableBook
     private Long id;
 
     private Book book;
-    private String geohash;
+    private String pos;
     private Float price;
 
     /** postscript
@@ -39,13 +39,13 @@ public class SalableBook
         this.book = aBook;
     }
 
-    public String getGeohash()
+    public String getPos()
     {
-        return(this.geohash);
+        return(this.pos);
     }
-    public void setGeohash(String aGeohash)
+    public void setPos(String aPos)
     {
-        this.geohash = aGeohash;
+        this.pos = aPos;
     }
 
     public String getPs()

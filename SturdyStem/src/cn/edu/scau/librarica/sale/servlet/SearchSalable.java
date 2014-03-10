@@ -1,4 +1,4 @@
-package cn.edu.scau.librarica.lend.servlet;
+package cn.edu.scau.librarica.sale.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,15 +16,15 @@ import org.hibernate.criterion.*;
 
 import cn.edu.scau.librarica.shelf.dao.*;
 import cn.edu.scau.librarica.shelf.core.*;
-import cn.edu.scau.librarica.lend.dao.*;
-import cn.edu.scau.librarica.lend.core.*;
+import cn.edu.scau.librarica.sale.dao.*;
+import cn.edu.scau.librarica.sale.core.*;
 import cn.edu.scau.librarica.util.conf.Configurator;
 
-/** 搜索/列出可借藏书
+/** 搜索/列出可买藏书
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
-   GET/POST /lend/search
+   GET/POST /sale/search
 
    <strong>参数</strong>
    <i>以下零至多个参数组, 按参数名分组, 组内以,分隔以or逻辑连接, 组间以and逻辑连接, 完全匹配</i>
@@ -44,6 +44,7 @@ import cn.edu.scau.librarica.util.conf.Configurator;
    uid:long, 书籍持有人的id
    ps:string, 出借人的附言
    pos:string, 书的所在位置
+   price:float, 书的声明卖价
 
    <strong>例外</strong>
 
@@ -51,7 +52,7 @@ import cn.edu.scau.librarica.util.conf.Configurator;
  * </pre>
  *
  */
-public class SearchBorrowable extends HttpServlet
+public class SearchSalable extends HttpServlet
 {
     private static final String FLAG = "flag";
     private static final String UID = "uid";
@@ -61,6 +62,7 @@ public class SearchBorrowable extends HttpServlet
     private static final String SIZE = "size";
     private static final String PS = "ps";
     private static final String POS = "pos";
+    private static final String PRICE = "price";
 
     private static final Integer defaultPageSize = Configurator.getInt("librarica.search.defaultpagesize", 20);
 
@@ -70,7 +72,7 @@ public class SearchBorrowable extends HttpServlet
      */
     public static DetachedCriteria parseCriteria(DetachedCriteria dc, HttpServletRequest req)
     {
-        // criterions BorrowableBook
+        // criterions SalableBook
         List<Long> bids = HttpUtil.getLongListParam(req, BID);
         if (bids!=null && bids.size()>0)
             dc.add(Restrictions.in("id", bids));
@@ -94,15 +96,16 @@ public class SearchBorrowable extends HttpServlet
         return(dc);
     }
 
-    private static JSONObject jsonize(BorrowableBook bb)
+    private static JSONObject jsonize(SalableBook sb)
     {
         JSONObject json = new JSONObject();
 
-        json.put(BID, bb.getId());
-        json.put(POS, bb.getPos());
-        json.put(PS, bb.getPs());
-        json.put(ISBN, bb.getBook().getIsbn());
-        json.put(UID, bb.getBook().getOwner().getId());
+        json.put(BID, sb.getId());
+        json.put(POS, sb.getPos());
+        json.put(PS, sb.getPs());
+        json.put(PRICE, sb.getPrice());
+        json.put(ISBN, sb.getBook().getIsbn());
+        json.put(UID, sb.getBook().getOwner().getId());
 
         return(json);
     }
@@ -125,7 +128,7 @@ public class SearchBorrowable extends HttpServlet
         try
         {
             DetachedCriteria dc = parseCriteria(
-                DetachedCriteria.forClass(BorrowableBook.class),
+                DetachedCriteria.forClass(SalableBook.class),
                 req
             );
 
@@ -135,13 +138,13 @@ public class SearchBorrowable extends HttpServlet
 
             HiberDao.begin();
 
-            List<BorrowableBook> l = (List<BorrowableBook>)HiberDao.search(dc, start, size);
+            List<SalableBook> l = (List<SalableBook>)HiberDao.search(dc, start, size);
 
             HiberDao.commit();
 
             JSONArray json = new JSONArray();
 
-            Iterator<BorrowableBook> i = l.iterator();
+            Iterator<SalableBook> i = l.iterator();
             while (i.hasNext())
                 json.add(jsonize(i.next()));
 

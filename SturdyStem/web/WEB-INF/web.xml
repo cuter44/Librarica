@@ -485,6 +485,15 @@
     </servlet-mapping>
 
     <servlet>
+      <servlet-name>SaleSearchSalable</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.SearchSalable</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>SaleSearchSalable</servlet-name>
+      <url-pattern>/sale/search</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
       <servlet-name>SaleFilterSalableBids</servlet-name>
       <servlet-class>cn.edu.scau.librarica.sale.servlet.FilterSalableId</servlet-class>
     </servlet>
@@ -745,7 +754,6 @@
       <filter-name>IsUserHatedInterceptor</filter-name>
     </filter-mapping>
     -->
-
 
     <filter-mapping>
       <filter-name>SessionKeyVerifier</filter-name>
