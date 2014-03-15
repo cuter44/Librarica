@@ -17,6 +17,7 @@ import com.alibaba.fastjson.*;
 //import cn.edu.scau.librarica.util.conf.*;
 import cn.edu.scau.librarica.authorize.dao.*;
 import cn.edu.scau.librarica.authorize.core.*;
+import cn.edu.scau.librarica.authorize.exception.*;
 
 /** 注册
  * <pre style="font-size:12px">
@@ -34,10 +35,10 @@ import cn.edu.scau.librarica.authorize.core.*;
    s:hex, 成功时返回 session key
 
    <strong>例外</strong>
-   找不到对应 RSA 私钥返回 Bad Request(400):{flag:"!parameter"}
-   pass 不能正确地解密返回 Bad Request(400):{flag:"!parameter"}
-   非可激活状态(包括已激活状态)返回 Conflict(409):{flag:"!status"}
-   code不正确返回 Frobidden(403):{flag:"!fail"}, 密码/帐户状态不会变动
+   找不到对应 RSA 私钥返回 Bad Request(400):{"flag":"!parameter"}
+   pass 不能正确地解密返回 Forbidden(403):{"flag":"!incorrect"}
+   code 不正确返回 Forbidden(403):{"flag":"!incorrect"}
+   非可激活状态(包括已激活状态)返回 Conflict(409):{flag:"!blocked"}
    uid 不存在返回 Frobidden(403):{flag:"!notfound"}
 
    <strong>样例</strong>暂无
@@ -78,29 +79,22 @@ public class Activate extends HttpServlet
             if (code == null)
                 throw(new MissingParameterException(CODE));
 
-            byte[] pass = HttpUtil.getByteArrayParam(req, PASS);
-            if (pass == null)
-                throw(new MissingParameterException(PASS));
-
-            // key 不存在
+            // key 检出
             PrivateKey key = RSAKeyCache.get(uid);
             if (key == null)
                 throw(new MissingParameterException(KEY));
 
-            // pass 不正确
-            pass = CryptoUtil.RSADecrypt(pass, key);
+            // pass 检出
+            byte[] pass = HttpUtil.getByteArrayParam(req, PASS);
             if (pass == null)
                 throw(new MissingParameterException(PASS));
+            pass = CryptoUtil.RSADecrypt(pass, key);
+            if (pass == null)
+                throw(new PasswordIncorrectException("pass not decrypted."));
 
             HiberDao.begin();
 
-            if (!Authorizer.activate(uid, code, pass))
-            {
-                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                out.println("{\"flag\":\"!fail\"}");
-                return;
-            }
-            // else
+            Authorizer.activate(uid, code, pass);
 
             byte[] skey = Authorizer.login(uid, pass);
 
@@ -111,29 +105,35 @@ public class Activate extends HttpServlet
             json.put(S, CryptoUtil.byteToHex(skey));
             out.println(json.toJSONString());
         }
+        catch (PasswordIncorrectException ex)
+        {
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            out.println("{\"flag\":\"!incorrect\"}");
+            HiberDao.rollback();
+        }
         catch (IllegalStateException ex)
         {
             resp.setStatus(HttpServletResponse.SC_CONFLICT);
-
             out.println("{\"flag\":\"!status\"}");
+            HiberDao.rollback();
         }
         catch (EntityNotFoundException ex)
         {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-
             out.println("{\"flag\":\"!notfound\"}");
+            HiberDao.rollback();
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
             out.println("{\"flag\":\"!parameter\"}");
+            HiberDao.rollback();
         }
         catch (Exception ex)
         {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
             this.log("", ex);
+            HiberDao.rollback();
         }
         finally
         {

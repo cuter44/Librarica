@@ -41,7 +41,7 @@ public class ActivateUserCLI
 
             assert(encrypted!=null);
 
-            String baseurl = Configurator.get("librarica.server.web.baseurl");
+            String baseurl = Configurator.get("librarica.server.api.baseurl");
 
             assert(baseurl!=null);
             resp = Request.Post(baseurl+"/user/activate")

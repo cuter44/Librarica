@@ -22,7 +22,7 @@ public class LoginCLI
         String resp = null;
         try
         {
-            String baseurl = Configurator.get("librarica.server.web.baseurl");
+            String baseurl = Configurator.get("librarica.server.api.baseurl");
             String encrypted = CryptoUtil.byteToHex(
                     EncryptPasswordCLI.encrypt(uid, pass)
                 );

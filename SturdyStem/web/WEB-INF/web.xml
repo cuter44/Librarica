@@ -76,12 +76,21 @@
     </servlet-mapping>
 
     <servlet>
-      <servlet-name>AuthorizeSearchUserBasic</servlet-name>
+      <servlet-name>AuthorizeSearchUser</servlet-name>
       <servlet-class>cn.edu.scau.librarica.authorize.servlet.SearchUser</servlet-class>
     </servlet>
     <servlet-mapping>
-      <servlet-name>AuthorizeSearchUserBasic</servlet-name>
-      <url-pattern>/user/search-basic</url-pattern>
+      <servlet-name>AuthorizeSearchUser</servlet-name>
+      <url-pattern>/user/search</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>AuthorizeChangePassword</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.Passwd</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>AuthorizeChangePassword</servlet-name>
+      <url-pattern>/user/passwd</url-pattern>
     </servlet-mapping>
 
     <filter>

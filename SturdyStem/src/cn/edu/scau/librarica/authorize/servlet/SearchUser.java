@@ -20,7 +20,7 @@ import cn.edu.scau.librarica.authorize.dao.*;
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
-   POST /user/search-basic
+   POST /user/search
 
    <strong>参数</strong>
    <i>以下零至多个参数组, 按参数名分组, 组内以,分隔以or逻辑连接, 组间以and逻辑连接, 完全匹配</i>

@@ -41,4 +41,20 @@ public class UserMgr
     //public static String update();
 
     //public static void remove(Long id)
+
+    public static boolean isLoginable(Long id)
+    {
+        User u = get(id);
+        return(
+            User.ACTIVATED.equals(u.getStatus())
+        );
+    }
+
+    public static boolean isActivatable(Long id)
+    {
+        User u = get(id);
+        return(
+            User.REGISTERED.equals(u.getStatus())
+        );
+    }
 }

@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.OutputStream;
 import java.security.PrivateKey;
+
 import javax.servlet.http.*;
 import javax.servlet.ServletException;
 
 import com.github.cuter44.util.dao.*;
 import com.github.cuter44.util.servlet.*;
 import com.github.cuter44.util.crypto.*;
+
 import com.alibaba.fastjson.*;
 
 import cn.edu.scau.librarica.util.conf.*;
@@ -17,39 +19,44 @@ import cn.edu.scau.librarica.authorize.dao.*;
 import cn.edu.scau.librarica.authorize.core.*;
 import cn.edu.scau.librarica.authorize.exception.*;
 
-/** 登出
- * 登出会清除所有终端上的操作凭证
+/** 修改密码
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
-   POST /user/logout
+   POST /user/passwd
 
    <strong>参数</strong>
    uid:long, uid
-   以下参数的其中一个:
-   s:hex, session key
    pass:hex, RSA 加密的 UTF-8 编码的用户登录密码.
+   newpass:hex, 使用相同 key 加密的新密码
 
    <strong>响应</strong>
-   application/json 对象:
-   flag:string, 成功时返回 success
+   application/json; charset=utf-8:
+   {
+     "s":hexa, 新的 session key
+   }
+   <i>密码被变更为 newpass</i>
+   <i>原session key失效</i>
 
    <strong>例外</strong>
-   找不到对应 RSA 私钥返回 Bad Request(400):{flag:"!parameter"}
-   pass 不能正确地解密返回 Bad Request(400):{flag:"!parameter"}
-   执行失败返回 Forbidden(403):{flag:"!fail"}
-   uid 不存在返回 Forbidden(403):{flag:"!notfound"}
+   找不到对应 RSA 私钥返回 Bad Request(400):{"flag":"!parameter"}
+   pass 不能正确地解密返回 Forbidden(403):{"flag":"!incorrect"}
+   密码不正确返回 Forbidden(403):{"flag":"!incorrect"}
+   uid 不存在返回 Frobidden(403):{flag:"!notfound"}
+   登录禁止返回 Forbidden(403):{"flag":"!blocked"}, 请通过 /user/search?uid=:uid 确定帐号状态
+   <i>只要发生例外密码就不会变更</i>
 
    <strong>样例</strong>暂无
  * </pre>
  *
  */
-public class Logout extends HttpServlet
+public class Passwd extends HttpServlet
 {
     private static final String FLAG = "flag";
     private static final String UID = "uid";
     private static final String KEY = "key";
     private static final String PASS = "pass";
+    private static final String NEWPASS = "newpass";
     private static final String S = "s";
 
     @Override
@@ -69,48 +76,43 @@ public class Logout extends HttpServlet
 
         try
         {
-            JSONObject json = new JSONObject();
-
             Long uid = HttpUtil.getLongParam(req, UID);
             if (uid == null)
                 throw(new MissingParameterException(UID));
 
+            // key 检出
+            PrivateKey key = RSAKeyCache.get(uid);
+            if (key == null)
+                throw(new MissingParameterException(KEY));
+
+            // pass 检出
+            byte[] pass = HttpUtil.getByteArrayParam(req, PASS);
+            if (pass == null)
+                throw(new MissingParameterException(PASS));
+            pass = CryptoUtil.RSADecrypt(pass, key);
+            if (pass == null)
+                throw(new PasswordIncorrectException("pass not decrypted."));
+
+            // newpass 检出
+            byte[] newpass = HttpUtil.getByteArrayParam(req, NEWPASS);
+            if (newpass == null)
+                throw(new MissingParameterException(NEWPASS));
+            newpass = CryptoUtil.RSADecrypt(newpass, key);
+            if (newpass == null)
+                throw(new PasswordIncorrectException("newpass not decrypted."));
+
             HiberDao.begin();
 
-            // logout by session key
-            byte[] skey = HttpUtil.getByteArrayParam(req, S);
-            if (skey != null)
-            {
-                Authorizer.logoutViaSkey(uid, skey);
+            Authorizer.passwd(uid, pass, newpass);
 
-                HiberDao.commit();
-                return;
-            }
+            byte[] skey = Authorizer.login(uid, newpass);
 
-            // else
-            // logout by password
-            byte[] pass = HttpUtil.getByteArrayParam(req, PASS);
-            if (pass != null)
-            {
-                // key 检定
-                PrivateKey key = RSAKeyCache.get(uid);
-                if (key == null)
-                    throw(new MissingParameterException(KEY));
+            HiberDao.commit();
 
-                // pass 检定
-                pass = CryptoUtil.RSADecrypt(pass, key);
-                if (pass == null)
-                    throw(new PasswordIncorrectException(PASS));
+            JSONObject json = new JSONObject();
 
-                Authorizer.logoutViaPass(uid, pass);
-
-                HiberDao.commit();
-
-                return;
-            }
-            // else
-            // parameter missing
-            throw(new MissingParameterException(""));
+            json.put(S, CryptoUtil.byteToHex(skey));
+            out.println(json.toJSONString());
         }
         catch (PasswordIncorrectException ex)
         {
@@ -123,7 +125,6 @@ public class Logout extends HttpServlet
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             out.println("{\"flag\":\"!notfound\"}");
             HiberDao.rollback();
-
         }
         catch (MissingParameterException ex)
         {

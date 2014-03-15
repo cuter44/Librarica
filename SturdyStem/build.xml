@@ -185,6 +185,11 @@
     <antcall target="run" />
   </target>
 
+  <target name="cli-passwd" description="更改密码">
+    <property name="run.main" value="cn.edu.scau.librarica.util.test.PasswdCLI" />
+    <antcall target="run" />
+  </target>
+
   <target name="db-bind" description="绑定豆瓣帐号, 调试目标由 client_id 决定">
     <property name="run.main" value="cn.edu.scau.librarica.util.test.BindDoubanAccount" />
     <antcall target="run" />

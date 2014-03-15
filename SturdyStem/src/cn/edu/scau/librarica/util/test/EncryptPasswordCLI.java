@@ -9,24 +9,19 @@ import java.security.spec.RSAPublicKeySpec;
 import com.github.cuter44.util.crypto.*;
 import cn.edu.scau.librarica.util.conf.*;
 import com.alibaba.fastjson.*;
-
 import org.apache.http.client.fluent.*;
 
 /** rerieve key and encode
  */
 public class EncryptPasswordCLI
 {
-    /**
-     * @param uid
-     * @param pass in plaintext
-     * @return encrypted password
-     */
-    public static byte[] encrypt(Long uid, String pass)
+    public static PublicKey getRsaKey(Long uid)
     {
         String resp = "";
+
         try
         {
-            String baseurl = Configurator.get("librarica.server.web.baseurl");
+            String baseurl = Configurator.get("librarica.server.api.baseurl");
             resp = Request.Post(baseurl+"/security/get-rsa-key")
                 .bodyForm(
                     Form.form()
@@ -44,9 +39,7 @@ public class EncryptPasswordCLI
             KeyFactory kf = KeyFactory.getInstance("RSA");
             PublicKey key = kf.generatePublic(new RSAPublicKeySpec(m,e));
 
-            byte[] encrypted = CryptoUtil.RSAEncrypt(pass.getBytes("utf-8"), key);
-
-            return(encrypted);
+            return(key);
         }
         catch (Exception ex)
         {
@@ -54,7 +47,40 @@ public class EncryptPasswordCLI
             System.out.println(resp);
             return(null);
         }
+    }
 
+    /**
+     * encrypt with a specified key, not one retrieve from endpoint.
+     */
+    public static byte[] encrypt(String pass, PublicKey key)
+    {
+        try
+        {
+            byte[] encrypted = CryptoUtil.RSAEncrypt(pass.getBytes("utf-8"), key);
+
+            return(encrypted);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return(null);
+        }
+    }
+
+    /**
+     * retrive key from http endpoint and encrypt.
+     * @param uid
+     * @param pass in plaintext
+     * @return encrypted password
+     */
+    public static byte[] encrypt(Long uid, String pass)
+    {
+        return(
+            encrypt(
+                pass,
+                getRsaKey(uid)
+            )
+        );
     }
 
     public static void main(String[] args)
