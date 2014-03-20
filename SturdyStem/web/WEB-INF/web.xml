@@ -776,6 +776,35 @@
     </filter-mapping>
   <!-- /buddy -->
 
+  <!-- profile -->
+    <servlet>
+      <servlet-name>ProfileSearchProfile</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.profile.servlet.SearchProfile</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>ProfileSearchProfile</servlet-name>
+      <url-pattern>/profile/search</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>ProfileUpdateProfile</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.profile.servlet.UpdateProfile</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>ProfileUpdateProfile</servlet-name>
+      <url-pattern>/profile/update</url-pattern>
+    </servlet-mapping>
+
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/profile/update</url-pattern>
+    </filter-mapping>
+  <!-- /profile -->
+
   <!-- config -->
     <servlet>
       <servlet-name>ServerConfigBroadcaster</servlet-name>

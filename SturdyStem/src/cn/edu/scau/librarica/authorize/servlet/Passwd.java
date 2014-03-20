@@ -118,25 +118,21 @@ public class Passwd extends HttpServlet
         {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             out.println("{\"flag\":\"!incorrect\"}");
-            HiberDao.rollback();
         }
         catch (EntityNotFoundException ex)
         {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             out.println("{\"flag\":\"!notfound\"}");
-            HiberDao.rollback();
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.println("{\"flag\":\"!parameter\"}");
-            HiberDao.rollback();
         }
         catch (Exception ex)
         {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             this.log("", ex);
-            HiberDao.rollback();
         }
         finally
         {

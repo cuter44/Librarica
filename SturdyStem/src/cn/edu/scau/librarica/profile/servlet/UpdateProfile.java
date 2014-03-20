@@ -1,56 +1,68 @@
-package cn.edu.scau.librarica.authorize.servlet;
+package cn.edu.scau.librarica.profile.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.OutputStream;
-import java.security.PrivateKey;
-
 import javax.servlet.http.*;
 import javax.servlet.ServletException;
 
 import com.github.cuter44.util.dao.*;
 import com.github.cuter44.util.servlet.*;
-import com.github.cuter44.util.crypto.*;
-
 import com.alibaba.fastjson.*;
 
-import cn.edu.scau.librarica.util.conf.*;
-import cn.edu.scau.librarica.authorize.dao.*;
-import cn.edu.scau.librarica.authorize.core.*;
-import cn.edu.scau.librarica.authorize.exception.*;
+import cn.edu.scau.librarica.profile.dao.*;
+import cn.edu.scau.librarica.profile.core.*;
 
-/** 登录
+/** 变更个人资料
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
-   POST /user/login
+   POST /profile/update
 
    <strong>参数</strong>
-   uid:long, uid
-   pass:hex, RSA 加密的 UTF-8 编码的用户登录密码.
+   uid:long, 必需, 变更的资料id
+   <1>可变更项目</i>
+   dname:string(48), 显示名
+   motto:string(255), 签名
+   pos:base32(24), 地理标记
+   <i>鉴权</i>
+   uid:long, 必需, uid
+   s:hex, 必需, session key
 
    <strong>响应</strong>
-   application/json 对象:
-   s:hex 成功时返回 session key
+   application/json Object:
+   uid:long, uid;
+   dname: string(48), 显示名
+   motto: string(48), 个性签名
+   pos:geohash-base32, 地理标记
 
    <strong>例外</strong>
-   找不到对应 RSA 私钥返回 Bad Request(400):{"flag":"!parameter"}
-   pass 不能正确地解密返回 Forbidden(403):{"flag":"!incorrect"}
-   密码不正确返回 Forbidden(403):{"flag":"!incorrect"}
-   uid 不存在返回 Frobidden(403):{flag:"!notfound"}
-   登录禁止返回 Forbidden(403):{"flag":"!blocked"}, 请通过 /user/search?uid=:uid 确定帐号状态
+   指定的 id 不存在返回 Forbidden(403):{"flag":"!notfound"}
 
    <strong>样例</strong>暂无
  * </pre>
  *
  */
-public class Login extends HttpServlet
+public class UpdateProfile extends HttpServlet
 {
     private static final String FLAG = "flag";
     private static final String UID = "uid";
-    private static final String KEY = "key";
-    private static final String PASS = "pass";
     private static final String S = "s";
+    private static final String DNAME = "dname";
+    private static final String MOTTO = "motto";
+    private static final String POS = "pos";
+
+    private static JSONObject jsonize(Profile p)
+    {
+        JSONObject json = new JSONObject();
+
+        json.put(UID, p.getId());
+        json.put(DNAME, p.getDname());
+        json.put(MOTTO, p.getMotto());
+        json.put(POS, p.getPos());
+
+        return(json);
+    }
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -73,48 +85,48 @@ public class Login extends HttpServlet
             if (uid == null)
                 throw(new MissingParameterException(UID));
 
-            // key 检定
-            PrivateKey key = RSAKeyCache.get(uid);
-            if (key == null)
-                throw(new MissingParameterException(KEY));
-
-            // pass 检定
-            byte[] pass = HttpUtil.getByteArrayParam(req, PASS);
-            if (pass == null)
-                throw(new MissingParameterException(PASS));
-            pass = CryptoUtil.RSADecrypt(pass, key);
-            if (pass == null)
-                throw(new PasswordIncorrectException("pass not decrypted."));
-
             HiberDao.begin();
 
-            byte[] skey = Authorizer.login(uid, pass);
+            Profile p = ProfileMgr.get(uid);
+            if (p == null)
+                throw(new EntityNotFoundException("No such Profile:"+uid));
+
+            String dname = HttpUtil.getParam(req, DNAME);
+            if (dname != null)
+                p.setDname(dname);
+
+            String motto = HttpUtil.getParam(req, MOTTO);
+            if (motto != null)
+                p.setMotto(motto);
+
+            String pos = HttpUtil.getParam(req, POS);
+            if (pos != null)
+                p.setPos(pos);
+
+            HiberDao.update(p);
 
             HiberDao.commit();
 
-            JSONObject json = new JSONObject();
+            JSONObject json = jsonize(p);
 
-            json.put(S, CryptoUtil.byteToHex(skey));
             out.println(json.toJSONString());
-        }
-        catch (PasswordIncorrectException ex)
-        {
-            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            out.println("{\"flag\":\"!incorrect\"}");
         }
         catch (EntityNotFoundException ex)
         {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+
             out.println("{\"flag\":\"!notfound\"}");
         }
         catch (MissingParameterException ex)
         {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
             out.println("{\"flag\":\"!parameter\"}");
         }
         catch (Exception ex)
         {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
             this.log("", ex);
         }
         finally

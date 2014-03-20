@@ -15,8 +15,7 @@ import com.alibaba.fastjson.*;
 import cn.edu.scau.librarica.lend.dao.*;
 import cn.edu.scau.librarica.lend.core.*;
 
-/** 登记出借
- * 登记自身的藏书为可出借
+/** 变更出借登记
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
@@ -88,6 +87,8 @@ public class UpdateBorrowable extends HttpServlet
             HiberDao.begin();
 
             BorrowableBook bb = BorrowableBookMgr.get(id);
+            if (bb == null)
+                throw(new EntityNotFoundException("No such BorrowableBook:"+id));
 
             String pos = HttpUtil.getParam(req, POS);
             if (pos != null)
