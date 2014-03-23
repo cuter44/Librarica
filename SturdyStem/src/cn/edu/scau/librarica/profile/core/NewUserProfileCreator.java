@@ -4,6 +4,7 @@ import cn.edu.scau.librarica.authorize.dao.*;
 import cn.edu.scau.librarica.authorize.core.*;
 import cn.edu.scau.librarica.profile.core.*;
 
+@Deprecated
 public class NewUserProfileCreator
     implements Authorizer.StatusChangedListener
 {

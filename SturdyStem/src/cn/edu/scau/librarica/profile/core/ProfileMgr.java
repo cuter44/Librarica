@@ -10,9 +10,16 @@ public class ProfileMgr
 {
     public static Profile get(Long id)
     {
-        return(
-            (Profile)HiberDao.get(Profile.class, id)
-        );
+        Profile p = (Profile)HiberDao.get(Profile.class, id);
+
+        // create if newbie
+        if (p == null)
+        {
+            if (UserMgr.get(id) != null)
+                p = create(id);
+        }
+
+        return(p);
     }
 
     public static Profile create(Long id)
