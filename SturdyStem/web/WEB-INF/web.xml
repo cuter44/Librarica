@@ -16,6 +16,20 @@
     <url-pattern>cn.edu.scau.librarica.</url-pattern>
   </servlet-mapping>
   -->
+  
+  <!-- ehcache -->
+  <listener>
+    <listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
+  </listener>
+
+  <filter>
+    <filter-name>PageCacher</filter-name>
+    <filter-class>net.sf.ehcache.constructs.web.filter.SimplePageCachingFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>PageCacher</filter-name>
+    <url-pattern>/server/*</url-pattern>
+  </filter-mapping>
 
   <!-- bootstrap -->
     <listener>

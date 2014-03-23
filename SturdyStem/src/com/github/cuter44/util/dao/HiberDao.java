@@ -54,6 +54,8 @@ import org.apache.log4j.Logger;
  */
 public class HiberDao
 {
+    private static Logger logger = Logger.getLogger(HiberDao.class);
+
   // SESSION MANAGEMENT
     private SessionFactory sf = null;
 
@@ -93,7 +95,7 @@ public class HiberDao
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            logger.error("HiberDao init failed", ex);
         }
 
     }
