@@ -28,8 +28,8 @@ import cn.edu.scau.librarica.authorize.dao.*;
    mail:string(60), 邮件地址
    uname:string, 用户名字, 不包含显示名
    <i>分页</i>
-   start:int, 开始笔数
-   limit:int, 最多数据笔数, 缺省使用服务器配置
+   start:int, 返回结果的起始笔数, 缺省从 1 开始
+   size:int, 返回结果的最大笔数, 缺省使用服务器配置
 
    <strong>响应</strong>
    application/json 数组:

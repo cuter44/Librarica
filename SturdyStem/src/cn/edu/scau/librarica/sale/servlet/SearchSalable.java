@@ -34,8 +34,8 @@ import cn.edu.scau.librarica.util.conf.Configurator;
    <i>地理位置限制</i>
    pos:geohash-base32, 表示地理范围, 以此作前端一致匹配.
    <i>分页</i>
-   start:int, 返回结果的起始笔数
-   size:int, 返回结果的最大笔数
+   start:int, 返回结果的起始笔数, 缺省从 1 开始
+   size:int, 返回结果的最大笔数, 缺省使用服务器配置
 
    <strong>响应</strong>
    application/json Array of:

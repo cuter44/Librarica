@@ -33,8 +33,8 @@ import cn.edu.scau.librarica.util.conf.Configurator;
    <i>输出控制</i>
    verbose:boolean, 忽略大小写, 为 true 时输出全量数据(参见 <strong>响应</strong>)
    <i>分页</i>
-   start:int, 返回结果的起始笔数
-   size:int, 返回结果的最大笔数
+   start:int, 返回结果的起始笔数, 缺省从 1 开始
+   size:int, 返回结果的最大笔数, 缺省使用服务器配置
 
    <strong>响应</strong>
    application/json(array); charset=utf-8:

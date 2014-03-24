@@ -33,8 +33,8 @@ import org.hibernate.criterion.*;
    uid:long, 指定书拥有者id;
    isbn:string, 指定isbn;
    <i>分页</i>
-   start:int, 返回结果的起始笔数
-   size:int, 返回结果的最大笔数
+   start:int, 返回结果的起始笔数, 缺省从 1 开始
+   size:int, 返回结果的最大笔数, 缺省使用服务器配置
 
    <strong>响应</strong>
    application/json Array:

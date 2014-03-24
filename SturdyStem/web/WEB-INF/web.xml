@@ -759,6 +759,24 @@
       <url-pattern>/buddy/unset</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+      <servlet-name>BuddyListBuddy</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.buddy.servlet.ListBuddy</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuddyListBuddy</servlet-name>
+      <url-pattern>/buddy/list</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BuddyTestBuddy</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.buddy.servlet.TestBuddy</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuddyTestBuddy</servlet-name>
+      <url-pattern>/buddy/test</url-pattern>
+    </servlet-mapping>
+
     <!--
     <filter>
       <filter-name>IsUserHatedInterceptor</filter-name>

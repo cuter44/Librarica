@@ -11,6 +11,7 @@ public class Buddy
 
   // FIELDS
     public static Byte LIKE = 1;
+    public static Byte NOPE = 0;
     public static Byte HATE = -1;
 
     private Long id;

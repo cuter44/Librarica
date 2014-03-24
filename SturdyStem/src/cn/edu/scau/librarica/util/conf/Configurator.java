@@ -102,101 +102,83 @@ public class Configurator
 
     public static String get(String name, String defaultValue)
     {
-        try
-        {
-            String v = Singleton.instance.prop.getProperty(name);
+        String v = Singleton.instance.prop.getProperty(name);
 
-            if (v != null)
-                return(v);
-            else
-                throw(new IllegalArgumentException("Missing required config key: " + name));
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-            return(defaultValue);
-        }
+        return(
+            v!=null ? v : null
+        );
     }
 
 
     public static Integer getInt(String name)
     {
-        return(
-            Integer.valueOf(
-                get(name)
-            )
-        );
+        try
+        {
+            String v = get(name);
+            return(
+                v!=null ? Integer.valueOf(v) : null
+            );
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return(null);
+        }
     }
 
     public static Integer getInt(String name, Integer defaultValue)
     {
-        try
-        {
-            Integer v = Integer.valueOf(get(name));
-
-            if (v != null)
-                return(v);
-            else
-                throw(new IllegalArgumentException("Missing required config key: " + name));
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-            return(defaultValue);
-        }
+        Integer v = getInt(name);
+        return(
+            v!=null ? v : defaultValue
+        );
     }
 
     public static Long getLong(String name)
     {
-        return(
-            Long.valueOf(
-                get(name)
-            )
-        );
+        try
+        {
+            String v = get(name);
+            return(
+                v!=null ? Long.valueOf(v) : null
+            );
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return(null);
+        }
     }
 
     public static Long getLong(String name, Long defaultValue)
     {
-        try
-        {
-            Long v = Long.valueOf(get(name));
-
-            if (v != null)
-                return(v);
-            else
-                throw(new IllegalArgumentException("Missing required config key: " + name));
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-            return(defaultValue);
-        }
+        Long v = getLong(name);
+        return(
+            v!=null ? v : defaultValue
+        );
     }
 
     public static Double getDouble(String name)
     {
-        return(
-            Double.valueOf(
-                get(name)
-            )
-        );
-    }
-
-    public static Double getDouble(String name, Double defaultValue)
-    {
         try
         {
-            Double v = Double.valueOf(get(name));
-
-            if (v != null)
-                return(v);
-            else
-                throw(new IllegalArgumentException("Missing required config key: " + name));
+            String v = get(name);
+            return(
+                v!=null ? Double.valueOf(v) : null
+            );
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
-            return(defaultValue);
+            return(null);
         }
+    }
+
+    public static Double getDouble(String name, Double defaultValue)
+    {
+        Double v = getDouble(name);
+        return(
+            v!=null ? v : defaultValue
+        );
     }
 }
