@@ -41,7 +41,7 @@ public class MsgRouter
         }
     }
 
-    private static Hashtable<Long, Token> tokens = new Hashtable<Long, Token>();
+    private static Hashtable<Long, Token> waitingList = new Hashtable<Long, Token>();
 
   // ARRAVIAL
     /** 接受(从客户端)发出的消息
@@ -50,7 +50,7 @@ public class MsgRouter
      */
     public static void send(Msg m)
     {
-        Token t = tokens.remove(m.getT().getId());
+        Token t = waitingList.get(m.getT().getId());
         if (t != null)
         {
             // push to client
@@ -83,22 +83,24 @@ public class MsgRouter
         if (waitMillis > 0L)
         {
             Token t = new Token();
-            tokens.put(uid, t);
+            waitingList.put(uid, t);
             try
             {
                 t.waitMsg(waitMillis);
             }
             catch (InterruptedException ex)
             {
-                tokens.remove(uid);
                 throw(ex);
+            }
+            finally
+            {
+                waitingList.remove(uid);
             }
 
             // waken
             if (t.msg != null)
                 l.add(t.msg);
         }
-
         return(l);
     }
 

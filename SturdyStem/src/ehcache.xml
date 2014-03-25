@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../config/ehcache.xsd">
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../config/ehcache.xsd" updateCheck="false">
 
     <!--
     The ehcache-failsafe.xml is a default configuration for ehcache, if an ehcache.xml is not configured.
@@ -303,5 +303,14 @@
         memoryStoreEvictionPolicy="FIFO"
     />
 
+    <cache name="MagnetCache"
+        maxElementsInMemory="131072"
+        maxElementsOnDisk="0"
+        eternal="false"
+        overflowToDisk="false"
+        timeToIdleSeconds="0"
+        timeToLiveSeconds="100"
+        memoryStoreEvictionPolicy="FIFO"
+    />
 
 </ehcache>

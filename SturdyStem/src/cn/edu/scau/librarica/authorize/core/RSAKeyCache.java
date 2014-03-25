@@ -25,8 +25,6 @@ public class RSAKeyCache
         return;
     }
 
-    /**
-     */
     public static PrivateKey get(Long id)
     {
         Element e = Singleton.instance.cache.get(id);
@@ -42,11 +40,11 @@ public class RSAKeyCache
         if (this.cache == null)
             throw(new RuntimeException("Get RSAKeyCache failed, ehcache.xml missing or incorrect."));
 
-        Long lifetime = Configurator.getLong("librarica.authorize.rsakeylifetime");
-        if (lifetime != null)
+        Long ttl = Configurator.getLong("librarica.authorize.rsakeyttl");
+        if (ttl != null)
         {
             this.cache.getCacheConfiguration()
-                .setTimeToLiveSeconds(lifetime);
+                .setTimeToLiveSeconds(ttl);
         }
 
         return;

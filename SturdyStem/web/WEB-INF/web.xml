@@ -837,6 +837,35 @@
     </filter-mapping>
   <!-- /profile -->
 
+  <!-- magnet -->
+    <servlet>
+      <servlet-name>MagnetPutMagnet</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.magnet.servlet.PutMagnet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>MagnetPutMagnet</servlet-name>
+      <url-pattern>/magnet/put</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>MagnetGetMagnet</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.magnet.servlet.GetMagnet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>MagnetGetMagnet</servlet-name>
+      <url-pattern>/magnet/get</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>MagnetGetLatestMagnet</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.magnet.servlet.GetLatestMagnet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>MagnetGetLatestMagnet</servlet-name>
+      <url-pattern>/magnet/get-latest</url-pattern>
+    </servlet-mapping>
+  <!-- /magnet -->
+
   <!-- config -->
     <servlet>
       <servlet-name>ServerConfigBroadcaster</servlet-name>
