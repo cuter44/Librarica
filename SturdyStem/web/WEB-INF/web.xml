@@ -864,6 +864,17 @@
       <servlet-name>MagnetGetLatestMagnet</servlet-name>
       <url-pattern>/magnet/get-latest</url-pattern>
     </servlet-mapping>
+
+    <filter-mapping>
+      <filter-name>SessionKeyVerifier</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/magnet/put</url-pattern>
+      <url-pattern>/magnet/get</url-pattern>
+      <url-pattern>/magnet/get-latest</url-pattern>
+    </filter-mapping>
   <!-- /magnet -->
 
   <!-- config -->

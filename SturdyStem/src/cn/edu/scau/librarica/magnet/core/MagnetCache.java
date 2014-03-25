@@ -3,10 +3,12 @@ package cn.edu.scau.librarica.magnet.core;
 import java.util.Hashtable;
 
 import com.github.cuter44.util.geom.PointLong;
+import com.github.cuter44.util.dao.*;
 import net.sf.ehcache.event.CacheEventListenerAdapter;
 import net.sf.ehcache.*;
 
 import cn.edu.scau.librarica.util.conf.*;
+import cn.edu.scau.librarica.remind.core.*;
 
 public class MagnetCache
 {
@@ -133,7 +135,17 @@ public class MagnetCache
                 @Override
                 public void notifyElementPut(Ehcache c, Element e)
                 {
-                    System.out.println("insert or update?");
+                    HiberDao.begin();
+
+                    // ∑¢ÀÕÃ·–—
+                    PointLong t = (PointLong)e.getObjectKey();
+                    RemindRouter.put(
+                        RemindMgr.createTransient(t.y, "Magnet", t.x)
+                    );
+
+                    HiberDao.commit();
+
+                    HiberDao.close();
                 }
             }
         );

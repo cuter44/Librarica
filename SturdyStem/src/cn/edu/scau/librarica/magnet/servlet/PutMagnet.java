@@ -7,7 +7,6 @@ import javax.servlet.http.*;
 import javax.servlet.ServletException;
 
 import com.github.cuter44.util.geom.PointLong;
-import com.github.cuter44.util.dao.*;
 import com.github.cuter44.util.servlet.*;
 import com.alibaba.fastjson.*;
 
@@ -74,13 +73,8 @@ public class PutMagnet extends HttpServlet
             if (pos == null)
                 throw(new MissingParameterException(POS));
 
-            // Magnet 本身不使用数据库, 但生成提醒需要数据库
-            // 这个语句稍后将被移除
-            HiberDao.begin();
-
             MagnetCache.put(new PointLong(me, op), pos);
 
-            HiberDao.commit();
         }
         catch (MissingParameterException ex)
         {
@@ -91,9 +85,6 @@ public class PutMagnet extends HttpServlet
         {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             this.log("", ex);
-        }
-        finally {
-            HiberDao.close();
         }
 
         return;
