@@ -3,6 +3,7 @@ package cn.edu.scau.librarica.authorize.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.security.KeyPair;
 import java.security.interfaces.RSAPublicKey;
 
@@ -76,8 +77,19 @@ public class GetRsaKey extends HttpServlet
 
             JSONObject json = new JSONObject();
 
-            json.put(M, pk.getModulus().toString(16));
-            json.put(E, pk.getPublicExponent().toString(16));
+            //this.getServletContext().log(pk.getPublicExponent().toString(16));
+            //this.getServletContext().log(pk.getModulus().toString(16));
+            //this.getServletContext().log(CryptoUtil.byteToHex(pk.getPublicExponent().toByteArray()));
+            //this.getServletContext().log(CryptoUtil.byteToHex(pk.getModulus().toByteArray()));
+            byte[] m = pk.getModulus().toByteArray();
+            if (m[0] == 0)
+                m = Arrays.copyOfRange(m, 1, m.length);
+            byte[] e = pk.getPublicExponent().toByteArray();
+            if (e[0] == 0)
+                e = Arrays.copyOfRange(e, 1, e.length);
+
+            json.put(M, CryptoUtil.byteToHex(m));
+            json.put(E, CryptoUtil.byteToHex(e));
 
             out.println(json.toJSONString());
         }
