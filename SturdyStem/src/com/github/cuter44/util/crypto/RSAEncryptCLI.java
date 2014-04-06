@@ -41,8 +41,7 @@ public class RSAEncryptCLI
                 data = CryptoUtil.RSAEncrypt(data, key);
 
                 System.out.println("ciphertext:");
-                for (int i=0; i<data.length; i++)
-                    System.out.print(String.format("%02x",data[i]&0xff));
+                System.out.println(CryptoUtil.byteToHex(data));
                 System.out.println();
             }
         }

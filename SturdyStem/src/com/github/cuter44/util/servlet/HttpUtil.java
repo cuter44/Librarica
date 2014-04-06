@@ -13,15 +13,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /** Servlet 工具类
- * @version 1.0.0 builld 20131212
+ * @version 1.1.0 builld 20140404
  */
 public class HttpUtil
 {
+    public static Object notNull(Object o)
+        throws MissingParameterException
+    {
+        if (o == null)
+            throw(new MissingParameterException());
+
+        return(o);
+    }
+
     /**
      * 从 HTTP 请求中检出相应参数值的简便封装
      *
      * 没有该命名的参数时返回null
-     * (!) 不能用于在 Session 中检出 Object, 会返回它们的 toString()
+     * @warning 不能用于在 Session 中检出 Object, 会返回它们的 toString()
      * 优先顺序为 Http请求参数 > Session > Cookie
      * @param req Http请求
      * @param name 参数的名字

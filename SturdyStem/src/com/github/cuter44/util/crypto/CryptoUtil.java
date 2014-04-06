@@ -405,4 +405,9 @@ public class CryptoUtil
 
         return(sb.toString());
     }
+
+    public static String bytesToHex(byte[] bytes)
+    {
+        return(byteToHex(bytes));
+    }
 }

@@ -386,6 +386,24 @@
       <url-pattern>/borrow/conf-return</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+      <servlet-name>BorrowListBorrowSession</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.ListAllSession</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BorrowListBorrowSession</servlet-name>
+      <url-pattern>/borrow/list-both</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BorrowGetBorrowSession</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.lend.servlet.GetBorrowSession</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BorrowGetBorrowSession</servlet-name>
+      <url-pattern>/borrow/get</url-pattern>
+    </servlet-mapping>
+
     <filter>
       <filter-name>IsBorrowerVerifier</filter-name>
       <filter-class>cn.edu.scau.librarica.lend.filter.IsBorrowerVerifier</filter-class>
@@ -601,6 +619,24 @@
     <servlet-mapping>
       <servlet-name>BuyClose</servlet-name>
       <url-pattern>/buy/close</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BuyListBuySession</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.ListAllSession</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuyListBuySession</servlet-name>
+      <url-pattern>/buy/list-both</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BuyGetBuySession</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.sale.servlet.GetBuySession</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BuyGetBuySession</servlet-name>
+      <url-pattern>/buy/get</url-pattern>
     </servlet-mapping>
 
     <filter>

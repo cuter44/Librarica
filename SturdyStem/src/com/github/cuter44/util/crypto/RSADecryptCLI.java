@@ -37,14 +37,11 @@ public class RSADecryptCLI
 
                 PrivateKey key = kf.generatePrivate(new RSAPrivateKeySpec(m, d));
 
-                byte[] data = new byte[ct.length()/2];
-                for (int i=0; i<data.length; i++)
-                    data[i] = Byte.valueOf(s.substring(i*2,i*2+2), 16);
+                byte[] data = CryptoUtil.hexToBytes(ct);
                 data = CryptoUtil.RSADecrypt(data, key);
 
                 System.out.println("plaintext:");
-                for (int i=0; i<data.length; i++)
-                    System.out.print(String.format("%02x",data[i]&0xff));
+                System.out.println(CryptoUtil.byteToHex(data));
                 System.out.println();
             }
         }
