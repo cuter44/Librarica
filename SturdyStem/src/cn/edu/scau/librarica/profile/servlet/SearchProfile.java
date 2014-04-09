@@ -40,6 +40,7 @@ import cn.edu.scau.librarica.util.conf.Configurator;
    application/json(array); charset=utf-8:
    <i>non-verbose</i>
    id:long, uid
+   uid:long=id, 为了兼容愚蠢的伟豪的iOS而准备的冗余数据域
    dname:string(48), 显示名
    avatar:url(255), 头像的URL
    motto:string(255), 个性签名
@@ -89,7 +90,6 @@ import cn.edu.scau.librarica.util.conf.Configurator;
  * </pre>
  *
  */
-@Deprecated
 public class SearchProfile extends HttpServlet
 {
     private static final String FLAG = "flag";
@@ -99,6 +99,7 @@ public class SearchProfile extends HttpServlet
     private static final String ID = "id";
     private static final String Q = "q";
 
+    private static final String UID = "uid";
     private static final String DNAME = "dname";
     private static final String TNAME = "tname";
     private static final String MOTTO = "motto";
@@ -128,6 +129,7 @@ public class SearchProfile extends HttpServlet
     {
         JSONObject j = new JSONObject();
 
+        j.put(UID, p.getId());
         j.put(ID, p.getId());
         j.put(DNAME, p.getDname());
         j.put(MOTTO, p.getMotto());

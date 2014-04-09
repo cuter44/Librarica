@@ -14,17 +14,33 @@ public class BorrowSession
     public static final long serialVersionUID = 1L;
 
   // CONSTANTS
+    /** -2, 请求方放弃借阅请求
+     */
     public static final Byte ABORTED = -2;
+    /** -1, 被请求方拒绝请求
+     */
     public static final Byte REJECTED = -1;
+    /** 0, 发起请求的初始状态
+     */
     public static final Byte REQUESTED = 0;
+    /** 1, 被请求方已接受请求
+     */
     public static final Byte ACCEPTED = 1;
+    /** 2, 被请求方已交付书籍
+     */
     public static final Byte BORROWED = 2;
+    /** 3, 请求方请求还书
+     */
     public static final Byte RETURNING = 3;
+    /** 4, 被请求方确认已收到还书
+     */
     public static final Byte CLOSED = 4;
 
   // FIELDS
     // 流水号
     private Long id;
+    /** 以上常量之一, 表示借阅会话的状态
+     */
     private Byte status;
 
     private Book book;

@@ -24,7 +24,7 @@ import cn.edu.scau.librarica.util.conf.Configurator;
  * <pre style="font-size:12px">
 
    <strong>请求</strong>
-   GET/POST /borrow/list
+   GET/POST /borrow/list-both
 
    <strong>参数</strong>
    uid:long, 必须, 指定关系者的uid
