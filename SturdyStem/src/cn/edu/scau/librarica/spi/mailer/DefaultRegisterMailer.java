@@ -35,25 +35,27 @@ public class DefaultRegisterMailer
     {
         String activateURL =
             baseURL + "/user/activate.jsp?" +
-            "id=" + u.getId() + "&" +
-            "activateCode=" + CryptoUtil.byteToHex(u.getPass());
+            "uid=" + u.getId() + "&" +
+            "code=" + CryptoUtil.byteToHex(u.getPass());
 
         String recipient = u.getMail();
-        String subject = "[Librarica]欢迎加入我们的读书之旅";
+        String subject = "欢迎注册木瓜(≧▽≦)っ□";
 
         String content =
             "<html>"+
-            "<head>"+
-            "<meta http-equiv=\"content-type\" content=\"text/html\">"+
-            "</head>"+
-            "<body>"+
-            "Please visit <a href=\"" + activateURL + "\">"+
-            activateURL +
-            "</a>"+
-            " to activate your account."+
-            "<br />"+
-            "Or type in " + CryptoUtil.byteToHex(u.getPass()) + " to your app as activate code."+
-            "</body>"+
+             "<head>"+
+              "<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">"+
+             "</head>"+
+             "<body>"+
+               "<p>"+
+               "欢迎加入木瓜, 一个热爱读书的社交应用."+
+               "</p><p>"+
+               "要验证邮件地址才能使用 ( °д°)→"+
+               "<a href=\"" +activateURL+"\">"+activateURL+"</a>"+
+               "</p><p>"+
+               "谢啦, 祝你玩得开心~"+
+               "</p>"+
+             "</body>"+
             "</html>";
         try
         {

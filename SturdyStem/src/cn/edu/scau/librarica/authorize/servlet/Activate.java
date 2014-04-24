@@ -110,7 +110,7 @@ public class Activate extends HttpServlet
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             out.println("{\"flag\":\"!incorrect\"}");
         }
-        catch (IllegalStateException ex)
+        catch (LoginBlockedException ex)
         {
             resp.setStatus(HttpServletResponse.SC_CONFLICT);
             out.println("{\"flag\":\"!status\"}");

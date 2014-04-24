@@ -71,9 +71,7 @@ public class GetRsaKey extends HttpServlet
             if (uid == null)
                 throw(new MissingParameterException(UID));
 
-            KeyPair kp = CryptoUtil.generateRSAKey();
-            RSAPublicKey pk = (RSAPublicKey)kp.getPublic();
-            RSAKeyCache.put(uid, kp.getPrivate());
+            RSAPublicKey pk = (RSAPublicKey)RSAKeyCache.genKey(uid);
 
             JSONObject json = new JSONObject();
 

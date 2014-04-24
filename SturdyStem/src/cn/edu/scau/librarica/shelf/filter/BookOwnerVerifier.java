@@ -120,7 +120,7 @@ public class BookOwnerVerifier
         }
         else
         {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             resp.setContentType("application/json; charset=utf-8");
             resp.getWriter().println("{\"flag\":\"!owner\"}");
             return;

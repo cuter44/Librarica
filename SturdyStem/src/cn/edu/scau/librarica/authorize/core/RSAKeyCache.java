@@ -1,6 +1,8 @@
 package cn.edu.scau.librarica.authorize.core;
 
+import java.security.KeyPair;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import net.sf.ehcache.*;
 import com.github.cuter44.util.crypto.*;
@@ -31,6 +33,16 @@ public class RSAKeyCache
         return(
             e!=null ? (PrivateKey)e.getObjectValue() : null
         );
+    }
+
+    /** 生成一对密钥, 并把私钥存好返回其中的公钥
+     */
+    public static PublicKey genKey(Long id)
+    {
+        KeyPair kp = CryptoUtil.generateRSAKey();
+        put(id, kp.getPrivate());
+
+        return(kp.getPublic());
     }
 
   // CONSTRUCT

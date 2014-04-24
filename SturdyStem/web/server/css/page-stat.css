@@ -1,21 +1,12 @@
-/*
-  page: /stat.jsp
-*/
-
-h1
-{
-  margin-bottom: 0.2em;
-}
-
 span.stat-num
 {
   font-size: 24px;
-  font-weight:500;
+  font-weight:700;
 }
 
 span.stat-bad
 {
-  color: red;
+  /*  color: red; */
 }
 
 span.stat-uri-count
