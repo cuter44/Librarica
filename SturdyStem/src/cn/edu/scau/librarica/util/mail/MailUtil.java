@@ -1,22 +1,12 @@
 package cn.edu.scau.librarica.util.mail;
 
+import java.io.UnsupportedEncodingException;
 import java.security.Security;
-import javax.mail.Session;
-//import javax.mail.Message;
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
-
-import javax.mail.Transport;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeUtility;
-import javax.mail.internet.InternetAddress;
-import javax.mail.Message.RecipientType;
-
-import javax.mail.SendFailedException;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import javax.mail.internet.MimeMessage;
 
-import java.io.UnsupportedEncodingException;
+import com.github.cuter44.util.mail.*;
 
 import cn.edu.scau.librarica.util.conf.Configurator;
 
@@ -26,13 +16,13 @@ import cn.edu.scau.librarica.util.conf.Configurator;
  */
 public class MailUtil
 {
-    private static String MAIL_ADDRESS = "librarica.mail.address";
     private static String MAIL_PERSONAL = "librarica.mail.personal";
+    private static String MAIL_ADDRESS = "librarica.mail.address";
 
     private static String MAIL_USERNAME = "librarica.mail.username";
     private static String MAIL_PASSWORD = "librarica.mail.password";
 
-    private Session session = null;
+    private JavaMailUtil core;
 
     private static class Singleton
     {
@@ -41,59 +31,35 @@ public class MailUtil
 
     private MailUtil()
     {
-        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-        Authenticator auth = new Authenticator()
-            {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication()
-                {
-                    String name = Configurator.get(MAIL_USERNAME);
-                    String pass = Configurator.get(MAIL_PASSWORD);
+        this.core = JavaMailUtil.getInstance(
+            Configurator.get("mail.smtp.host"),
+            Configurator.get("mail.smtp.port"),
+            Configurator.get(MAIL_USERNAME),
+            Configurator.get(MAIL_PASSWORD),
+            Configurator.get(MAIL_PERSONAL),
+            Configurator.get(MAIL_ADDRESS)
+        );
+    }
 
-                    return(
-                        new PasswordAuthentication(name, pass)
-                    );
-                }
-            };
+    public static MimeMessage createMimeMessage()
+        throws MessagingException
+    {
+        return(
+            Singleton.instance.core.createMimeMessage()
+        );
+    }
 
-        this.session = Session.getDefaultInstance(
-            Configurator.getProperties(),
-            auth
+    public static MimeMessage createMessage(String to)
+        throws MessagingException, AddressException
+    {
+        return(
+            Singleton.instance.core.createMimeMessage(to)
         );
     }
 
     public static void sendHTMLMail(String to, String subject, String content)
         throws MessagingException, AddressException
     {
-        try
-        {
-            MimeMessage msg = new MimeMessage(Singleton.instance.session);
-            String address = Configurator.get(MAIL_ADDRESS);
-            String personal = Configurator.get(MAIL_PERSONAL);
-
-            msg.setFrom(
-                new InternetAddress(
-                    address,
-                    MimeUtility.encodeText(personal, "utf-8", "B")
-                )
-            );
-
-            msg.addRecipient(
-                RecipientType.TO,
-                new InternetAddress(to)
-            );
-
-            msg.setSubject(subject);
-
-            msg.setContent(content, "text/html; charset=UTF-8");
-
-            Transport.send(msg);
-
-            return;
-        }
-        catch (UnsupportedEncodingException ex)
-        {
-            ex.printStackTrace();
-        }
+        Singleton.instance.core.sendHTMLMail(to, subject, content);
     }
 }
