@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="cn.edu.scau.librarica.remind.dao.Remind" table="remind_remind">
+        <id	name="id" type="long">
+            <generator class="identity"/>
+        </id>
+
+        <many-to-one name="user" class="cn.edu.scau.librarica.authorize.dao.User" index="idx_remind_user" />
+        <property name="t" type="string" />
+        <property name="v" type="string" />
+    </class>
+</hibernate-mapping>

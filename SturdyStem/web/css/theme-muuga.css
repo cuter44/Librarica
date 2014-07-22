@@ -1,0 +1,49 @@
+body {
+  background-color: #59b7bc;
+  color: #ffffff;
+  /* font-size: 14px;*/
+}
+
+h1 {
+  text-shadow: 0px 0px 4px #c0c0c0;
+  font-size: 40px;
+  /* margin-bottom: 0.67em; */ /* opera default */
+}
+
+div.indent {
+  margin-left:12px;
+}
+
+a {
+  color: #00cc99;
+}
+
+fieldset {
+  border: 1px solid rgba(0,0,0,0.15);
+
+  /* background: rgba(0,0,0,0.15); */
+}
+
+input, textarea, div.input {
+  border: none;
+  border-radius: 4px;
+  padding:2px;
+
+  background: rgba(0,0,0,0.15);
+  color: #ffffff;
+
+  transition: box-shadow 200ms;
+}
+
+input[readonly="true"], textarea[readonly="true"] {
+  background: none;
+}
+
+input[type="button"] {
+  font-weight: 800;
+  box-shadow: 0px 0px 4px #404040;
+}
+
+input:hover, input:focus, textarea:hover, textarea:focus, div.input:hover, div.input:focus {
+  box-shadow: 0px 0px 4px #ffffff;
+}

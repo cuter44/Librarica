@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="cn.edu.scau.librarica.profile.dao.Profile" table="profile_profile">
+        <id	name="id" type="long">
+            <generator class="foreign">
+                <param name="property">user</param>
+            </generator>
+        </id>
+        <one-to-one name="user" class="cn.edu.scau.librarica.authorize.dao.User" />
+        
+        <property name="dname" type="string" length="48" />
+        <property name="tname" type="string" length="48" />
+        <property name="motto" type="string" length="255" />
+        <property name="avatar" type="string" length="255"/>
+
+        <property name="pos" type="string" length="24" />
+
+    </class>
+</hibernate-mapping>

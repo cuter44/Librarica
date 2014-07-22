@@ -1,0 +1,32 @@
+div.wechat-wrap-recv {
+  margin:8px 0px;
+}
+
+div.wechat-wrap-sent {
+  margin:8px 0px;
+  text-align:right;
+}
+
+span.wechat-element {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+span.wechat-balloon {
+  display: inline-block;
+  margin: 0px 4px;
+
+  padding: 4px;
+  border-radius: 4px;
+
+  color:black;
+}
+
+span.wechat-recv {
+  background-color: #a7d94f;
+}
+
+span.wechat-sent {
+  background-color: #ffffff;
+}
+

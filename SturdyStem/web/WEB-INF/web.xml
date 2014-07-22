@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xmlns:web="http://java.sun.com/xml/ns/javaee"
+        xmlns="http://java.sun.com/xml/ns/javaee"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+        id="WebApp_ID" version="2.5">
+  <display-name>librarica</display-name>
+
+  <!--
+  <servlet>
+    <servlet-name></servlet-name>
+    <servlet-class>cn.edu.scau.librarica.</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name></servlet-name>
+    <url-pattern>cn.edu.scau.librarica.</url-pattern>
+  </servlet-mapping>
+  -->
+  
+  <!-- system scope start -->
+
+    <!-- ehcache -->
+    <listener>
+      <listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
+    </listener>
+
+    <!--
+      <filter>
+        <filter-name>PageCacher</filter-name>
+        <filter-class>net.sf.ehcache.constructs.web.filter.SimplePageCachingFilter</filter-class>
+      </filter>
+      <filter-mapping>
+        <filter-name>PageCacher</filter-name>
+        <url-pattern>/server/*</url-pattern>
+      </filter-mapping>
+    -->
+
+    <!-- bootstrap -->
+      <listener>
+        <listener-class>cn.edu.scau.librarica.util.bootstrap.BootstrapJSPAdapter</listener-class>
+      </listener>
+    <!-- /bootstrap -->
+
+    <!-- exception-handler -->
+      <servlet>
+        <servlet-name>sys_exception</servlet-name>
+        <servlet-class>cn.edu.scau.librarica.sys.servlet.ExceptionHandler</servlet-class>
+      </servlet>
+      <servlet-mapping>
+        <servlet-name>sys_exception</servlet-name>
+        <url-pattern>/sys/exception.api</url-pattern>
+      </servlet-mapping>
+
+
+    <!-- /exception-handler -->
+
+    <!-- audit -->
+      <listener>
+        <listener-class>cn.edu.scau.librarica.util.audit.UriAuditListener</listener-class>
+      </listener>
+    <!-- /audit -->
+
+  <!-- system scope end -->
+
+  <!-- authorize -->
+    <servlet>
+      <servlet-name>user_register</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.Register</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>user_register</servlet-name>
+      <url-pattern>/user/register.api</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>security_get_rsa_key</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.GetRsaKey</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>security_get_rsa_key</servlet-name>
+      <url-pattern>/security/get-rsa-key.api</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>user_activate</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.Activate</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>user_activate</servlet-name>
+      <url-pattern>/user/activate.api</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>user_login</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.Login</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>user_login</servlet-name>
+      <url-pattern>/user/login.api</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>user_logout</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.Logout</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>user_logout</servlet-name>
+      <url-pattern>/user/logout.api</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>user_search</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.SearchUser</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>user_search</servlet-name>
+      <url-pattern>/user/search.api</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>user_passwd</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.authorize.servlet.Passwd</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>user_passwd</servlet-name>
+      <url-pattern>/user/passwd.api</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+      <filter-name>filter_password</filter-name>
+      <filter-class>cn.edu.scau.librarica.authorize.filter.PasswordVerifier</filter-class>
+      <init-param>
+        <param-name>userIdParamName</param-name>
+        <param-value>uid</param-value>
+      </init-param>
+      <init-param>
+        <param-name>passParamName</param-name>
+        <param-value>pass</param-value>
+      </init-param>
+    </filter>
+    <!-- remove comment while enable
+    <filter-mapping>
+      <filter-name>PasswordVerifier</filter-name>
+        userIdParamName=uid
+        passParamName=pass
+    </filter-mapping>
+    -->
+
+    <filter>
+      <filter-name>filter_skey</filter-name>
+      <filter-class>cn.edu.scau.librarica.authorize.filter.SessionKeyVerifier</filter-class>
+      <async-supported>true</async-supported>
+      <init-param>
+        <param-name>userIdParamName</param-name>
+        <param-value>uid</param-value>
+      </init-param>
+      <init-param>
+        <param-name>sessionKeyParamName</param-name>
+        <param-value>s</param-value>
+      </init-param>
+    </filter>
+    <!-- remove comment while enable.
+    <filter-mapping>
+      <filter-name>filter_skey</filter-name>
+        userIdParamName=uid
+        sessionKeyParamName=s
+    </filter-mapping>
+    -->
+  <!-- /authorize -->
+
+  <!-- profile -->
+    <servlet>
+      <servlet-name>profile_update</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.profile.servlet.UpdateProfile</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>profile_update</servlet-name>
+      <url-pattern>/profile/update.api</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>profile_search</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.profile.servlet.SearchProfile</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>profile_search</servlet-name>
+      <url-pattern>/profile/search.api</url-pattern>
+    </servlet-mapping>
+
+    <filter-mapping>
+      <filter-name>filter_skey</filter-name>
+      <url-pattern>/profile/update.api</url-pattern>
+    </filter-mapping>
+<!-- /profile -->
+
+  <!-- msg  -->
+    <servlet>
+      <servlet-name>msg_send</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.msg.servlet.SendMsg</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>msg_send</servlet-name>
+      <url-pattern>/msg/send.api</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>msg_receive</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.msg.servlet.ReceiveMsg</servlet-class>
+      <async-supported>true</async-supported>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>msg_receive</servlet-name>
+      <url-pattern>/msg/receive.api</url-pattern>
+    </servlet-mapping>
+
+    <filter-mapping>
+      <filter-name>filter_skey</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/msg/send.api</url-pattern>
+      <url-pattern>/msg/receive.api</url-pattern>
+    </filter-mapping>
+  <!-- /msg -->
+
+  <!-- buddy -->
+    <servlet>
+      <servlet-name>buddy_like</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.buddy.servlet.Like</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>buddy_like</servlet-name>
+      <url-pattern>/buddy/like</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>buddy_hate</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.buddy.servlet.Hate</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>buddy_hate</servlet-name>
+      <url-pattern>/buddy/hate</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>buddy_unset</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.buddy.servlet.Unset</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>buddy_unset</servlet-name>
+      <url-pattern>/buddy/unset.api</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+      <servlet-name>buddy_search</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.buddy.servlet.SearchUser</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>buddy_search</servlet-name>
+      <url-pattern>/buddy/search.api</url-pattern>
+    </servlet-mapping>
+
+    <filter-mapping>
+      <filter-name>filter_skey</filter-name>
+      <!--
+        userIdParamName=uid
+        sessionKeyParamName=s
+      -->
+      <url-pattern>/buddy/like.api</url-pattern>
+      <url-pattern>/buddy/hate.api</url-pattern>
+      <url-pattern>/buddy/unset.api</url-pattern>
+    </filter-mapping>
+  <!-- /buddy -->
+
+  <!-- config -->
+    <servlet>
+      <servlet-name>ServerConfigBroadcaster</servlet-name>
+      <servlet-class>cn.edu.scau.librarica.util.conf.ServerConfigBroadcaster</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>ServerConfigBroadcaster</servlet-name>
+      <url-pattern>/config/list.api</url-pattern>
+    </servlet-mapping>
+  <!-- /config -->
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+</web-app>    
+ 

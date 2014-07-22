@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Default build.xml file for JavaWeb Project
+  ==========================================
+  @depend ant-1.9.2+
+  @author "galin"<cuter44@qq.com>
+  @version 1.2.1 build 2014/2/13
+  ==========================================
+  You can do whatever to this file as you wish.
+  This file and other attachement is provided as-if, and no warranty.
+  ==========================================
+  [USAGE]
+  Config your project-name right below, then parse it to your project-base. use 'ant -projecthelp' to view all commands.
+-->
+<!--
+  modified by "galin"<cuter44@stu.scau.edu.cn>
+-->
+<project name="librarica" basedir="." default="build-all" >
+
+  <!-- 变量 -->
+  <property name="srcdir" value="src" />
+  <property name="dtlibdir" value="lib" />
+  <property name="webdir" value="web" />
+  <property name="javadocdir" value="javadoc" />
+  <property name="webinfdir" value="${webdir}/WEB-INF" />
+  <property name="rtlibdir" value="${webinfdir}/lib" />
+  <property name="destdir" value="${webinfdir}/classes" />
+
+  <path id="classpath">
+    <!-- web/WEB-INF/lib 存放需要发布的类库 -->
+    <fileset id="packages" dir="${rtlibdir}">
+	    <include name="*.jar" />
+	  </fileset>
+	  <!-- lib 存放开发及测试用库 -->
+	  <fileset id="debug-packages" dir="${dtlibdir}">
+	    <include name="*.jar" />
+	  </fileset>
+	  <pathelement path="${destdir}" />
+  </path>
+
+  <!-- 初始化目录树 -->
+  <target name="init" description="初始化目录树及默认配置文件, 注意会覆盖 web.xml">
+    <antcall target="init-dir" />
+    <antcall target="init-genwebxml" />
+    <antcall target="init-gendeploy" />
+  </target>
+
+  <target name="init-dir">
+	  <mkdir dir="${srcdir}" />
+	  <mkdir dir="${dtlibdir}" />
+	  <mkdir dir="${rtlibdir}" />
+	  <mkdir dir="${destdir}" />
+  </target>
+
+  <target name="init-genwebxml" description="初始化默认的 web.xml">
+    <echo file="${webinfdir}/web.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xmlns:web="http://java.sun.com/xml/ns/javaee"
+        xmlns="http://java.sun.com/xml/ns/javaee"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+        version="3.0"&gt;
+  &lt;display-name&gt;${ant.project.name}&lt;/display-name&gt;
+
+  &lt;!--
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;&lt;/servlet-class&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+  --&gt;
+
+  &lt;welcome-file-list&gt;
+    &lt;welcome-file&gt;index.html&lt;/welcome-file&gt;
+    &lt;welcome-file&gt;index.htm&lt;/welcome-file&gt;
+    &lt;welcome-file&gt;index.jsp&lt;/welcome-file&gt;
+  &lt;/welcome-file-list&gt;
+&lt;/web-app&gt;
+    </echo>
+  </target>
+
+  <target name="init-gendeploy" description="生成指向配置文件, 用于 tomcat 的引用部署">
+    <echo file="${ant.project.name}.xml">&lt;-- note: copy this file to your ANT_HOME/conf/Catalina/localhost(or other as your actual) to deploy --&gt;
+&lt;Context docBase="${basedir}\web"&gt;
+&lt;/Context&gt;
+    </echo>
+  </target>
+
+  <!-- 编译 -->
+  <target name="build" description="编译">
+    <antcall target="copy-config" />
+    <javac srcdir="${srcdir}" destdir="${destdir}" failonerror="true" debug="true" includeantruntime="false" encoding="utf-8">
+      <compilerarg value="-Xlint:unchecked"/>
+      <compilerarg value="-Xlint:deprecation"/>
+      <classpath refid="classpath" />
+	</javac>
+  </target>
+
+  <target name="clear-built" description="清理">
+    <delete>
+      <fileset dir="${destdir}" includes="**/*"/>
+    </delete>
+  </target>
+
+  <target name="build-all" description="全部重新编译">
+    <antcall target="clear-built" />
+    <antcall target="build" />
+  </target>
+
+  <target name="copy-config" description="复制配置文件">
+	<copy todir="${destdir}">
+	  <fileset dir="${srcdir}">
+	    <include name="**/*.xml" />
+		  <include name="**/*.properties" />
+	  </fileset>
+	</copy>
+  </target>
+
+  <!-- 生成javadoc -->
+  <target name="javadoc" description="生成javadoc">
+    <javadoc sourcepath="${srcdir}" destdir="${javadocdir}" private="true" classpathref="classpath"/>
+  </target>
+
+  <!-- 生成war -->
+  <target name="war" description="生成war">
+    <antcall target="build-all"/>
+    <jar destfile="${ant.project.name}.war" basedir="${webdir}" />
+  </target>
+
+  <!-- 运行 -->
+  <target name="run" description="直接运行, 使用-Drun.main=&lt;类名&gt;指定入口类">
+    <java classname="${run.main}" fork="true" dir="${destdir}">
+      <classpath refid="classpath" />
+	  </java>
+  </target>
+
+  <!-- 调试 -->
+  <target name="debug" description="本地测试, 使用-Ddebug.main=&lt;类名&gt;指定jvm的入口类">
+    <java classname="${debug.main}" fork="true" dir="${destdir}">
+      <!-- 启用断言 -->
+      <jvmarg value="-ea" />
+      <!-- 启用调试 -->
+      <jvmarg value="-Xdebug"/> 
+      <!-- 启用远程调试 -->
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8288,suspend=y,server=y"/>
+      <classpath refid="classpath" />
+    </java>
+  </target>
+
+  <!-- 工具类 -->
+  <!-- 注意这些工具都会影响数据库, 某些可能还需要直接读取数据库 -->
+  <!-- 目标服务器通过 librarica.public.properties#librarica.server.api.baseurl 查找 -->
+  <!-- 直接数据库连接通过 hibernate.xml 查找 -->
+
+  <target name="rsa-enc" description="加密">
+    <property name="run.main" value="com.github.cuter44.util.crypto.RSAEncryptCLI" />
+    <antcall target="run" />
+  </target>
+
+  <target name="rsa-dec" description="解密">
+    <property name="run.main" value="com.github.cuter44.util.crypto.RSADecryptCLI" />
+    <antcall target="run" />
+  </target>
+
+  <target name="rsa-keygen" description="生成密钥对">
+    <property name="run.main" value="com.github.cuter44.util.crypto.RSAGenKeyCLI" />
+    <antcall target="run" />
+  </target>
+
+  <target name="cli-encpass" description="加密密码">
+    <property name="run.main" value="cn.edu.scau.librarica.util.test.EncryptPasswordCLI" />
+    <antcall target="run" />
+  </target>
+
+  <target name="cli-act" description="激活用户">
+    <!-- 依赖SMTP服务器 -->
+    <property name="run.main" value="cn.edu.scau.librarica.util.test.ActivateUserCLI" />
+    <antcall target="run" />
+  </target>
+
+  <target name="cli-login" description="模拟登录">
+    <property name="run.main" value="cn.edu.scau.librarica.util.test.LoginCLI" />
+    <antcall target="run" />
+  </target>
+
+  <target name="cli-passwd" description="更改密码">
+    <property name="run.main" value="cn.edu.scau.librarica.util.test.PasswdCLI" />
+    <antcall target="run" />
+  </target>
+
+  <target name="db-bind" description="绑定豆瓣帐号, 调试目标由 client_id 决定">
+    <property name="run.main" value="cn.edu.scau.librarica.util.test.BindDoubanAccount" />
+    <antcall target="run" />
+  </target>
+
+</project>

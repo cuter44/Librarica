@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="cn.edu.scau.librarica.msg.dao.Msg" table="msg_msg">
+        <id	name="id" type="long">
+            <generator class="identity"/>
+        </id>
+        <many-to-one name="f" class="cn.edu.scau.librarica.authorize.dao.User" not-null="true" />
+        <many-to-one name="t" class="cn.edu.scau.librarica.authorize.dao.User" not-null="true" index="idx_msg_t" />
+
+        <property name="c" type="string" />
+        <property name="m" type="timestamp" />
+    </class>
+</hibernate-mapping>

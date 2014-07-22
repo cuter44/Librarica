@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="cn.edu.scau.librarica.buddy.dao.Buddy" table="buddy_buddy">
+        <id	name="id" type="long">
+            <generator class="identity" />
+        </id>
+
+        <property name="r" type="byte" />
+        <!--<properties unique="true" name='pair' >-->
+          <many-to-one name="me" class="cn.edu.scau.librarica.authorize.dao.User" unique-key="unique_buddy_edge" />
+          <many-to-one name="op" class="cn.edu.scau.librarica.authorize.dao.User" unique-key="unique_buddy_edge" />
+        <!--</properties>-->
+    </class>
+</hibernate-mapping>
